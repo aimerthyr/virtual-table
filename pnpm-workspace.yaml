@@ -1,0 +1,4 @@
+# pnpm workspace 配置
+packages:
+  - 'packages/*'
+  - 'docs'

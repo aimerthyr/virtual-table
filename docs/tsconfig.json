@@ -1,0 +1,12 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@aimerthyr/virtual-table": ["../packages/table/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*", "../packages/table/src/**/*"],
+  "exclude": ["node_modules"]
+}

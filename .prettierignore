@@ -1,0 +1,24 @@
+# 依赖
+node_modules/
+**/node_modules/
+
+# 构建产物
+dist/
+**/dist/
+
+# 锁文件
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# 日志
+*.log
+
+# 缓存
+.vite/
+.vite-temp/
+.vue-global-types/
+
+# 其他
+.DS_Store
+*.tgz

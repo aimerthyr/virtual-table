@@ -1,0 +1,49 @@
+{
+  "name": "@aimerthyr/virtual-table",
+  "version": "0.0.1",
+  "description": "高性能虚拟滚动表格",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./virtual-table.css": "./dist/virtual-table.css"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build"
+  },
+  "keywords": [
+    "vue",
+    "vue3",
+    "table",
+    "virtual-scroll",
+    "component"
+  ],
+  "author": "aimerthyr",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aimerthyr/virtual-table"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "dependencies": {
+    "@tanstack/vue-table": "^8.21.3",
+    "@tanstack/vue-virtual": "^3.13.19",
+    "lodash-es": "^4.17.23"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
+    "less": "^4.5.1"
+  }
+}
