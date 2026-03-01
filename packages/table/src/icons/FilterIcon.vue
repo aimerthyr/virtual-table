@@ -13,5 +13,5 @@
 </template>
 
 <script lang="ts" setup>
-defineOptions({ name: 'FilterFilled' })
+defineOptions({ name: 'FilterIcon' })
 </script>

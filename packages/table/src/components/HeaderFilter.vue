@@ -1,5 +1,5 @@
 <template>
-  <Popover v-model:open="open" placement="bottom-start" :arrow="false">
+  <VPopover v-model:open="open" placement="bottom-start" :arrow="false">
     <div class="relative h-[22px] cursor-pointer">
       <div
         class="absolute left-1/2 top-1/2 flex h-[30px] w-[20px] translate-x-[-50%] translate-y-[-50%] items-center justify-center text-[#0000004a] hover:bg-[#0000000f] hover:text-[#00000073]"
@@ -10,7 +10,7 @@
           :filtered="column.getIsFiltered()"
           :column="columnMeta"
         >
-          <FilterFilled :class="[column.getIsFiltered() ? 'text-[#1677ff]' : '']" />
+          <FilterIcon :class="[column.getIsFiltered() ? 'text-[#1677ff]' : '']" />
         </slot>
       </div>
     </div>
@@ -25,14 +25,14 @@
         :filter-model-value="filterModelValue"
       />
     </template>
-  </Popover>
+  </VPopover>
 </template>
 
 <script setup lang="ts">
 import type { Header } from '@tanstack/vue-table'
+import FilterIcon from '../icons/FilterIcon.vue'
 import type { VTableSlots } from '../interface'
-import FilterFilled from '../libs/FilterFilled.vue'
-import Popover from '../libs/Popover.vue'
+import VPopover from '../libs/VPopover.vue'
 
 defineOptions({ name: 'HeaderFilter' })
 

@@ -148,6 +148,24 @@
         当前内容为空
       </div>
     </div>
+    <div
+      v-if="props.paginationConfig.enabled"
+      :class="[
+        props.paginationConfig.placement === 'left'
+          ? 'justify-start'
+          : props.paginationConfig.placement === 'center'
+            ? 'justify-center'
+            : 'justify-end',
+      ]"
+      class="flex items-center py-[16px]"
+    >
+      <VPagination
+        v-model:current="pagination.pageIndex"
+        v-model:page-size="pagination.pageSize"
+        :total="props.paginationConfig.total"
+        @change="handlePageChange"
+      />
+    </div>
   </div>
 </template>
 
@@ -179,10 +197,10 @@ import {
   EXPAND_ROW_KEY,
   TABLE_DEFAULT_STYLE,
 } from './constant/index.ts'
+import ExpandIcon from './icons/ExpandIcon.vue'
 import type { VTableData } from './interface/index.ts'
 import type { VTableProps, VTableSlots } from './interface/table.ts'
-import Checkbox from './libs/Checkbox.vue'
-import ExpandIcon from './libs/ExpandIcon.vue'
+import VCheckbox from './libs/VCheckbox.vue'
 import {
   buildData,
   convertSizeToPixels,
@@ -191,6 +209,7 @@ import {
   simpleHash,
 } from './utils/index.ts'
 import './style.css'
+import VPagination from './libs/VPagination.vue'
 
 defineOptions({ name: 'VTable' })
 
@@ -223,6 +242,7 @@ const props = withDefaults(defineProps<VTableProps<TData>>(), {
   paginationConfig: () => ({
     enabled: false,
     placement: 'right',
+    total: 0,
     mode: 'server',
   }),
   treeConfig: () => ({
@@ -248,7 +268,7 @@ const CHECKBOX_COLUMN: ColumnDef<TData> = {
   header: ({ table }: { table: Table<TData> }) => {
     const selectableRows = table.getRowModel().rows.filter((row) => row.getCanSelect())
     const selectedSelectableRows = selectableRows.filter((row) => row.getIsSelected())
-    return h(Checkbox, {
+    return h(VCheckbox, {
       indeterminate:
         selectedSelectableRows.length > 0 && selectedSelectableRows.length < selectableRows.length,
       checked: table.getIsAllRowsSelected(),
@@ -258,7 +278,7 @@ const CHECKBOX_COLUMN: ColumnDef<TData> = {
     })
   },
   cell: ({ row }: { row: Row<TData> }) => {
-    return h(Checkbox, {
+    return h(VCheckbox, {
       checked: row.getIsSelected(),
       disabled: !row.getCanSelect(),
       onClick: (e: any) => {
@@ -305,6 +325,10 @@ const columnPinning = defineModel<ColumnPinningState>('defaultColumnPinning', {
   default: () => ({}),
 })
 
+const handlePageChange = (page: number, pageSize: number) => {
+  pagination.value = { pageIndex: page, pageSize }
+  triggerTableStateChange()
+}
 const triggerTableStateChange = () => {
   nextTick(() => {
     props.onTableChange?.({

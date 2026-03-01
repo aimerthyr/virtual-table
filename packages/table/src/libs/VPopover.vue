@@ -28,6 +28,7 @@
 
 <script setup lang="ts">
 import {
+  flip,
   arrow as floatingArrow,
   offset,
   shift,
@@ -74,7 +75,8 @@ const { floatingStyles, middlewareData } = useFloating(referenceRef, floatingRef
       mainAxis: props.arrow ? 8 : 12, // 主轴距离（垂直方向）
       crossAxis: crossAxisOffset.value, // 横向偏移（根据对齐方式动态计算）
     }),
-    shift({ padding: 8 }),
+    flip(), // 自动翻转，防止溢出
+    shift({ padding: 8 }), // 自动偏移，防止贴边
     ...(props.arrow ? [floatingArrow({ element: arrowRef, padding: 16 })] : []),
   ],
 })
@@ -153,8 +155,6 @@ onUnmounted(() => {
 
 .popover-content {
   z-index: 1050;
-  min-width: 120px;
-  padding: 12px;
   background: #fff;
   border-radius: 6px;
   box-shadow:

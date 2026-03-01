@@ -24,8 +24,8 @@
 <script setup lang="ts">
 import { computed, h } from 'vue'
 import type { Header } from '@tanstack/vue-table'
+import SorterIcon from '../icons/SorterIcon.vue'
 import type { VTableSlots } from '../interface'
-import SorterIcon from '../libs/SorterIcon.vue'
 import HeaderFilter from './HeaderFilter.vue'
 
 defineOptions({ name: 'HeaderCell' })

@@ -82,6 +82,8 @@ export type VTablePaginationConfig = {
   enabled?: boolean
   /** 分页器位置 */
   placement?: 'left' | 'center' | 'right'
+  /** 总数（必须要传） */
+  total: number
   /** 服务端分页还是前端分页 */
   mode?: 'client' | 'server'
 }

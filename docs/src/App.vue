@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full flex-col bg-white p-[24px]">
+  <div class="flex h-full flex-col bg-white p-[12px]">
     <h2 class="mb-[16px] flex gap-[16px]">
       VTable 功能示例
       <div>
@@ -56,6 +56,7 @@
       :pagination-config="{
         enabled: !useScrollLoad,
         placement: 'right',
+        total: totalCount,
       }"
       :tree-config="{
         enabled: enableTreeExpand,

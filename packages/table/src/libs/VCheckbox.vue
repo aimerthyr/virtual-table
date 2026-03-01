@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: 'Checkbox' })
+defineOptions({ name: 'VCheckbox' })
 
 const props = withDefaults(
   defineProps<{
