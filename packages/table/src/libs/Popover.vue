@@ -62,9 +62,9 @@ const arrowRef = ref<HTMLElement | null>(null)
 
 const crossAxisOffset = computed(() => {
   const placement = props.placement
-  if (placement.includes('-start')) return -12 // start 对齐往左偏移
-  if (placement.includes('-end')) return 12 // end 对齐往右偏移
-  return 0 // 居中对齐不偏移
+  if (placement.includes('-start')) return -12
+  if (placement.includes('-end')) return 12
+  return 0
 })
 
 const { floatingStyles, middlewareData } = useFloating(referenceRef, floatingRef, {

@@ -1,6 +1,3 @@
-import Table from './Table.vue'
-import './style.css'
-
-export default Table
+export { default } from './index.vue'
 export * from './interface'
 export * from './constant'

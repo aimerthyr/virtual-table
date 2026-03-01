@@ -22,46 +22,37 @@ defineOptions({ name: 'Checkbox' })
 
 const props = withDefaults(
   defineProps<{
-    checked?: boolean
     disabled?: boolean
     indeterminate?: boolean // 半选状态
-    onChange?: (checked: boolean, e: Event) => void
+    onChange?: (e: Event) => void
   }>(),
   {
-    checked: false,
     disabled: false,
     indeterminate: false,
     onChange: () => {},
   },
 )
 
-const emit = defineEmits<{
-  'update:checked': [value: boolean]
-  change: [checked: boolean, e: Event]
-}>()
+const checked = defineModel<boolean>('checked')
 
 const wrapperClasses = computed(() => ({
   'checkbox-wrapper': true,
-  'checkbox-wrapper-checked': props.checked,
+  'checkbox-wrapper-checked': checked.value,
   'checkbox-wrapper-disabled': props.disabled,
 }))
 
 const checkboxClasses = computed(() => ({
   checkbox: true,
-  'checkbox-checked': props.checked && !props.indeterminate,
+  'checkbox-checked': checked.value && !props.indeterminate,
   'checkbox-disabled': props.disabled,
   'checkbox-indeterminate': props.indeterminate,
 }))
 
 const handleChange = (e: Event) => {
   if (props.disabled) return
-
   const target = e.target as HTMLInputElement
-  const newChecked = target.checked
-
-  emit('update:checked', newChecked)
-  emit('change', newChecked, e)
-  props.onChange?.(newChecked, e)
+  checked.value = target.checked
+  props.onChange?.(e)
 }
 </script>
 

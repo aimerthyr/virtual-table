@@ -31,8 +31,8 @@
 <script setup lang="ts">
 import type { Header } from '@tanstack/vue-table'
 import type { VTableSlots } from '../interface'
-import FilterFilled from './FilterFilled.vue'
-import Popover from './Popover.vue'
+import FilterFilled from '../libs/FilterFilled.vue'
+import Popover from '../libs/Popover.vue'
 
 defineOptions({ name: 'HeaderFilter' })
 

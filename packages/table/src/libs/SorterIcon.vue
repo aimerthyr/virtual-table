@@ -5,6 +5,7 @@
       :class="{ 'text-[#1677ff]': sort === 'asc' }"
       viewBox="0 0 1024 1024"
       version="1.1"
+      fill="currentcolor"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
@@ -16,11 +17,11 @@
       :class="{ 'text-[#1677ff]': sort === 'desc' }"
       viewBox="0 0 1024 1024"
       version="1.1"
+      fill="currentcolor"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
         d="M76.3 392.3l403.1 489.1c16.9 18.9 46.5 18.9 63.4 0l405.1-489.1c24.4-27.4 5-70.8-31.7-70.8H108.1c-36.8 0-56.3 43.4-31.8 70.8z"
-        p-id="1808"
       ></path>
     </svg>
   </div>

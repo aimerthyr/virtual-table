@@ -152,7 +152,7 @@
 </template>
 
 <script setup lang="ts" generic="TData extends VTableData">
-import { computed, h, ref, type CSSProperties } from 'vue'
+import { type CSSProperties } from 'vue'
 import {
   FlexRender,
   getCoreRowModel,
@@ -171,8 +171,6 @@ import {
 } from '@tanstack/vue-table'
 import { Virtualizer, useVirtualizer, type VirtualItem } from '@tanstack/vue-virtual'
 import BodyCell from './components/BodyCell.vue'
-import Checkbox from './components/Checkbox.vue'
-import ExpandIcon from './components/ExpandIcon.vue'
 import HeaderCell from './components/HeaderCell.vue'
 import {
   CHECKBOX_COLUMN_KEY,
@@ -181,15 +179,18 @@ import {
   EXPAND_ROW_KEY,
   TABLE_DEFAULT_STYLE,
 } from './constant/index.ts'
-import type { VTableData } from './interface'
+import type { VTableData } from './interface/index.ts'
 import type { VTableProps, VTableSlots } from './interface/table.ts'
+import Checkbox from './libs/Checkbox.vue'
+import ExpandIcon from './libs/ExpandIcon.vue'
 import {
   buildData,
   convertSizeToPixels,
   convertToColumnDefList,
   getAllRowKeys,
   simpleHash,
-} from './utils'
+} from './utils/index.ts'
+import './style.css'
 
 defineOptions({ name: 'VTable' })
 
@@ -251,7 +252,7 @@ const CHECKBOX_COLUMN: ColumnDef<TData> = {
       indeterminate:
         selectedSelectableRows.length > 0 && selectedSelectableRows.length < selectableRows.length,
       checked: table.getIsAllRowsSelected(),
-      onChange: (_, e) => {
+      onChange: (e) => {
         table.getToggleAllRowsSelectedHandler()?.(e)
       },
     })
@@ -261,10 +262,9 @@ const CHECKBOX_COLUMN: ColumnDef<TData> = {
       checked: row.getIsSelected(),
       disabled: !row.getCanSelect(),
       onClick: (e: any) => {
-        console.log(e, 'e')
         e.stopPropagation()
       },
-      onChange: (_, e) => {
+      onChange: (e) => {
         row.getToggleSelectedHandler()?.(e)
       },
     })
