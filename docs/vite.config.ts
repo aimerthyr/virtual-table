@@ -1,5 +1,7 @@
 import vue from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
+import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
+import Components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
 
@@ -15,6 +17,13 @@ export default defineConfig({
         enabled: true,
         filepath: './.eslintrc-auto-import.json',
       },
+    }),
+    Components({
+      resolvers: [
+        AntDesignVueResolver({
+          importStyle: false, // css in js
+        }),
+      ],
     }),
   ],
   server: {

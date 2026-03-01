@@ -38,6 +38,7 @@
     "vue": "^3.5.0"
   },
   "dependencies": {
+    "@floating-ui/vue": "^1.1.10",
     "@tanstack/vue-table": "^8.21.3",
     "@tanstack/vue-virtual": "^3.13.19",
     "lodash-es": "^4.17.23"
