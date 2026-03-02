@@ -171,12 +171,15 @@ const columns: VTableColumn[] = [
     columnKey: 'id',
     columnHeader: '员工id',
     columnWidth: 100,
+    columnMaxWidth: 300,
+    columnEnableResize: true,
   },
   {
     columnKey: 'name',
     columnHeader: '姓名',
     columnWidth: '50%',
     columnEnableFilter: true,
+    columnEnableResize: true,
     columnFilterMode: 'input',
   },
   {

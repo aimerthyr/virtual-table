@@ -74,6 +74,8 @@ export interface VTableProps<TData = any> {
   adaptiveColumnWidth?: number
   /** 默认展开所有行（仅初始化生效） */
   defaultExpandAllRows?: boolean
+  /** 列宽调整模式 */
+  columnResizeMode?: 'onChange' | 'onEnd'
   /** 自定义数据行属性 */
   customRow?: (row: TData, rowIndex: number) => HTMLAttributes
   /** 自定义表头单元格属性 */

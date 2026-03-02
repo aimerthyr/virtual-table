@@ -43,6 +43,12 @@ export type VTableColumn<TData = any> = {
   columnFilterOptions?: Array<{ label: any; value: any }>
   /** 单元格内容 */
   columnCell?: ColumnDef<TData>['cell']
+  /** 当前列宽是否可以调整 */
+  columnEnableResize?: boolean
+  /** 列宽最大值 */
+  columnMaxWidth?: number
+  /** 列宽最小值 (默认 50px) */
+  columnMinWidth?: number
 }
 
 /**

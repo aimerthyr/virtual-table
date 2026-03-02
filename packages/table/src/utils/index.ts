@@ -3,16 +3,23 @@ import { isNumber } from 'lodash-es'
 import { EXPAND_ROW_DATA_INDEX, EXPAND_ROW_KEY } from '../constant'
 import type { VTableColumn, VTableRowKey } from '../interface'
 
-export function convertToColumnDefList<T>(columns: VTableColumn[]): ColumnDef<T>[] {
+export function convertToColumnDefList<T>(
+  columns: VTableColumn[],
+  containerWidth: number = 0,
+): ColumnDef<T>[] {
   return columns.map((col) => ({
     id: col.columnKey,
     accessorKey: col.columnKey,
-    size: col.columnWidth as any,
+    // 将百分比转换为像素值
+    size: col.columnWidth ? convertSizeToPixels(col.columnWidth, containerWidth) : undefined,
     header: col.columnHeader,
     cell: col.columnCell,
     enableSorting: col.columnEnableSort,
     enableColumnFilter: col.columnEnableFilter,
     sortDescFirst: true,
+    enableResizing: col.columnEnableResize ?? false,
+    minSize: col.columnMinWidth ?? 50,
+    maxSize: col.columnMaxWidth,
     meta: col,
   }))
 }
@@ -69,11 +76,12 @@ export function convertSizeToPixels(
   // 处理百分比：'20%' -> 实际像素
   if (typeof size === 'string' && size.endsWith('%')) {
     const percentage = parseFloat(size)
-    return (containerWidth * percentage) / 100
+    // 使用 Math.round 避免小数精度问题
+    return Math.round((containerWidth * percentage) / 100)
   }
   // 处理 px 字符串：'100px' -> 100
   if (typeof size === 'string' && size.endsWith('px')) {
-    return parseFloat(size)
+    return Math.round(parseFloat(size))
   }
   return 0
 }

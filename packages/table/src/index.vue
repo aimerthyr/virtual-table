@@ -20,10 +20,10 @@
                 v-for="header in headerGroup.headers"
                 :key="header.id"
                 :colspan="header.colSpan"
+                class="relative"
                 :class="[
                   header.id === CHECKBOX_COLUMN_KEY ? 'checkbox-col' : '',
                   header.id === EXPAND_COLUMN_KEY ? 'expand-col' : '',
-                  header.column.getIsPinned() ? 'sticky z-10' : '',
                   isShadowPinnedColumn(header.column),
                 ]"
                 :style="getColumnStyle(header.column)"
@@ -76,10 +76,7 @@
                 :key="cell.id"
                 :style="getColumnStyle(cell.column)"
                 class="group-hover:!bg-[#fafafa]"
-                :class="[
-                  cell.column.getIsPinned() ? 'sticky z-[2]' : '',
-                  isShadowPinnedColumn(cell.column),
-                ]"
+                :class="[isShadowPinnedColumn(cell.column)]"
                 v-bind="props?.customCell?.(cell.column.columnDef?.meta!, cell.column.getIndex())"
               >
                 <FlexRender
@@ -180,6 +177,7 @@ import {
   type ColumnDef,
   type ColumnFiltersState,
   type ColumnPinningState,
+  type ColumnSizingState,
   type ExpandedState,
   type PaginationState,
   type Row,
@@ -225,6 +223,7 @@ const props = withDefaults(defineProps<VTableProps<TData>>(), {
   enableRowHover: true,
   adaptiveColumnWidth: 120,
   defaultExpandAllRows: false,
+  columnResizeMode: 'onChange',
   borderConfig: () => ({
     enabled: false,
     borderStyle: 'solid',
@@ -258,6 +257,82 @@ const props = withDefaults(defineProps<VTableProps<TData>>(), {
   onExpandedRowsChange: () => {},
 })
 defineSlots<VTableSlots<TData>>()
+
+// #region 自适应列宽计算
+const tableContainerRef = ref<HTMLDivElement | null>(null)
+const tableContainerWidth = ref(0)
+let resizeObserver: ResizeObserver | null = null
+// 初始化 ResizeObserver（在 onMounted 中调用）
+const initResizeObserver = () => {
+  if (!tableContainerRef.value) return
+
+  resizeObserver = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      tableContainerWidth.value = entry.contentRect.width
+    }
+  })
+
+  resizeObserver.observe(tableContainerRef.value)
+}
+/** 计算自适应列的实际宽度 */
+const adaptiveColumnWidthMap = computed(() => {
+  const allColumns = table.getAllColumns()
+  const containerWidth = tableContainerWidth.value || 0
+  if (containerWidth === 0) return {}
+  // 计算固定列总宽度
+  const fixedWidthTotal = allColumns.reduce((sum, col) => {
+    // 统计所有设置列宽的列
+    if (col.columnDef.size) {
+      return sum + Math.round(col.getSize())
+    }
+    return sum
+  }, 0)
+  // 筛选出自适应列（未设置 size 的列）
+  const adaptiveColumns = allColumns.filter((col) => !col.columnDef.size)
+  const adaptiveCount = adaptiveColumns.length
+  if (adaptiveCount === 0) return {}
+  const remainingWidth = Math.max(0, containerWidth - fixedWidthTotal)
+  // 1.第一种情况：固定列总宽 < 容器宽度，则自适应列均分剩余空间
+  if (remainingWidth > 0) {
+    const avgWidth = Math.floor(remainingWidth / adaptiveCount)
+    // 计算余数（因为可能均分之后，不能整除的情况）
+    const remainder = remainingWidth % adaptiveCount
+    // 将余数分配给前 remainder 列，避免像素损失
+    return adaptiveColumns.reduce(
+      (map, col, index) => {
+        map[col.id] = avgWidth + (index < remainder ? 1 : 0)
+        return map
+      },
+      {} as Record<string, number>,
+    )
+  }
+  // 2. 第二种情况：固定列总宽 >= 容器宽度，自适应列使用最小宽度
+  return adaptiveColumns.reduce(
+    (map, col) => {
+      map[col.id] = props.adaptiveColumnWidth
+      return map
+    },
+    {} as Record<string, number>,
+  )
+})
+/** 获取表格列宽 */
+const getColumnWidth = (column: Column<TData>) => {
+  let width: string | undefined
+  const actualSize = column.getSize()
+  const definedSize = column.columnDef.size
+  if (definedSize) {
+    // 1.有固定宽度，使用实际宽度（可能被拖拽调整过）
+    width = `${actualSize}px`
+  } else {
+    // 2.未传入 size 时，则需要设置成自适应列宽
+    const adaptiveWidth = adaptiveColumnWidthMap.value[column.id]
+    if (adaptiveWidth) {
+      width = `${adaptiveWidth}px`
+    }
+  }
+  return width
+}
+// #endregion
 
 // #region tanstack-table 核心逻辑
 /** checkbox 列 */
@@ -324,6 +399,9 @@ const selection = defineModel<RowSelectionState>('defaultSelection', { default: 
 const columnPinning = defineModel<ColumnPinningState>('defaultColumnPinning', {
   default: () => ({}),
 })
+const columnSizing = defineModel<ColumnSizingState>('defaultColumnSizing', {
+  default: () => ({}),
+})
 
 const handlePageChange = (page: number, pageSize: number) => {
   pagination.value = { pageIndex: page, pageSize }
@@ -342,7 +420,8 @@ const hasFixedColumns = computed(() => {
   return columnPinning.value.left?.length || columnPinning.value.right?.length
 })
 const computedColumns = computed(() => {
-  const columns = convertToColumnDefList<TData>(props.columns)
+  // 传入容器宽度，用于将百分比转换为像素
+  const columns = convertToColumnDefList<TData>(props.columns, tableContainerWidth.value)
   if (props.enableExpandRow) {
     columns.unshift(EXPAND_COLUMN)
   }
@@ -385,6 +464,9 @@ const table = useVueTable<TData>({
       }
       return columnPinning.value
     },
+    get columnSizing() {
+      return columnSizing.value
+    },
   },
   get data() {
     return tableData.value
@@ -411,6 +493,8 @@ const table = useVueTable<TData>({
   manualFiltering: true, // 手动筛选，结合后端
   manualPagination: true,
   enableColumnPinning: true,
+  enableColumnResizing: true,
+  columnResizeMode: props.columnResizeMode,
   enableSortingRemoval: props.enableSortingRemoval,
   onSortingChange: (updaterOrValue) => {
     columnSorts.value =
@@ -443,6 +527,10 @@ const table = useVueTable<TData>({
       )
     })
   },
+  onColumnSizingChange: (updaterOrValue) => {
+    columnSizing.value =
+      typeof updaterOrValue === 'function' ? updaterOrValue(columnSizing.value) : updaterOrValue
+  },
   getSubRows: (row) => {
     // 如果开启了自定义可展开行
     if (props.enableExpandRow) {
@@ -466,7 +554,6 @@ const setAllRowsExpand = () => {
 
 // #region 虚拟滚动相关逻辑
 const rows = computed(() => table.getRowModel().rows)
-const tableContainerRef = ref<HTMLDivElement | null>(null)
 // 限制重新渲染的频率 https://github.com/TanStack/virtual/issues/860
 const virtualRows = ref<VirtualItem[]>([])
 const rerenderTimer = ref<number | null>(null)
@@ -548,97 +635,14 @@ const showNoMoreTip = computed(() => {
 const noMoreText = computed(() => props.loadMoreConfig?.noMoreText || '没有更多了')
 // #endregion
 
-// #region 自适应列宽计算
-const tableContainerWidth = ref(0)
-let resizeObserver: ResizeObserver | null = null
-
-// 初始化 ResizeObserver（在 onMounted 中调用）
-const initResizeObserver = () => {
-  if (!tableContainerRef.value) return
-
-  resizeObserver = new ResizeObserver((entries) => {
-    for (const entry of entries) {
-      tableContainerWidth.value = entry.contentRect.width
-    }
-  })
-
-  resizeObserver.observe(tableContainerRef.value)
-}
-/** 计算自适应列的实际宽度 */
-const adaptiveColumnWidthMap = computed(() => {
-  const allColumns = table.getAllColumns()
-  const containerWidth = tableContainerWidth.value || 0
-  // 容器宽度为 0 时，先返回空对象，等待容器宽度计算完成
-  if (containerWidth === 0) return {}
-  // 计算固定列总宽度（支持数字、百分比、px 字符串）
-  const fixedWidthTotal = allColumns.reduce((sum, col) => {
-    const size = col.columnDef.size
-    return sum + convertSizeToPixels(size, containerWidth)
-  }, 0)
-  // 筛选出自适应列（未设置 size 的列）
-  const adaptiveColumns = allColumns.filter((col) => !col.columnDef.size)
-  const adaptiveCount = adaptiveColumns.length
-  if (adaptiveCount === 0) return {}
-  const remainingWidth = containerWidth - fixedWidthTotal
-  // 固定列总宽 < 容器宽度，自适应列均分剩余空间
-  if (remainingWidth > 0) {
-    const avgWidth = Math.floor(remainingWidth / adaptiveCount)
-    // 计算余数（因为可能均分之后，不能整除的情况）
-    const remainder = remainingWidth % adaptiveCount
-    // 将余数分配给前 remainder 列，避免像素损失
-    return adaptiveColumns.reduce(
-      (map, col, index) => {
-        map[col.id] = avgWidth + (index < remainder ? 1 : 0)
-        return map
-      },
-      {} as Record<string, number>,
-    )
-  }
-  // 固定列总宽 >= 容器宽度，自适应列使用最小宽度
-  return adaptiveColumns.reduce(
-    (map, col) => {
-      map[col.id] = props.adaptiveColumnWidth
-      return map
-    },
-    {} as Record<string, number>,
-  )
-})
-/** 获取表格列宽 */
-const getColumnWidth = (size: any, columnKey: string) => {
-  let width: string | undefined
-  const containerWidth = tableContainerWidth.value || 0
-  if (size) {
-    // 有固定宽度，转换为像素值
-    const pixelWidth = convertSizeToPixels(size, containerWidth)
-    width = `${pixelWidth}px`
-  } else {
-    // 未传入 size 时，则需要设置成自适应列宽
-    const adaptiveWidth = adaptiveColumnWidthMap.value[columnKey]
-    if (adaptiveWidth) {
-      width = `${adaptiveWidth}px`
-    }
-  }
-  return width
-}
-// #endregion
-
 // #region 表格样式相关逻辑
 const borderColor = computed(() => props.borderConfig?.borderColor || '#f0f0f0')
 const borderStyle = computed(() => props.borderConfig?.borderStyle || 'solid')
 const getColumnStyle = (column: Column<TData>): CSSProperties => {
-  const size = column.columnDef.size
   const meta = column.columnDef.meta
   const pinPosition = column.getIsPinned()
   // 处理自适应列宽
-  const width = getColumnWidth(size, column.id)
-  if (column.id === CHECKBOX_COLUMN_KEY) {
-    return {
-      width,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'flex-end',
-    }
-  }
+  const width = getColumnWidth(column)
   const baseStyle: CSSProperties = {
     ...TABLE_DEFAULT_STYLE,
     width,
@@ -653,7 +657,13 @@ const getColumnStyle = (column: Column<TData>): CSSProperties => {
     } else {
       baseStyle.right = `${column.getAfter('right')}px`
     }
+    baseStyle.zIndex = 10
     baseStyle.backgroundColor = '#ffffff'
+  }
+  if (column.id === CHECKBOX_COLUMN_KEY) {
+    baseStyle.display = 'flex'
+    baseStyle.alignItems = 'center'
+    baseStyle.justifyContent = 'flex-end'
   }
   return baseStyle
 }
