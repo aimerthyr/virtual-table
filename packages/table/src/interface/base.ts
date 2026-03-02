@@ -37,10 +37,6 @@ export type VTableColumn<TData = any> = {
   columnEnableSort?: boolean
   /** 是否开启筛选 */
   columnEnableFilter?: boolean
-  /** 筛选模式 */
-  columnFilterMode?: VTableFilterMode
-  /** 筛选下拉选项 */
-  columnFilterOptions?: Array<{ label: any; value: any }>
   /** 单元格内容 */
   columnCell?: ColumnDef<TData>['cell']
   /** 当前列宽是否可以调整 */

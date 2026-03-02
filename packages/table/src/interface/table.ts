@@ -11,6 +11,7 @@ import type {
   VTableRowSelectionConfig,
   VTableTreeConfig,
 } from './base'
+import type { VTableCustomComponentsConfig } from './components'
 
 /** slots 类型定义 */
 export interface VTableSlots<TData = any> {
@@ -66,6 +67,8 @@ export interface VTableProps<TData = any> {
   paginationConfig?: VTablePaginationConfig
   /** 树形结构配置 */
   treeConfig?: VTableTreeConfig
+  /** 自定义组件配置（可替换内置的 Checkbox、Popover、Pagination 等组件） */
+  customComponentsConfig?: VTableCustomComponentsConfig
   /** 是否启用展开行功能 */
   enableExpandRow?: boolean
   /** 是否启用 行 hover 高亮 */

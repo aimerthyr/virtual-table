@@ -1,5 +1,5 @@
 <template>
-  <VPopover v-model:open="open" placement="bottom-start" :arrow="false">
+  <component :is="customComponents.Popover" :open="open" @open-change="open = $event">
     <div class="relative h-[22px] cursor-pointer">
       <div
         class="absolute left-1/2 top-1/2 flex h-[30px] w-[20px] translate-x-[-50%] translate-y-[-50%] items-center justify-center text-[#0000004a] hover:bg-[#0000000f] hover:text-[#00000073]"
@@ -25,14 +25,14 @@
         :filter-model-value="filterModelValue"
       />
     </template>
-  </VPopover>
+  </component>
 </template>
 
 <script setup lang="ts">
 import type { Header } from '@tanstack/vue-table'
+import { useInjectVTableContext } from '../context'
 import FilterIcon from '../icons/FilterIcon.vue'
 import type { VTableSlots } from '../interface'
-import VPopover from '../libs/VPopover.vue'
 
 defineOptions({ name: 'HeaderFilter' })
 
@@ -41,6 +41,8 @@ defineSlots<VTableSlots>()
 const props = defineProps<{
   header: Header<any, any>
 }>()
+
+const { customComponents } = useInjectVTableContext()
 
 const column = computed(() => props.header.column)
 const columnMeta = computed(() => column.value.columnDef.meta!)

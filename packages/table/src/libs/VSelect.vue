@@ -1,11 +1,5 @@
 <template>
-  <Popover
-    v-model:open="open"
-    trigger="click"
-    placement="bottom"
-    :arrow="false"
-    @update:open="handleOpenChange"
-  >
+  <Popover :open="open" placement="bottom" @open-change="handleOpenChange">
     <div ref="selectRef" :class="selectClasses">
       <div class="select-selector">
         <span class="select-selection-item">{{ selectedLabel }}</span>
@@ -17,9 +11,9 @@
       <div class="select-dropdown" :style="{ width: dropdownWidth }">
         <div class="select-dropdown-inner">
           <div
-            v-for="option in options"
+            v-for="option in props.options"
             :key="option.value"
-            :class="['select-item', { 'select-item-selected': option.value === modelValue }]"
+            :class="['select-item', { 'select-item-selected': option.value === props.value }]"
             @click="handleSelect(option)"
           >
             {{ option.label }}
@@ -33,19 +27,20 @@
 <script setup lang="ts">
 import Popover from './VPopover.vue'
 
-defineOptions({ name: 'VSelect' })
+defineOptions({ name: 'VSelect', inheritAttrs: false })
 
-interface SelectOption {
-  label: string
-  value: string | number
-}
-
-const props = defineProps<{
-  options: SelectOption[]
-  disabled?: boolean
-}>()
-
-const modelValue = defineModel<string | number>()
+const props = withDefaults(
+  defineProps<{
+    value?: string | number
+    options?: Array<{ label: string; value: string | number }>
+    onSelectChange?: (value: string | number) => void
+  }>(),
+  {
+    value: undefined,
+    options: () => [],
+    onSelectChange: () => {},
+  },
+)
 
 const open = ref(false)
 const selectRef = ref<HTMLElement | null>(null)
@@ -53,25 +48,24 @@ const dropdownWidth = ref('auto')
 
 const selectClasses = computed(() => ({
   select: true,
-  'select-disabled': props.disabled,
   'select-open': open.value,
 }))
 
 const selectedLabel = computed(() => {
-  const option = props.options.find((opt) => opt.value === modelValue.value)
+  const option = props.options.find((opt) => opt.value === props.value)
   return option?.label || ''
 })
 
 const handleOpenChange = (isOpen: boolean) => {
+  open.value = isOpen
   if (isOpen && selectRef.value) {
     // 打开时获取触发器宽度
     dropdownWidth.value = `${selectRef.value.offsetWidth}px`
   }
 }
 
-const handleSelect = (option: SelectOption) => {
-  if (props.disabled) return
-  modelValue.value = option.value
+const handleSelect = (option: { label: string; value: string | number }) => {
+  props.onSelectChange?.(option.value)
   open.value = false
 }
 </script>
@@ -81,11 +75,6 @@ const handleSelect = (option: SelectOption) => {
   display: inline-block;
   min-width: 80px;
   cursor: pointer;
-}
-
-.select-disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
 }
 
 .select-selector {

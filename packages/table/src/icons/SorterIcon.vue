@@ -1,11 +1,11 @@
 <template>
   <div class="sorter-icon inline-flex flex-col items-center">
     <svg
-      class="sorter-up h-[12px] w-[12px]"
+      class="sorter-up h-[10px] w-[10px]"
       :class="{ 'text-[#1677ff]': sort === 'asc' }"
       viewBox="0 0 1024 1024"
       version="1.1"
-      fill="currentcolor"
+      fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
@@ -13,11 +13,11 @@
       ></path>
     </svg>
     <svg
-      class="sorter-down h-[12px] w-[12px]"
+      class="sorter-down h-[10px] w-[10px]"
       :class="{ 'text-[#1677ff]': sort === 'desc' }"
       viewBox="0 0 1024 1024"
       version="1.1"
-      fill="currentcolor"
+      fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path

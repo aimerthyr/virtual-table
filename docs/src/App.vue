@@ -180,7 +180,6 @@ const columns: VTableColumn[] = [
     columnWidth: '50%',
     columnEnableFilter: true,
     columnEnableResize: true,
-    columnFilterMode: 'input',
   },
   {
     columnKey: 'age',
@@ -200,12 +199,6 @@ const columns: VTableColumn[] = [
     columnHeader: '部门',
     columnWidth: 150,
     columnEnableFilter: true,
-    columnFilterMode: 'checkbox-group',
-    columnFilterOptions: [
-      { label: '技术部', value: '技术部' },
-      { label: '产品部', value: '产品部' },
-      { label: '运营部', value: '运营部' },
-    ],
   },
   {
     columnKey: 'status',

@@ -1,13 +1,17 @@
 <template>
   <div class="pagination">
     <!-- 总数显示 -->
-    <span v-if="showTotal" class="pagination-total">共 {{ total }} 条</span>
+    <span class="pagination-total">共 {{ props.total }} 条</span>
 
     <!-- 页码列表 -->
     <ul class="pagination-list">
       <!-- 上一页 -->
       <li
-        :class="['pagination-item', 'pagination-prev', { 'pagination-disabled': current === 1 }]"
+        :class="[
+          'pagination-item',
+          'pagination-prev',
+          { 'pagination-disabled': props.pageIndex === 1 },
+        ]"
         @click="handlePrev"
       >
         <ArrowIcon direction="left" />
@@ -20,7 +24,7 @@
         :class="[
           'pagination-item',
           {
-            'pagination-item-active': page === current,
+            'pagination-item-active': page === props.pageIndex,
             'pagination-ellipsis': page === '...',
           },
         ]"
@@ -34,7 +38,7 @@
         :class="[
           'pagination-item',
           'pagination-next',
-          { 'pagination-disabled': current === totalPages },
+          { 'pagination-disabled': props.pageIndex === totalPages },
         ]"
         @click="handleNext"
       >
@@ -43,59 +47,34 @@
     </ul>
 
     <!-- 每页条数选择器 -->
-    <div v-if="showSizeChanger" class="pagination-size-changer">
-      <VSelect v-model="currentPageSize" :options="pageSizeOptions" />
+    <div class="pagination-size-changer">
+      <VSelect
+        :value="props.pageSize"
+        :options="[
+          { label: '10', value: 10 },
+          { label: '20', value: 20 },
+          { label: '50', value: 50 },
+          { label: '100', value: 100 },
+        ]"
+        @select-change="(value) => props.onPageChange?.(1, value as number)"
+      />
       <span class="pagination-size-text">条/页</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { VTablePaginationProps } from '@/interface'
 import ArrowIcon from '../icons/ArrowIcon.vue'
 import VSelect from './VSelect.vue'
 
-defineOptions({ name: 'Pagination' })
+defineOptions({ name: 'VPagination' })
 
-const props = withDefaults(
-  defineProps<{
-    total: number // 总条数
-    pageSize?: number // 每页条数
-    current?: number // 当前页码
-    showTotal?: boolean // 是否显示总数
-    showSizeChanger?: boolean // 是否显示每页条数选择器
-    pageSizeOptions?: number[] // 每页条数选项
-    onChange?: (page: number, pageSize: number) => void
-  }>(),
-  {
-    pageSize: 10,
-    current: 1,
-    showTotal: true,
-    showSizeChanger: true,
-    pageSizeOptions: () => [10, 20, 50, 100],
-    onChange: () => {},
-  },
-)
-
-const emit = defineEmits<{
-  'update:current': [value: number]
-  'update:pageSize': [value: number]
-  change: [page: number, pageSize: number]
-}>()
-
-const currentPage = computed({
-  get: () => props.current,
-  set: (val) => emit('update:current', val),
-})
-
-const currentPageSize = computed({
-  get: () => props.pageSize,
-  set: (val) => {
-    emit('update:pageSize', val as number)
-    // 切换 pageSize 时回到第一页
-    currentPage.value = 1
-    emit('change', 1, val as number)
-    props.onChange?.(1, val as number)
-  },
+const props = withDefaults(defineProps<VTablePaginationProps>(), {
+  total: 0,
+  pageSize: 10,
+  pageIndex: 1,
+  onPageChange: () => {},
 })
 
 // 总页数
@@ -105,7 +84,7 @@ const totalPages = computed(() => Math.ceil(props.total / props.pageSize))
 const pageList = computed(() => {
   const pages: (number | string)[] = []
   const total = totalPages.value
-  const current = currentPage.value
+  const current = props.pageIndex
 
   if (total <= 7) {
     // 总页数小于等于 7，全部显示
@@ -143,34 +122,24 @@ const pageList = computed(() => {
   return pages
 })
 
-// 每页条数选项
-const pageSizeOptions = computed(() =>
-  props.pageSizeOptions.map((size) => ({
-    label: `${size}`,
-    value: size,
-  })),
-)
-
 // 上一页
 const handlePrev = () => {
-  if (currentPage.value > 1) {
-    handlePageChange(currentPage.value - 1)
+  if (props.pageIndex > 1) {
+    handlePageChange(props.pageIndex - 1)
   }
 }
 
 // 下一页
 const handleNext = () => {
-  if (currentPage.value < totalPages.value) {
-    handlePageChange(currentPage.value + 1)
+  if (props.pageIndex < totalPages.value) {
+    handlePageChange(props.pageIndex + 1)
   }
 }
 
 // 切换页码
 const handlePageChange = (page: number) => {
-  if (page === currentPage.value) return
-  currentPage.value = page
-  emit('change', page, props.pageSize)
-  props.onChange?.(page, props.pageSize)
+  if (page === props.pageIndex) return
+  props.onPageChange?.(page, props.pageSize)
 }
 </script>
 

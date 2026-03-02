@@ -156,11 +156,12 @@
       ]"
       class="flex items-center py-[16px]"
     >
-      <VPagination
-        v-model:current="pagination.pageIndex"
-        v-model:page-size="pagination.pageSize"
+      <component
+        :is="PaginationComponent"
+        :page-index="pagination.pageIndex"
+        :page-size="pagination.pageSize"
         :total="props.paginationConfig.total"
-        @change="handlePageChange"
+        :on-page-change="handlePageChange"
       />
     </div>
   </div>
@@ -195,10 +196,13 @@ import {
   EXPAND_ROW_KEY,
   TABLE_DEFAULT_STYLE,
 } from './constant/index.ts'
+import { useProvideVTableContext } from './context/index.ts'
 import ExpandIcon from './icons/ExpandIcon.vue'
-import type { VTableData } from './interface/index.ts'
+import type { VTableCustomComponentsConfig, VTableData } from './interface/index.ts'
 import type { VTableProps, VTableSlots } from './interface/table.ts'
 import VCheckbox from './libs/VCheckbox.vue'
+import VPagination from './libs/VPagination.vue'
+import VPopover from './libs/VPopover.vue'
 import {
   buildData,
   convertSizeToPixels,
@@ -206,8 +210,6 @@ import {
   getAllRowKeys,
   simpleHash,
 } from './utils/index.ts'
-import './style.css'
-import VPagination from './libs/VPagination.vue'
 
 defineOptions({ name: 'VTable' })
 
@@ -249,6 +251,7 @@ const props = withDefaults(defineProps<VTableProps<TData>>(), {
     childrenKey: 'children',
     indentSize: 16,
   }),
+  customComponentsConfig: () => ({}),
   customRow: undefined,
   customHeaderCell: undefined,
   customCell: undefined,
@@ -257,6 +260,20 @@ const props = withDefaults(defineProps<VTableProps<TData>>(), {
   onExpandedRowsChange: () => {},
 })
 defineSlots<VTableSlots<TData>>()
+
+// #region 自定义组件配置
+const CheckboxComponent = computed(() => props.customComponentsConfig?.Checkbox || VCheckbox)
+const PopoverComponent = computed(() => props.customComponentsConfig?.Popover || VPopover)
+const PaginationComponent = computed(() => props.customComponentsConfig?.Pagination || VPagination)
+const customComponentsConfig = computed<VTableCustomComponentsConfig>(() => ({
+  Checkbox: CheckboxComponent.value,
+  Popover: PopoverComponent.value,
+  Pagination: PaginationComponent.value,
+}))
+useProvideVTableContext({
+  customComponents: customComponentsConfig,
+})
+// #endregion
 
 // #region 自适应列宽计算
 const tableContainerRef = ref<HTMLDivElement | null>(null)
@@ -336,35 +353,35 @@ const getColumnWidth = (column: Column<TData>) => {
 
 // #region tanstack-table 核心逻辑
 /** checkbox 列 */
-const CHECKBOX_COLUMN: ColumnDef<TData> = {
+const CHECKBOX_COLUMN = computed<ColumnDef<TData>>(() => ({
   id: CHECKBOX_COLUMN_KEY,
   accessorKey: CHECKBOX_COLUMN_KEY,
   size: 40,
   header: ({ table }: { table: Table<TData> }) => {
     const selectableRows = table.getRowModel().rows.filter((row) => row.getCanSelect())
     const selectedSelectableRows = selectableRows.filter((row) => row.getIsSelected())
-    return h(VCheckbox, {
+    return h(CheckboxComponent.value, {
       indeterminate:
         selectedSelectableRows.length > 0 && selectedSelectableRows.length < selectableRows.length,
       checked: table.getIsAllRowsSelected(),
-      onChange: (e) => {
+      onCheckedChange: (e: Event) => {
         table.getToggleAllRowsSelectedHandler()?.(e)
       },
     })
   },
   cell: ({ row }: { row: Row<TData> }) => {
-    return h(VCheckbox, {
+    return h(CheckboxComponent.value, {
       checked: row.getIsSelected(),
       disabled: !row.getCanSelect(),
-      onClick: (e: any) => {
+      onClick: (e: Event) => {
         e.stopPropagation()
       },
-      onChange: (e) => {
+      onCheckedChange: (e: Event) => {
         row.getToggleSelectedHandler()?.(e)
       },
     })
   },
-}
+}))
 /** expand 列 */
 const EXPAND_COLUMN: ColumnDef<TData> = {
   id: EXPAND_COLUMN_KEY,
@@ -426,7 +443,7 @@ const computedColumns = computed(() => {
     columns.unshift(EXPAND_COLUMN)
   }
   if (props.rowSelectionConfig?.enabled) {
-    columns.unshift(CHECKBOX_COLUMN)
+    columns.unshift(CHECKBOX_COLUMN.value)
   }
   return columns
 })

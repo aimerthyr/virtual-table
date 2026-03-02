@@ -1,25 +1,11 @@
 <template>
-  <div
-    ref="referenceRef"
-    class="popover-trigger"
-    @click="handleTriggerClick"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
-  >
+  <div ref="referenceRef" class="popover-trigger" @click="props.onOpenChange(!props.open)">
     <slot />
   </div>
 
   <Teleport to="body">
     <Transition name="popover-fade">
-      <div
-        v-if="open"
-        ref="floatingRef"
-        :style="floatingStyles"
-        class="popover-content"
-        @mouseenter="handleMouseEnter"
-        @mouseleave="handleMouseLeave"
-      >
-        <div v-if="arrow" ref="arrowRef" :style="arrowStyle" class="popover-arrow" />
+      <div v-if="open" ref="floatingRef" :style="floatingStyles" class="popover-content">
         <slot name="content" />
       </div>
     </Transition>
@@ -27,39 +13,19 @@
 </template>
 
 <script setup lang="ts">
-import {
-  flip,
-  arrow as floatingArrow,
-  offset,
-  shift,
-  useFloating,
-  type Placement,
-} from '@floating-ui/vue'
+import type { VTablePopoverProps } from '@/interface'
+import { flip, offset, shift, useFloating, type Placement } from '@floating-ui/vue'
 
-defineOptions({ name: 'Popover' })
+defineOptions({ name: 'VPopover' })
 
-const props = withDefaults(
-  defineProps<{
-    open?: boolean
-    trigger?: 'click' | 'hover'
-    placement?: Placement
-    arrow?: boolean
-  }>(),
-  {
-    open: false,
-    trigger: 'click',
-    placement: 'bottom',
-    arrow: true,
-  },
-)
-
-const emit = defineEmits<{
-  'update:open': [value: boolean]
-}>()
+const props = withDefaults(defineProps<VTablePopoverProps & { placement?: Placement }>(), {
+  open: false,
+  placement: 'bottom-start',
+  onOpenChange: () => {},
+})
 
 const referenceRef = ref<HTMLElement | null>(null)
 const floatingRef = ref<HTMLElement | null>(null)
-const arrowRef = ref<HTMLElement | null>(null)
 
 const crossAxisOffset = computed(() => {
   const placement = props.placement
@@ -68,61 +34,20 @@ const crossAxisOffset = computed(() => {
   return 0
 })
 
-const { floatingStyles, middlewareData } = useFloating(referenceRef, floatingRef, {
+const { floatingStyles } = useFloating(referenceRef, floatingRef, {
   placement: computed(() => props.placement),
   middleware: [
     offset({
-      mainAxis: props.arrow ? 8 : 12, // 主轴距离（垂直方向）
-      crossAxis: crossAxisOffset.value, // 横向偏移（根据对齐方式动态计算）
+      mainAxis: 12,
+      crossAxis: crossAxisOffset.value,
     }),
-    flip(), // 自动翻转，防止溢出
-    shift({ padding: 8 }), // 自动偏移，防止贴边
-    ...(props.arrow ? [floatingArrow({ element: arrowRef, padding: 16 })] : []),
+    flip(),
+    shift({ padding: 8 }),
   ],
 })
 
-// 箭头样式
-const arrowStyle = computed(() => {
-  const { x, y } = middlewareData.value.arrow || {}
-  const side = props.placement.split('-')[0] as 'top' | 'right' | 'bottom' | 'left'
-  const staticSide: Record<string, string> = {
-    top: 'bottom',
-    right: 'left',
-    bottom: 'top',
-    left: 'right',
-  }
-
-  return {
-    left: x != null ? `${x}px` : '',
-    top: y != null ? `${y}px` : '',
-    [staticSide[side] as string]: '-4px',
-  }
-})
-
-const handleTriggerClick = () => {
-  if (props.trigger === 'click') {
-    emit('update:open', !props.open)
-  }
-}
-
-let hoverTimer: ReturnType<typeof setTimeout> | null = null
-const handleMouseEnter = () => {
-  if (props.trigger === 'hover') {
-    if (hoverTimer) clearTimeout(hoverTimer)
-    emit('update:open', true)
-  }
-}
-
-const handleMouseLeave = () => {
-  if (props.trigger === 'hover') {
-    hoverTimer = setTimeout(() => {
-      emit('update:open', false)
-    }, 100)
-  }
-}
-
 const handleClickOutside = (e: MouseEvent) => {
-  if (!props.open || props.trigger !== 'click') return
+  if (!props.open) return
   const target = e.target as Node
   if (
     referenceRef.value &&
@@ -130,21 +55,16 @@ const handleClickOutside = (e: MouseEvent) => {
     !referenceRef.value.contains(target) &&
     !floatingRef.value.contains(target)
   ) {
-    emit('update:open', false)
+    props.onOpenChange(false)
   }
 }
 
 onMounted(() => {
-  if (props.trigger === 'click') {
-    document.addEventListener('click', handleClickOutside)
-  }
+  document.addEventListener('click', handleClickOutside)
 })
 
 onUnmounted(() => {
-  if (props.trigger === 'click') {
-    document.removeEventListener('click', handleClickOutside)
-  }
-  if (hoverTimer) clearTimeout(hoverTimer)
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 

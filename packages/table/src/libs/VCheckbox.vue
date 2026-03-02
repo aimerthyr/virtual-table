@@ -18,41 +18,33 @@
 </template>
 
 <script setup lang="ts">
+import type { VTableCheckboxProps } from '@/interface'
+
 defineOptions({ name: 'VCheckbox' })
 
-const props = withDefaults(
-  defineProps<{
-    disabled?: boolean
-    indeterminate?: boolean // 半选状态
-    onChange?: (e: Event) => void
-  }>(),
-  {
-    disabled: false,
-    indeterminate: false,
-    onChange: () => {},
-  },
-)
-
-const checked = defineModel<boolean>('checked')
+const props = withDefaults(defineProps<VTableCheckboxProps>(), {
+  checked: false,
+  disabled: false,
+  indeterminate: false,
+  onCheckedChange: () => {},
+})
 
 const wrapperClasses = computed(() => ({
   'checkbox-wrapper': true,
-  'checkbox-wrapper-checked': checked.value,
+  'checkbox-wrapper-checked': props.checked,
   'checkbox-wrapper-disabled': props.disabled,
 }))
 
 const checkboxClasses = computed(() => ({
   checkbox: true,
-  'checkbox-checked': checked.value && !props.indeterminate,
+  'checkbox-checked': props.checked && !props.indeterminate,
   'checkbox-disabled': props.disabled,
   'checkbox-indeterminate': props.indeterminate,
 }))
 
 const handleChange = (e: Event) => {
   if (props.disabled) return
-  const target = e.target as HTMLInputElement
-  checked.value = target.checked
-  props.onChange?.(e)
+  props.onCheckedChange?.(e)
 }
 </script>
 
