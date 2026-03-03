@@ -1,8 +1,7 @@
 import type { ColumnDef } from '@tanstack/vue-table'
 import { isNumber } from 'lodash-es'
 import { EXPAND_ROW_DATA_INDEX, EXPAND_ROW_KEY } from '../constant'
-import type { VTableColumn, VTableProps, VTableRowKey } from '../interface'
-import { defineDefaultProps } from './props'
+import type { VTableColumn, VTableRowKey } from '../interface'
 
 export function convertToColumnDefList<T>(
   columns: VTableColumn[],
@@ -86,50 +85,3 @@ export function convertSizeToPixels(
   }
   return 0
 }
-
-export const vTableDefaultProps = defineDefaultProps<VTableProps<any>>({
-  columns: () => [],
-  data: () => [],
-  rowHeight: undefined,
-  rowKey: undefined,
-  loading: false,
-  fixedHeader: true,
-  enableSortingRemoval: true,
-  enableExpandRow: false,
-  enableRowHover: true,
-  adaptiveColumnWidth: 120,
-  defaultExpandAllRows: false,
-  columnResizeMode: 'onChange',
-  borderConfig: () => ({
-    enabled: false,
-    borderStyle: 'solid',
-    borderColor: '#f0f0f0',
-  }),
-  rowSelectionConfig: () => ({
-    enabled: false,
-    getRowCheckDisabled: () => false,
-    onChange: () => {},
-  }),
-  loadMoreConfig: () => ({
-    showNoMore: false,
-    noMoreText: '没有更多了',
-  }),
-  paginationConfig: () => ({
-    enabled: false,
-    placement: 'right',
-    total: 0,
-    mode: 'server',
-  }),
-  treeConfig: () => ({
-    enabled: false,
-    childrenKey: 'children',
-    indentSize: 16,
-  }),
-  customComponentsConfig: () => ({}),
-  customRow: undefined,
-  customHeaderCell: undefined,
-  customCell: undefined,
-  onTableChange: () => {},
-  onScrollToBottom: () => {},
-  onExpandedRowsChange: () => {},
-})

@@ -6,5 +6,3 @@ export * from './interface'
 export { default } from './index.vue'
 // 导出常量
 export * from './constant'
-// 导出默认 props
-export { vTableDefaultProps } from './utils'

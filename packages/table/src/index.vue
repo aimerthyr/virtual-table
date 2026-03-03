@@ -198,6 +198,7 @@ import {
   EXPAND_ROW_DATA_INDEX,
   EXPAND_ROW_KEY,
   TABLE_DEFAULT_STYLE,
+  vTableDefaultProps,
 } from './constant/index.ts'
 import { useProvideVTableContext } from './context/index.ts'
 import ExpandIcon from './icons/ExpandIcon.vue'
@@ -212,7 +213,6 @@ import {
   convertToColumnDefList,
   getAllRowKeys,
   simpleHash,
-  vTableDefaultProps,
 } from './utils/index.ts'
 
 defineOptions({ name: 'VTable' })

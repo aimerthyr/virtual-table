@@ -24,7 +24,7 @@ export type VTableSelectionState = RowSelectionState
 export type VTableColumnPinningState = ColumnPinningState
 
 /** 列配置 */
-export type VTableColumn<TData = any> = {
+export interface VTableColumn<TData = any> {
   /** 列的 key （同时也对应于每一列数据的 key） */
   columnKey: string
   /** 列标题 */
@@ -75,12 +75,12 @@ export type VTableLoadMoreConfig = {
 }
 
 export type VTablePaginationConfig = {
+  /** 总数（必须要传） */
+  total: number
   /** 是否开启分页 */
   enabled?: boolean
   /** 分页器位置 */
   placement?: 'left' | 'center' | 'right'
-  /** 总数（必须要传） */
-  total: number
   /** 服务端分页还是前端分页 */
   mode?: 'client' | 'server'
 }
