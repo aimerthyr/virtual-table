@@ -95,3 +95,9 @@ export interface VTableProps<TData = any> {
   onExpandedRowsChange?: (expandState: VTableExpandedState) => void
   // #endregion
 }
+
+/** VTable 实例类型定义 */
+export interface VTableInstance {
+  /** 滚动到指定行 */
+  scrollToIndex: (index: number) => void
+}

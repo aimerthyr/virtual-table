@@ -199,7 +199,7 @@ import {
 import { useProvideVTableContext } from './context/index.ts'
 import ExpandIcon from './icons/ExpandIcon.vue'
 import type { VTableCustomComponentsConfig, VTableData } from './interface/index.ts'
-import type { VTableProps, VTableSlots } from './interface/table.ts'
+import type { VTableInstance, VTableProps, VTableSlots } from './interface/table.ts'
 import VCheckbox from './libs/VCheckbox.vue'
 import VPagination from './libs/VPagination.vue'
 import VPopover from './libs/VPopover.vue'
@@ -737,7 +737,7 @@ onBeforeUnmount(() => {
   }
 })
 
-defineExpose({
+defineExpose<VTableInstance>({
   /** 滚动到指定行 */
   scrollToIndex: async (index: number) => {
     nextTick(() => {
