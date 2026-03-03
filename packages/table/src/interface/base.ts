@@ -45,14 +45,9 @@ export type VTableColumn<TData = any> = {
   columnMaxWidth?: number
   /** 列宽最小值 (默认 50px) */
   columnMinWidth?: number
+  /** 可自行拓展字段 */
+  [key: string]: any
 }
-
-/**
- * 筛选模式 (如果没传，但是开启了筛选，则需要使用 customFilterDropdown 自己来定义)
- * input 输入框
- * check-group 多选组
- */
-export type VTableFilterMode = 'input' | 'checkbox-group'
 
 /** 表格状态（分页，排序，筛选） */
 export type VTableChangeState = {

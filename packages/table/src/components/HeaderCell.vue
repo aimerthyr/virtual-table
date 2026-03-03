@@ -17,6 +17,9 @@
           <template v-if="$slots.customFilterDropdown" #customFilterDropdown="slotProps">
             <slot name="customFilterDropdown" v-bind="slotProps" />
           </template>
+          <template v-if="$slots.customFilterIcon" #customFilterIcon="slotProps">
+            <slot name="customFilterIcon" v-bind="slotProps" />
+          </template>
         </HeaderFilter>
       </div>
     </div>

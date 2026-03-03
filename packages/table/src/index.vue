@@ -47,6 +47,9 @@
                     <template v-if="$slots.customFilterDropdown" #customFilterDropdown="slotProps">
                       <slot name="customFilterDropdown" v-bind="slotProps" />
                     </template>
+                    <template v-if="$slots.customFilterIcon" #customFilterIcon="slotProps">
+                      <slot name="customFilterIcon" v-bind="slotProps" />
+                    </template>
                   </HeaderCell>
                 </template>
               </th>
@@ -209,56 +212,12 @@ import {
   convertToColumnDefList,
   getAllRowKeys,
   simpleHash,
+  vTableDefaultProps,
 } from './utils/index.ts'
 
 defineOptions({ name: 'VTable' })
 
-const props = withDefaults(defineProps<VTableProps<TData>>(), {
-  columns: () => [],
-  data: () => [],
-  rowHeight: undefined,
-  rowKey: undefined,
-  loading: false,
-  fixedHeader: true,
-  enableSortingRemoval: true,
-  enableExpandRow: false,
-  enableRowHover: true,
-  adaptiveColumnWidth: 120,
-  defaultExpandAllRows: false,
-  columnResizeMode: 'onChange',
-  borderConfig: () => ({
-    enabled: false,
-    borderStyle: 'solid',
-    borderColor: '#f0f0f0',
-  }),
-  rowSelectionConfig: () => ({
-    enabled: false,
-    getRowCheckDisabled: () => false,
-    onChange: () => {},
-  }),
-  loadMoreConfig: () => ({
-    showNoMore: false,
-    noMoreText: '没有更多了',
-  }),
-  paginationConfig: () => ({
-    enabled: false,
-    placement: 'right',
-    total: 0,
-    mode: 'server',
-  }),
-  treeConfig: () => ({
-    enabled: false,
-    childrenKey: 'children',
-    indentSize: 16,
-  }),
-  customComponentsConfig: () => ({}),
-  customRow: undefined,
-  customHeaderCell: undefined,
-  customCell: undefined,
-  onTableChange: () => {},
-  onScrollToBottom: () => {},
-  onExpandedRowsChange: () => {},
-})
+const props = withDefaults(defineProps<VTableProps<TData>>(), vTableDefaultProps)
 defineSlots<VTableSlots<TData>>()
 
 // #region 自定义组件配置
