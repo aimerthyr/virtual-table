@@ -165,6 +165,7 @@
         :page-size="pagination.pageSize"
         :total="props.paginationConfig.total"
         :on-page-change="handlePageChange"
+        v-bind="props.paginationConfig.paginationExtraProps"
       />
     </div>
   </div>

@@ -83,6 +83,8 @@ export type VTablePaginationConfig = {
   placement?: 'left' | 'center' | 'right'
   /** 服务端分页还是前端分页 */
   mode?: 'client' | 'server'
+  /** 分页器额外属性（如果你自己定义了分页器组件，则用于回传给你自己定义的组件） */
+  paginationExtraProps?: Record<string, any>
 }
 
 export type VTableTreeConfig = {
