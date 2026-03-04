@@ -49,6 +49,10 @@ export interface VTableSlots<TData = any> {
   customPagination?: (props: VTablePaginationProps) => VNode
   /** 自定义 checkbox */
   customCheckbox?: (props: VTableCheckboxProps) => VNode
+  /** 自定义空状态 */
+  customEmpty?: () => VNode
+  /** 自定义 loading 图标 */
+  customLoadingIcon?: () => VNode
   [key: string]: ((...args: any[]) => VNode) | undefined
 }
 

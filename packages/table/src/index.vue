@@ -2,6 +2,7 @@
   <div class="flex h-full flex-col">
     <div
       ref="tableContainerRef"
+      v-loading="{ spinning: props.loading, indicator: $slots?.customLoadingIcon?.() }"
       class="min-h-0 flex-1 overflow-x-auto"
       :class="{ 'overflow-y-auto': props.fixedHeader }"
     >
@@ -148,7 +149,7 @@
       </table>
       <!-- 空状态 -->
       <div v-if="!virtualRows.length" class="flex h-[calc(100%-48px)] items-center justify-center">
-        当前内容为空
+        <slot name="customEmpty"> 当前内容为空 </slot>
       </div>
     </div>
     <div
@@ -201,6 +202,7 @@ import ExpandIcon from './icons/ExpandIcon.vue'
 import type { VTableCheckboxProps, VTableData, VTablePaginationProps } from './interface/index.ts'
 import type { VTableInstance, VTableProps, VTableSlots } from './interface/table.ts'
 import VCheckbox from './libs/VCheckbox.vue'
+import vLoading from './libs/VLoading'
 import VPagination from './libs/VPagination.vue'
 import {
   buildData,
@@ -717,25 +719,6 @@ tr {
 thead {
   tr {
     background-color: #ffffff;
-    /* 表头分割线样式 */
-    > th:not(.checkbox-col, .expand-col):not(:last-child) {
-      position: relative;
-      &::before {
-        position: absolute;
-        top: 50%;
-        inset-inline-end: 0;
-        width: 1px;
-        height: 1.6em;
-        background-color: #00000014;
-        transform: translateY(-50%);
-        transition: background-color 0.2s;
-        content: '';
-      }
-    }
-
-    th:last-child {
-      padding-right: 24px !important;
-    }
   }
 }
 
