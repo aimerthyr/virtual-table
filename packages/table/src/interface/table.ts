@@ -11,7 +11,7 @@ import type {
   VTableRowSelectionConfig,
   VTableTreeConfig,
 } from './base'
-import type { VTableCustomComponentsConfig } from './components'
+import type { VTableCheckboxProps, VTablePaginationProps } from './components'
 
 /** slots 类型定义 */
 export interface VTableSlots<TData = any> {
@@ -38,6 +38,17 @@ export interface VTableSlots<TData = any> {
   }) => VNode
   /** 自定义展开行 */
   expandedRowRender?: (data: { row: TData }) => VNode
+  /** 自定义 Popover */
+  customPopover?: (props: {
+    open: boolean
+    onOpenChange: (value: boolean) => void
+    trigger: () => VNode
+    content: () => VNode
+  }) => VNode
+  /** 自定义分页器 */
+  customPagination?: (props: VTablePaginationProps) => VNode
+  /** 自定义 checkbox */
+  customCheckbox?: (props: VTableCheckboxProps) => VNode
   [key: string]: ((...args: any[]) => VNode) | undefined
 }
 
@@ -67,8 +78,6 @@ export interface VTableProps<TData = any> {
   paginationConfig?: VTablePaginationConfig
   /** 树形结构配置 */
   treeConfig?: VTableTreeConfig
-  /** 自定义组件配置（可替换内置的 Checkbox、Popover、Pagination 等组件） */
-  customComponentsConfig?: VTableCustomComponentsConfig
   /** 是否启用展开行功能 */
   enableExpandRow?: boolean
   /** 是否启用 行 hover 高亮 */

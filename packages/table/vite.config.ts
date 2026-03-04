@@ -1,4 +1,5 @@
 import vue from '@vitejs/plugin-vue'
+import vueJsx from '@vitejs/plugin-vue-jsx'
 import AutoImport from 'unplugin-auto-import/vite'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
@@ -7,6 +8,7 @@ import { resolve } from 'path'
 export default defineConfig({
   plugins: [
     vue(),
+    vueJsx(),
     AutoImport({
       imports: ['vue'],
       dts: 'src/auto-imports.d.ts',

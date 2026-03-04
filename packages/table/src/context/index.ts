@@ -1,9 +1,8 @@
-import type { ComputedRef, InjectionKey } from 'vue'
-import type { VTableCustomComponentsConfig } from '@/interface'
+import type { InjectionKey } from 'vue'
 
-export interface VTableContext {
-  customComponents: ComputedRef<VTableCustomComponentsConfig>
-}
+// 暂时用不着，后续可能会用， 所以先留着
+//  eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface VTableContext {}
 
 const VTableContextKey: InjectionKey<VTableContext> = Symbol('vTableContextKey')
 

@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",
+    "@vitejs/plugin-vue-jsx": "^5.1.4",
     "less": "^4.5.1"
   }
 }

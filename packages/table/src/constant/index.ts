@@ -54,7 +54,6 @@ export const vTableDefaultProps = defineDefaultProps<VTableProps<any>>({
     childrenKey: 'children',
     indentSize: 16,
   }),
-  customComponentsConfig: () => ({}),
   customRow: undefined,
   customHeaderCell: undefined,
   customCell: undefined,

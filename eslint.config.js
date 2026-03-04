@@ -28,7 +28,7 @@ export default tseslint.config(
   // 自定义规则
   {
     name: 'custom-rules',
-    files: ['**/*.{js,mjs,cjs,ts,vue}'],
+    files: ['**/*.{js,mjs,cjs,ts,vue,tsx}'],
     plugins: {
       'unused-imports': unusedImports,
     },

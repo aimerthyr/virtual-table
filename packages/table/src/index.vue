@@ -50,6 +50,9 @@
                     <template v-if="$slots.customFilterIcon" #customFilterIcon="slotProps">
                       <slot name="customFilterIcon" v-bind="slotProps" />
                     </template>
+                    <template v-if="$slots.customPopover" #customPopover="slotProps">
+                      <slot name="customPopover" v-bind="slotProps" />
+                    </template>
                   </HeaderCell>
                 </template>
               </th>
@@ -159,14 +162,7 @@
       ]"
       class="flex items-center py-[16px]"
     >
-      <component
-        :is="PaginationComponent"
-        :page-index="pagination.pageIndex"
-        :page-size="pagination.pageSize"
-        :total="props.paginationConfig.total"
-        :on-page-change="handlePageChange"
-        v-bind="props.paginationConfig.paginationExtraProps"
-      />
+      <component :is="PaginationComponent" />
     </div>
   </div>
 </template>
@@ -201,13 +197,11 @@ import {
   TABLE_DEFAULT_STYLE,
   vTableDefaultProps,
 } from './constant/index.ts'
-import { useProvideVTableContext } from './context/index.ts'
 import ExpandIcon from './icons/ExpandIcon.vue'
-import type { VTableCustomComponentsConfig, VTableData } from './interface/index.ts'
+import type { VTableCheckboxProps, VTableData, VTablePaginationProps } from './interface/index.ts'
 import type { VTableInstance, VTableProps, VTableSlots } from './interface/table.ts'
 import VCheckbox from './libs/VCheckbox.vue'
 import VPagination from './libs/VPagination.vue'
-import VPopover from './libs/VPopover.vue'
 import {
   buildData,
   convertSizeToPixels,
@@ -219,21 +213,7 @@ import {
 defineOptions({ name: 'VTable' })
 
 const props = withDefaults(defineProps<VTableProps<TData>>(), vTableDefaultProps)
-defineSlots<VTableSlots<TData>>()
-
-// #region 自定义组件配置
-const CheckboxComponent = computed(() => props.customComponentsConfig?.Checkbox || VCheckbox)
-const PopoverComponent = computed(() => props.customComponentsConfig?.Popover || VPopover)
-const PaginationComponent = computed(() => props.customComponentsConfig?.Pagination || VPagination)
-const customComponentsConfig = computed<VTableCustomComponentsConfig>(() => ({
-  Checkbox: CheckboxComponent.value,
-  Popover: PopoverComponent.value,
-  Pagination: PaginationComponent.value,
-}))
-useProvideVTableContext({
-  customComponents: customComponentsConfig,
-})
-// #endregion
+const $slots = defineSlots<VTableSlots<TData>>()
 
 // #region 自适应列宽计算
 const tableContainerRef = ref<HTMLDivElement | null>(null)
@@ -312,6 +292,7 @@ const getColumnWidth = (column: Column<TData>) => {
 // #endregion
 
 // #region tanstack-table 核心逻辑
+
 /** checkbox 列 */
 const CHECKBOX_COLUMN = computed<ColumnDef<TData>>(() => ({
   id: CHECKBOX_COLUMN_KEY,
@@ -320,26 +301,27 @@ const CHECKBOX_COLUMN = computed<ColumnDef<TData>>(() => ({
   header: ({ table }: { table: Table<TData> }) => {
     const selectableRows = table.getRowModel().rows.filter((row) => row.getCanSelect())
     const selectedSelectableRows = selectableRows.filter((row) => row.getIsSelected())
-    return h(CheckboxComponent.value, {
+    const checkboxProps: VTableCheckboxProps = {
       indeterminate:
         selectedSelectableRows.length > 0 && selectedSelectableRows.length < selectableRows.length,
       checked: table.getIsAllRowsSelected(),
       onCheckedChange: (e: Event) => {
         table.getToggleAllRowsSelectedHandler()?.(e)
       },
-    })
+      disabled: false,
+    }
+    return $slots?.customCheckbox?.(checkboxProps) || h(VCheckbox, checkboxProps)
   },
   cell: ({ row }: { row: Row<TData> }) => {
-    return h(CheckboxComponent.value, {
+    const checkboxProps: VTableCheckboxProps = {
       checked: row.getIsSelected(),
+      indeterminate: false,
       disabled: !row.getCanSelect(),
-      onClick: (e: Event) => {
-        e.stopPropagation()
-      },
       onCheckedChange: (e: Event) => {
         row.getToggleSelectedHandler()?.(e)
       },
-    })
+    }
+    return $slots?.customCheckbox?.(checkboxProps) || h(VCheckbox, checkboxProps)
   },
 }))
 /** expand 列 */
@@ -527,6 +509,15 @@ const setAllRowsExpand = () => {
     {},
   )
 }
+const PaginationComponent = computed(() => {
+  const paginationProps: VTablePaginationProps = {
+    pageIndex: pagination.value.pageIndex,
+    pageSize: pagination.value.pageSize,
+    total: props.paginationConfig.total,
+    onPageChange: handlePageChange,
+  }
+  return () => $slots?.customPagination?.(paginationProps) || h(VPagination, paginationProps)
+})
 // #endregion
 
 // #region 虚拟滚动相关逻辑

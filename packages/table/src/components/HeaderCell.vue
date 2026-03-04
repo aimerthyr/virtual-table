@@ -20,6 +20,9 @@
           <template v-if="$slots.customFilterIcon" #customFilterIcon="slotProps">
             <slot name="customFilterIcon" v-bind="slotProps" />
           </template>
+          <template v-if="$slots.customPopover" #customPopover="slotProps">
+            <slot name="customPopover" v-bind="slotProps" />
+          </template>
         </HeaderFilter>
       </div>
     </div>
@@ -41,7 +44,7 @@ import { computed, h } from 'vue'
 import type { Header } from '@tanstack/vue-table'
 import SorterIcon from '../icons/SorterIcon.vue'
 import type { VTableSlots } from '../interface'
-import HeaderFilter from './HeaderFilter.vue'
+import HeaderFilter from './HeaderFilter.tsx'
 
 defineOptions({ name: 'HeaderCell' })
 

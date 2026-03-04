@@ -13,16 +13,24 @@
 </template>
 
 <script setup lang="ts">
-import type { VTablePopoverProps } from '@/interface'
+import type { VNode } from 'vue'
 import { flip, offset, shift, useFloating, type Placement } from '@floating-ui/vue'
 
 defineOptions({ name: 'VPopover' })
 
-const props = withDefaults(defineProps<VTablePopoverProps & { placement?: Placement }>(), {
-  open: false,
-  placement: 'bottom-start',
-  onOpenChange: () => {},
-})
+defineSlots<{
+  default: () => VNode
+  content: () => VNode
+}>()
+
+const props = withDefaults(
+  defineProps<{ open?: boolean; onOpenChange?: (value: boolean) => void; placement?: Placement }>(),
+  {
+    open: false,
+    placement: 'bottom-start',
+    onOpenChange: () => {},
+  },
+)
 
 const referenceRef = ref<HTMLElement | null>(null)
 const floatingRef = ref<HTMLElement | null>(null)
