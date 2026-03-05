@@ -1,5 +1,4 @@
 import type { ColumnDef } from '@tanstack/vue-table'
-import { isNumber } from 'lodash-es'
 import { EXPAND_ROW_DATA_INDEX, EXPAND_ROW_KEY } from '../constant'
 import type { VTableColumn, VTableRowKey } from '../interface'
 
@@ -72,7 +71,8 @@ export function convertSizeToPixels(
   containerWidth: number,
 ): number {
   if (!size) return 0
-  if (isNumber(size)) return size
+  // 使用原生 typeof 判断数字类型
+  if (typeof size === 'number') return size
   // 处理百分比：'20%' -> 实际像素
   if (typeof size === 'string' && size.endsWith('%')) {
     const percentage = parseFloat(size)

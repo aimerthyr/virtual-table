@@ -9,7 +9,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./virtual-table.css": "./dist/virtual-table.css"
   },
@@ -40,12 +41,12 @@
   "dependencies": {
     "@floating-ui/vue": "^1.1.10",
     "@tanstack/vue-table": "^8.21.3",
-    "@tanstack/vue-virtual": "^3.13.19",
-    "lodash-es": "^4.17.23"
+    "@tanstack/vue-virtual": "^3.13.19"
   },
   "devDependencies": {
-    "@types/lodash-es": "^4.17.12",
     "@vitejs/plugin-vue-jsx": "^5.1.4",
-    "less": "^4.5.1"
+    "less": "^4.5.1",
+    "rollup-plugin-visualizer": "^5.12.0",
+    "vite-plugin-dts": "^4.5.4"
   }
 }

@@ -29,11 +29,14 @@ export default defineConfig({
     cssCodeSplit: false,
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      formats: ['es'],
-      fileName: () => 'index.js',
+      formats: ['es', 'cjs'],
+      fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs'),
     },
     rollupOptions: {
       external: ['vue'],
+      output: {
+        exports: 'named',
+      },
     },
     // 生成 sourcemap
     sourcemap: true,
