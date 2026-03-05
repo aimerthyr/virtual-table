@@ -1,157 +1,166 @@
 <template>
   <div class="flex h-full flex-col">
     <div
-      ref="tableContainerRef"
       v-loading="{ spinning: props.loading, indicator: $slots?.customLoadingIcon?.() }"
-      class="min-h-0 flex-1 overflow-x-auto"
-      :class="{ 'overflow-y-auto': props.fixedHeader }"
+      class="relative min-h-0 flex-1"
     >
-      <table
-        :class="{ 'v-table-bordered': props.borderConfig?.enabled }"
-        :style="{ width: tableWidth }"
+      <div
+        ref="tableContainerRef"
+        class="h-full overflow-x-auto"
+        :class="{ 'overflow-y-auto': props.fixedHeader }"
       >
-        <thead :class="{ sticky: props.fixedHeader }" :style="{ top: 0, zIndex: 12 }">
-          <slot name="customHeader" :columns="columns" :table="table">
-            <tr
-              v-for="headerGroup in table.getHeaderGroups()"
-              :key="headerGroup.id"
-              :style="{ display: 'flex' }"
-            >
-              <th
-                v-for="header in headerGroup.headers"
-                :key="header.id"
-                :colspan="header.colSpan"
-                class="relative"
-                :class="[
-                  header.id === CHECKBOX_COLUMN_KEY ? 'checkbox-col' : '',
-                  header.id === EXPAND_COLUMN_KEY ? 'expand-col' : '',
-                  isShadowPinnedColumn(header.column),
-                ]"
-                :style="getColumnStyle(header.column)"
-                v-bind="
-                  props?.customHeaderCell?.(
-                    header.column.columnDef?.meta!,
-                    header.column.getIndex(),
-                  )
-                "
+        <table
+          :class="{ 'v-table-bordered': props.borderConfig?.enabled }"
+          :style="{ width: tableWidth }"
+        >
+          <thead :class="{ sticky: props.fixedHeader }" :style="{ top: 0, zIndex: 12 }">
+            <slot name="customHeader" :columns="columns" :table="table">
+              <tr
+                v-for="headerGroup in table.getHeaderGroups()"
+                :key="headerGroup.id"
+                :style="{ display: 'flex' }"
               >
-                <template v-if="!header.isPlaceholder">
-                  <FlexRender
-                    v-if="header.id === CHECKBOX_COLUMN_KEY"
-                    :render="header.column.columnDef.header"
-                    :props="header.getContext()"
-                  />
-                  <HeaderCell v-else :header="header">
-                    <template v-if="$slots.headerCell" #headerCell="slotProps">
-                      <slot name="headerCell" v-bind="slotProps" />
-                    </template>
-                    <template v-if="$slots.customFilterDropdown" #customFilterDropdown="slotProps">
-                      <slot name="customFilterDropdown" v-bind="slotProps" />
-                    </template>
-                    <template v-if="$slots.customFilterIcon" #customFilterIcon="slotProps">
-                      <slot name="customFilterIcon" v-bind="slotProps" />
-                    </template>
-                    <template v-if="$slots.customPopover" #customPopover="slotProps">
-                      <slot name="customPopover" v-bind="slotProps" />
-                    </template>
-                  </HeaderCell>
-                </template>
-              </th>
-            </tr>
-          </slot>
-        </thead>
-
-        <tbody>
-          <tr v-if="paddingTop > 0" :style="{ display: 'flex', height: `${paddingTop}px` }" />
-
-          <tr
-            v-for="vRow in virtualRows"
-            :key="renderRowKeys[vRow.index]"
-            :ref="(el: any) => measureElement(el, rows[vRow.index]?.original?.[EXPAND_ROW_KEY])"
-            :data-index="vRow.index"
-            :style="{
-              display: 'flex',
-              minHeight: `${vRow.size}px`,
-              width: '100%',
-            }"
-            :class="[props.enableRowHover ? 'group hover:!bg-[#fafafa]' : '']"
-            v-bind="props?.customRow?.(rows[vRow.index]!.original, vRow.index)"
-          >
-            <template v-if="!rows[vRow.index]!.original?.[EXPAND_ROW_KEY]">
-              <td
-                v-for="cell in rows[vRow.index]!.getVisibleCells()"
-                :key="cell.id"
-                :style="getColumnStyle(cell.column)"
-                class="group-hover:!bg-[#fafafa]"
-                :class="[isShadowPinnedColumn(cell.column)]"
-                v-bind="props?.customCell?.(cell.column.columnDef?.meta!, cell.column.getIndex())"
-              >
-                <FlexRender
-                  v-if="cell.column.id === CHECKBOX_COLUMN_KEY"
-                  :render="cell.column.columnDef.cell"
-                  :props="cell.getContext()"
-                />
-                <BodyCell v-else :cell="cell">
-                  <template v-if="$slots.bodyCell" #bodyCell="slotProps">
-                    <!-- 树形结构（第一列添加展开图标和缩进） -->
-                    <div
-                      v-if="
-                        props.treeConfig?.enabled && cell.column.id === props.columns[0]?.columnKey
-                      "
-                      class="flex h-full items-center gap-[8px]"
-                      :style="{
-                        paddingLeft: `${rows[vRow.index]!.depth * (props.treeConfig?.indentSize ?? 16)}px`,
-                      }"
-                    >
-                      <ExpandIcon
-                        :class="[rows[vRow.index]!.getCanExpand() ? 'visible' : 'invisible']"
-                        class="flex-shrink-0"
-                        :expand="rows[vRow.index]!.getIsExpanded()"
-                        @expand="rows[vRow.index]!.toggleExpanded()"
-                      />
-                      <slot name="bodyCell" v-bind="slotProps">
-                        {{ slotProps.row[slotProps.columnKey] }}
-                      </slot>
-                    </div>
-                    <slot v-else name="bodyCell" v-bind="slotProps" />
+                <th
+                  v-for="header in headerGroup.headers"
+                  :key="header.id"
+                  :colspan="header.colSpan"
+                  class="relative"
+                  :class="[
+                    header.id === CHECKBOX_COLUMN_KEY ? 'checkbox-col' : '',
+                    header.id === EXPAND_COLUMN_KEY ? 'expand-col' : '',
+                    isShadowPinnedColumn(header.column),
+                  ]"
+                  :style="getColumnStyle(header.column)"
+                  v-bind="
+                    props?.customHeaderCell?.(
+                      header.column.columnDef?.meta!,
+                      header.column.getIndex(),
+                    )
+                  "
+                >
+                  <template v-if="!header.isPlaceholder">
+                    <FlexRender
+                      v-if="header.id === CHECKBOX_COLUMN_KEY"
+                      :render="header.column.columnDef.header"
+                      :props="header.getContext()"
+                    />
+                    <HeaderCell v-else :header="header">
+                      <template v-if="$slots.headerCell" #headerCell="slotProps">
+                        <slot name="headerCell" v-bind="slotProps" />
+                      </template>
+                      <template
+                        v-if="$slots.customFilterDropdown"
+                        #customFilterDropdown="slotProps"
+                      >
+                        <slot name="customFilterDropdown" v-bind="slotProps" />
+                      </template>
+                      <template v-if="$slots.customFilterIcon" #customFilterIcon="slotProps">
+                        <slot name="customFilterIcon" v-bind="slotProps" />
+                      </template>
+                      <template v-if="$slots.customPopover" #customPopover="slotProps">
+                        <slot name="customPopover" v-bind="slotProps" />
+                      </template>
+                    </HeaderCell>
                   </template>
-                </BodyCell>
-              </td>
-            </template>
-            <!-- 自定义展开行的模板 -->
-            <td
-              v-else
-              :style="{
-                position: hasFixedColumns ? 'sticky' : 'static',
-                left: 0,
-                width: hasFixedColumns ? `${tableContainerWidth}px` : 'auto',
-                maxWidth: hasFixedColumns ? `${tableContainerWidth}px` : 'none',
-              }"
-            >
-              <slot name="expandedRowRender" :row="rows[vRow.index]!.original" />
-            </td>
-          </tr>
+                </th>
+              </tr>
+            </slot>
+          </thead>
 
-          <tr
-            v-if="paddingBottom > 0"
-            :style="{ display: 'flex', height: `${paddingBottom}px`, border: 'none' }"
-          />
-          <!-- 底部提示模板 (作为最后一行) -->
-          <tr
-            v-if="showNoMoreTip"
-            :style="{ display: 'flex', height: `${footerHeight}px`, borderBottom: 'none' }"
-          >
-            <td class="text-lightest flex w-full items-center justify-center">
-              {{ noMoreText }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <!-- 空状态 -->
-      <div v-if="!virtualRows.length" class="flex h-[calc(100%-48px)] items-center justify-center">
-        <slot name="customEmpty"> 当前内容为空 </slot>
+          <tbody>
+            <tr v-if="paddingTop > 0" :style="{ display: 'flex', height: `${paddingTop}px` }" />
+
+            <tr
+              v-for="vRow in virtualRows"
+              :key="renderRowKeys[vRow.index]"
+              :ref="(el: any) => measureElement(el, rows[vRow.index]?.original?.[EXPAND_ROW_KEY])"
+              :data-index="vRow.index"
+              :style="{
+                display: 'flex',
+                minHeight: `${vRow.size}px`,
+                width: '100%',
+              }"
+              :class="[props.enableRowHover ? 'group hover:!bg-[#fafafa]' : '']"
+              v-bind="props?.customRow?.(rows[vRow.index]!.original, vRow.index)"
+            >
+              <template v-if="!rows[vRow.index]!.original?.[EXPAND_ROW_KEY]">
+                <td
+                  v-for="cell in rows[vRow.index]!.getVisibleCells()"
+                  :key="cell.id"
+                  :style="getColumnStyle(cell.column)"
+                  class="group-hover:!bg-[#fafafa]"
+                  :class="[isShadowPinnedColumn(cell.column)]"
+                  v-bind="props?.customCell?.(cell.column.columnDef?.meta!, cell.column.getIndex())"
+                >
+                  <FlexRender
+                    v-if="cell.column.id === CHECKBOX_COLUMN_KEY"
+                    :render="cell.column.columnDef.cell"
+                    :props="cell.getContext()"
+                  />
+                  <BodyCell v-else :cell="cell">
+                    <template v-if="$slots.bodyCell" #bodyCell="slotProps">
+                      <!-- 树形结构（第一列添加展开图标和缩进） -->
+                      <div
+                        v-if="
+                          props.treeConfig?.enabled &&
+                          cell.column.id === props.columns[0]?.columnKey
+                        "
+                        class="flex h-full items-center gap-[8px]"
+                        :style="{
+                          paddingLeft: `${rows[vRow.index]!.depth * (props.treeConfig?.indentSize ?? 16)}px`,
+                        }"
+                      >
+                        <ExpandIcon
+                          :class="[rows[vRow.index]!.getCanExpand() ? 'visible' : 'invisible']"
+                          class="flex-shrink-0"
+                          :expand="rows[vRow.index]!.getIsExpanded()"
+                          @expand="rows[vRow.index]!.toggleExpanded()"
+                        />
+                        <slot name="bodyCell" v-bind="slotProps">
+                          {{ slotProps.row[slotProps.columnKey] }}
+                        </slot>
+                      </div>
+                      <slot v-else name="bodyCell" v-bind="slotProps" />
+                    </template>
+                  </BodyCell>
+                </td>
+              </template>
+              <!-- 自定义展开行的模板 -->
+              <td
+                v-else
+                :style="{
+                  position: hasFixedColumns ? 'sticky' : 'static',
+                  left: 0,
+                  width: hasFixedColumns ? `${tableContainerWidth}px` : 'auto',
+                  maxWidth: hasFixedColumns ? `${tableContainerWidth}px` : 'none',
+                }"
+              >
+                <slot name="expandedRowRender" :row="rows[vRow.index]!.original" />
+              </td>
+            </tr>
+
+            <tr
+              v-if="paddingBottom > 0"
+              :style="{ display: 'flex', height: `${paddingBottom}px`, border: 'none' }"
+            />
+            <!-- 底部提示模板 (作为最后一行) -->
+            <tr
+              v-if="showNoMoreTip"
+              :style="{ display: 'flex', height: `${footerHeight}px`, borderBottom: 'none' }"
+            >
+              <td class="text-lightest flex w-full items-center justify-center">
+                {{ noMoreText }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- 空状态 -->
+        <div v-if="!virtualRows.length" class="absolute inset-0 flex items-center justify-center">
+          <slot name="customEmpty"> 当前内容为空 </slot>
+        </div>
       </div>
     </div>
+
     <div
       v-if="props.paginationConfig.enabled"
       :class="[
