@@ -720,7 +720,8 @@ table {
   table-layout: fixed;
 }
 
-tr {
+tr > th,
+tr > td {
   border-bottom: 1px @borderStyle @borderColor;
 }
 
@@ -733,26 +734,28 @@ thead {
 
 /* 带边框样式 */
 table.v-table-bordered {
-  border: 1px @borderStyle @borderColor;
-  border-top: none;
   thead {
-    border-top: 1px @borderStyle @borderColor;
-  }
-  tbody {
-    tr > td:not(:last-child) {
+    tr > th {
       border-right: 1px @borderStyle @borderColor;
     }
-    tr:last-child {
-      border-bottom: none;
+    tr > th:first-child {
+      border-left: 1px @borderStyle @borderColor;
+    }
+    tr:first-child > th {
+      border-top: 1px @borderStyle @borderColor;
+    }
+  }
+  tbody {
+    tr > td {
+      border-right: 1px @borderStyle @borderColor;
+    }
+    tr > td:first-child {
+      border-left: 1px @borderStyle @borderColor;
     }
   }
 }
 
 .pinned-left-shadow {
-  // 固定列阴影不需要分割线
-  &::before {
-    display: none;
-  }
   &::after {
     position: absolute;
     top: 0;
