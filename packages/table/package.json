@@ -1,6 +1,6 @@
 {
   "name": "@aimerthyr/virtual-table",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "高性能虚拟滚动表格",
   "type": "module",
   "main": "./dist/index.js",
@@ -16,18 +16,21 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "dev": "vite build --watch",
-    "build": "vite build"
+    "build": "vite build",
+    "prepublishOnly": "pnpm build"
   },
   "keywords": [
     "vue",
     "vue3",
     "table",
     "virtual-scroll",
-    "component"
+    "virtualization"
   ],
   "author": "aimerthyr",
   "license": "MIT",

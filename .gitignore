@@ -26,3 +26,5 @@ dist-ssr
 # 自动导入生成的文件
 **/auto-imports.d.ts
 **/.eslintrc-auto-import.json
+
+release.sh
