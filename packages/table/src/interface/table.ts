@@ -53,6 +53,10 @@ export interface VTableSlots<TData = any> {
   customEmpty?: () => VNode
   /** 自定义 loading 图标 */
   customLoadingIcon?: () => VNode
+  /** 自定义加载没有更多区域 */
+  customLoadNoMore?: () => VNode
+  /** 自定义表尾 */
+  customFooter?: () => VNode
   [key: string]: ((...args: any[]) => VNode) | undefined
 }
 
@@ -92,6 +96,8 @@ export interface VTableProps<TData = any> {
   defaultExpandAllRows?: boolean
   /** 列宽调整模式 */
   columnResizeMode?: 'onChange' | 'onEnd'
+  /** 是否固定表尾（表尾不随着滚动） */
+  fixedFooter?: boolean
   /** 自定义数据行属性 */
   customRow?: (row: TData, rowIndex: number) => HTMLAttributes
   /** 自定义表头单元格属性 */

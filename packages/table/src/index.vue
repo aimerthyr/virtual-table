@@ -144,15 +144,19 @@
               :style="{ display: 'flex', height: `${paddingBottom}px`, border: 'none' }"
             />
             <!-- 底部提示模板 (作为最后一行) -->
-            <tr
-              v-if="showNoMoreTip"
-              :style="{ display: 'flex', height: `${footerHeight}px`, borderBottom: 'none' }"
-            >
-              <td class="text-lightest flex w-full items-center justify-center">
-                {{ noMoreText }}
+            <tr v-if="showNoMoreTip" :style="{ display: 'flex', borderBottom: 'none' }">
+              <td
+                class="flex w-full items-center justify-center border-b-0 text-[rgba(0,0,0,0.32)]"
+              >
+                <slot name="customLoadNoMore">
+                  {{ noMoreText }}
+                </slot>
               </td>
             </tr>
           </tbody>
+          <tfoot :class="{ sticky: props.fixedFooter }" :style="{ bottom: 0, zIndex: 12 }">
+            <slot name="customFooter" />
+          </tfoot>
         </table>
         <!-- 空状态 -->
         <div v-if="!virtualRows.length" class="absolute inset-0 flex items-center justify-center">
@@ -607,7 +611,6 @@ const paddingBottom = computed(() => {
 
 // #region 底部提示逻辑
 /** 底部提示行高度 */
-const footerHeight = 46
 const showNoMoreTip = computed(() => {
   return tableData.value.length > 0 && !props.loading && props.loadMoreConfig?.showNoMore
 })
