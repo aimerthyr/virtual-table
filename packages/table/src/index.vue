@@ -147,18 +147,17 @@
               </template>
             </template>
             <!-- 自定义展开行的模板 -->
-            <td
-              v-else
-              :style="{
-                position: hasFixedColumns ? 'sticky' : 'static',
-                left: 0,
-                width: hasFixedColumns ? `${tableContainerWidth}px` : 'auto',
-                maxWidth: hasFixedColumns ? `${tableContainerWidth}px` : 'none',
-              }"
-              class="p-[12px]"
-              :colspan="table.getAllLeafColumns().length"
-            >
-              <slot name="expandedRowRender" :row="rows[vRow.index]!.original" />
+            <td v-else :colspan="table.getAllLeafColumns().length">
+              <div
+                class="overflow-hidden p-[12px]"
+                :style="{
+                  position: hasFixedColumns ? 'sticky' : 'static',
+                  left: 0,
+                  width: hasFixedColumns ? `${tableContainerWidth}px` : 'auto',
+                }"
+              >
+                <slot name="expandedRowRender" :row="rows[vRow.index]!.original" />
+              </div>
             </td>
           </tr>
 
@@ -649,6 +648,9 @@ const canRenderCell = (
   rowIndex: number,
   colIndex: number,
 ): boolean => {
+  if (!column) {
+    return true
+  }
   const attrs = props.customCellAttributes(row, column, rowIndex, colIndex) || {}
   // 当 colspan 或 rowspan 为 0 时，不渲染该单元格
   if (attrs.colspan === 0 || attrs.rowspan === 0) {
@@ -761,7 +763,7 @@ defineExpose<VTableInstance>({
   }
 
   &-body tr {
-    &.v-table-row-hover:hover {
+    &.v-table-row-hover:hover td {
       background-color: var(--v-table-row-hover-color);
     }
 

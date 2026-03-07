@@ -17,10 +17,10 @@
           </a-radio-group>
         </div>
         <div class="flex flex-col gap-[4px]">
-          <div class="text-[14px] font-medium">表头分组</div>
-          <a-radio-group v-model:value="columnMode">
+          <div class="text-[14px] font-medium">表格模式</div>
+          <a-radio-group v-model:value="columnMode" @change="handleColumnModeChange">
             <a-radio value="normal">普通列</a-radio>
-            <a-radio value="grouped">表头分组</a-radio>
+            <a-radio value="combined">表头分组+单元格合并</a-radio>
           </a-radio-group>
         </div>
       </div>
@@ -57,6 +57,7 @@
       :row-height="56"
       :fixed-header="true"
       :bordered="true"
+      :enable-row-hover="true"
       row-key="id"
       :row-selection-config="{
         enabled: true,
@@ -81,6 +82,7 @@
       :on-scroll-to-bottom="handleScrollToBottom"
       :on-expanded-rows-change="handleExpandedChange"
       :custom-row-attributes="customRowHandler"
+      :custom-cell-attributes="customCellHandler"
       :theme-config="{
         border: {
           borderStyle: 'dashed',
@@ -171,7 +173,7 @@ const currentPage = ref(1)
 const expandMode = ref('expand')
 const enableExpandRow = ref(true)
 const enableTreeExpand = ref(false)
-const columnMode = ref<'normal' | 'grouped'>('normal')
+const columnMode = ref<'normal' | 'combined'>('normal')
 
 const paginationState = ref<VTablePaginationState>({ pageIndex: 1, pageSize: 20 })
 const sortState = ref<VTableSortingState>([])
@@ -235,8 +237,8 @@ const normalColumns: VTableColumn[] = [
   },
 ]
 
-// 分组列配置（表头分组）
-const groupedColumns: VTableColumn[] = [
+// 表头分组 + 单元格合并列配置
+const combinedColumns: VTableColumn[] = [
   {
     columnKey: 'id',
     columnHeader: '员工id',
@@ -244,7 +246,7 @@ const groupedColumns: VTableColumn[] = [
     columnMaxWidth: 300,
     columnEnableResize: true,
   },
-  // 表头分组示例：基本信息
+  // 表头分组：基本信息
   {
     columnKey: 'basicInfo',
     columnHeader: '基本信息',
@@ -257,15 +259,19 @@ const groupedColumns: VTableColumn[] = [
         columnEnableResize: true,
       },
       {
+        columnKey: 'department',
+        columnHeader: '部门',
+        columnWidth: 150,
+      },
+      {
         columnKey: 'age',
         columnHeader: '年龄',
         columnWidth: 100,
         columnAlign: 'center',
-        columnEnableSort: true,
       },
     ],
   },
-  // 表头分组示例：联系方式
+  // 表头分组：联系方式
   {
     columnKey: 'contactInfo',
     columnHeader: '联系方式',
@@ -274,34 +280,19 @@ const groupedColumns: VTableColumn[] = [
         columnKey: 'email',
         columnHeader: '邮箱',
         columnWidth: 220,
-        columnEnableFilter: true,
       },
-      {
-        columnKey: 'department',
-        columnHeader: '部门',
-        columnWidth: 150,
-        columnEnableFilter: true,
-      },
-    ],
-  },
-  // 表头分组示例：状态信息
-  {
-    columnKey: 'statusInfo',
-    columnHeader: '状态信息',
-    columnChildren: [
       {
         columnKey: 'status',
         columnHeader: '状态',
         columnWidth: 120,
         columnAlign: 'center',
       },
-      {
-        columnKey: 'createTime',
-        columnHeader: '创建时间',
-        columnWidth: 180,
-        columnEnableSort: true,
-      },
     ],
+  },
+  {
+    columnKey: 'createTime',
+    columnHeader: '创建时间',
+    columnWidth: 180,
   },
   {
     columnKey: 'action',
@@ -312,7 +303,8 @@ const groupedColumns: VTableColumn[] = [
 
 // 根据模式动态切换列配置
 const columns = computed(() => {
-  return columnMode.value === 'normal' ? normalColumns : groupedColumns
+  if (columnMode.value === 'combined') return combinedColumns
+  return normalColumns
 })
 
 // 模拟后端数据生成
@@ -550,6 +542,105 @@ const customRowHandler = (row: TableRow) => {
     style: row.status === 'inactive' ? { opacity: 0.6, background: '#fafafa' } : {},
   }
 }
+
+/**
+ * 单元格合并处理函数
+ * 实现规则：
+ * 1. 相同部门的员工，部门列进行纵向合并
+ * 2. 每5行，邮箱列进行横向合并（跨2列）
+ * 3. 每10行，创建时间列进行纵向合并（跨2行）
+ */
+const customCellHandler = (
+  row: TableRow,
+  column: VTableColumn | undefined,
+  rowIndex: number,
+  _colIndex: number,
+) => {
+  // 只在单元格合并模式和组合模式下生效
+  if (columnMode.value !== 'combined') {
+    return null
+  }
+
+  if (!column || !row) {
+    return null
+  }
+
+  const columnKey = column.columnKey
+
+  // 规则1：相同部门的员工，部门列进行纵向合并
+  if (columnKey === 'department') {
+    // 查找当前行之前有多少个相同部门的连续行
+    let prevSameCount = 0
+    for (let i = rowIndex - 1; i >= 0; i--) {
+      if (tableData.value[i]?.department === row.department) {
+        prevSameCount++
+      } else {
+        break
+      }
+    }
+
+    // 如果前面有相同部门，当前单元格不渲染
+    if (prevSameCount > 0) {
+      return { rowspan: 0 }
+    }
+
+    // 查找当前行之后有多少个相同部门的连续行
+    let nextSameCount = 0
+    for (let i = rowIndex + 1; i < tableData.value.length; i++) {
+      if (tableData.value[i]?.department === row.department) {
+        nextSameCount++
+      } else {
+        break
+      }
+    }
+
+    // 返回合并的行数
+    return { rowspan: 1 + nextSameCount }
+  }
+
+  // 规则2：每5行，邮箱列进行横向合并（跨2列：邮箱 + 状态）
+  if (columnKey === 'email' && (rowIndex + 1) % 5 === 0) {
+    return {
+      colspan: 2,
+      style: {
+        background: '#e6f7ff',
+        fontWeight: 'bold',
+      },
+    }
+  }
+
+  // 规则2：被合并的状态列不渲染
+  if (columnKey === 'status' && (rowIndex + 1) % 5 === 0) {
+    return { colspan: 0 }
+  }
+
+  // 规则3：每10行，创建时间列进行纵向合并（跨2行）
+  if (columnKey === 'createTime') {
+    // 每10行的第1行开始合并
+    if ((rowIndex + 1) % 10 === 1 && rowIndex + 1 < tableData.value.length) {
+      return {
+        rowspan: 2,
+        style: {
+          background: '#fff7e6',
+          verticalAlign: 'middle',
+        },
+      }
+    }
+    // 每10行的第2行不渲染
+    if ((rowIndex + 1) % 10 === 2) {
+      return { rowspan: 0 }
+    }
+  }
+
+  return null
+}
+
+const handleColumnModeChange = () => {
+  // 切换模式时重置状态
+  handleClear()
+  handleRefresh()
+}
+
 onMounted(() => {
   // 初始化
   fetchDataByPage({
