@@ -56,17 +56,6 @@ export function getAllRowKeys<TData>(
   return keys
 }
 
-/** 遍历对象的 key 生成 hash */
-export function simpleHash(obj: any): string {
-  let str = ''
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      str += `${key}:${obj[key]};`
-    }
-  }
-  return str
-}
-
 /** 将 size 转换为实际像素值 */
 export function convertSizeToPixels(
   size: number | string | undefined,

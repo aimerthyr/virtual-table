@@ -227,6 +227,7 @@ import {
   type Table,
 } from '@tanstack/vue-table'
 import { Virtualizer, useVirtualizer, type VirtualItem } from '@tanstack/vue-virtual'
+import { hash } from 'ohash'
 import BodyCell from './components/BodyCell.vue'
 import HeaderCell from './components/HeaderCell.vue'
 import {
@@ -250,7 +251,7 @@ import type {
 import VCheckbox from './libs/VCheckbox.vue'
 import vLoading from './libs/VLoading'
 import VPagination from './libs/VPagination.vue'
-import { buildData, convertToColumnDefList, getAllRowKeys, simpleHash } from './utils'
+import { buildData, convertToColumnDefList, getAllRowKeys } from './utils'
 
 defineOptions({ name: 'VTable' })
 
@@ -388,7 +389,7 @@ const EXPAND_COLUMN: ColumnDef<TData> = {
   },
 }
 const renderRowKeys = computed(() => {
-  return rows.value.map((row) => `${row.id}_${simpleHash(row.original)}`)
+  return rows.value.map((row) => `${row.id}_${hash(row.original)}`)
 })
 const columnFilters = defineModel<ColumnFiltersState>('defaultFilter', { default: () => [] })
 const columnSorts = defineModel<SortingState>('defaultSort', { default: () => [] })
