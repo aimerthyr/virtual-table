@@ -5,7 +5,6 @@ import VTableComponent from './index.vue'
 export * from './interface'
 // 导出常量
 export * from './constant'
-
 // 导出组件
 export { VTableComponent as VTable }
 export default VTableComponent

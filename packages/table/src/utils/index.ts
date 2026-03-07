@@ -24,8 +24,9 @@ export function convertToColumnDefList<T>(
   }))
 }
 
-/** 给 data 添加组件内部属性 */
-export function buildData<T>(data: T[]) {
+/** 给 data 添加组件内部属性（仅当 enableExpandRow 时添加展开行结构） */
+export function buildData<T>(data: T[], enableExpandRow = false) {
+  if (!enableExpandRow) return data
   return data.map((v) => ({
     ...v,
     [EXPAND_ROW_DATA_INDEX]: [{ ...v, [EXPAND_ROW_KEY]: true }],

@@ -77,7 +77,7 @@ export type VTableLoadMoreConfig = {
 }
 
 export type VTablePaginationConfig = {
-  /** 总数（必须要传） */
+  /** 总数（必须要传, 客户端分页可以不传，自动以传入的 data 长度作为总数） */
   total: number
   /** 是否开启分页 */
   enabled?: boolean

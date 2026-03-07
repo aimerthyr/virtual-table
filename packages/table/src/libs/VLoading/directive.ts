@@ -10,6 +10,7 @@ export type LoadingDirectiveOptions =
       size?: LoadingSize
       /** 自定义 loading 图标 */
       indicator?: VNode
+      bottom?: number
     }
 
 type LoadingNode = {
@@ -35,7 +36,7 @@ const createLoadingTpl = (el: LoadingElement, options: LoadingDirectiveOptions =
   container.style.top = '0'
   container.style.left = '0'
   container.style.right = '0'
-  container.style.bottom = '0'
+  container.style.bottom = typeof options === 'boolean' ? '0' : `${options.bottom || 0}px`
   container.style.zIndex = '1000'
 
   // 创建 VNode
