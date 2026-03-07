@@ -99,11 +99,19 @@ export interface VTableProps<TData = any> {
   /** 是否固定表尾（表尾不随着滚动） */
   fixedFooter?: boolean
   /** 自定义数据行属性 */
-  customRow?: (row: TData, rowIndex: number) => HTMLAttributes
+  customRowAttributes?: (row: TData, rowIndex: number) => HTMLAttributes
   /** 自定义表头单元格属性 */
-  customHeaderCell?: (column: VTableColumn, colIndex: number) => ThHTMLAttributes
-  /** 自定义表体单元格属性 */
-  customCell?: (column: VTableColumn, colIndex: number) => TdHTMLAttributes
+  customHeaderCellAttributes?: (column: VTableColumn, colIndex: number) => ThHTMLAttributes
+  /**
+   * 自定义表体单元格属性（包括合并单元格）
+   * 当返回的属性中 colspan 或 rowspan 为 0 时，该单元格不会被渲染
+   */
+  customCellAttributes?: (
+    row: TData,
+    column: VTableColumn,
+    rowIndex: number,
+    colIndex: number,
+  ) => TdHTMLAttributes | null
 
   // #region 事件定义区域
   /** 表格状态变化（筛选，排序，分页） */

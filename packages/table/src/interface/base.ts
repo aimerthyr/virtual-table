@@ -45,6 +45,8 @@ export interface VTableColumn<TData = any> {
   columnMaxWidth?: number
   /** 列宽最小值 (默认 50px) */
   columnMinWidth?: number
+  /** 子列（用于表头分组） */
+  columnChildren?: VTableColumn<TData>[]
   /** 可自行拓展字段 */
   [key: string]: any
 }

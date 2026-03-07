@@ -11,15 +11,18 @@
       >
         <table
           :class="{ 'v-table-bordered': props.borderConfig?.enabled }"
-          :style="{ width: tableWidth }"
+          :style="{ width: '100%' }"
         >
+          <colgroup>
+            <col
+              v-for="column in table.getAllLeafColumns()"
+              :key="column.id"
+              :style="{ width: getColumnWidth(column) }"
+            />
+          </colgroup>
           <thead :class="{ sticky: props.fixedHeader }" :style="{ top: 0, zIndex: 12 }">
             <slot name="customHeader" :columns="columns" :table="table">
-              <tr
-                v-for="headerGroup in table.getHeaderGroups()"
-                :key="headerGroup.id"
-                :style="{ display: 'flex' }"
-              >
+              <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                 <th
                   v-for="header in headerGroup.headers"
                   :key="header.id"
@@ -32,7 +35,7 @@
                   ]"
                   :style="getColumnStyle(header.column)"
                   v-bind="
-                    props?.customHeaderCell?.(
+                    props?.customHeaderCellAttributes?.(
                       header.column.columnDef?.meta!,
                       header.column.getIndex(),
                     )
@@ -68,7 +71,7 @@
           </thead>
 
           <tbody>
-            <tr v-if="paddingTop > 0" :style="{ display: 'flex', height: `${paddingTop}px` }" />
+            <tr v-if="paddingTop > 0" :style="{ height: `${paddingTop}px` }" />
 
             <tr
               v-for="vRow in virtualRows"
@@ -76,54 +79,70 @@
               :ref="(el: any) => measureElement(el, rows[vRow.index]?.original?.[EXPAND_ROW_KEY])"
               :data-index="vRow.index"
               :style="{
-                display: 'flex',
                 minHeight: `${vRow.size}px`,
-                width: '100%',
               }"
               :class="[props.enableRowHover ? 'group hover:!bg-[#fafafa]' : '']"
-              v-bind="props?.customRow?.(rows[vRow.index]!.original, vRow.index)"
+              v-bind="props?.customRowAttributes?.(rows[vRow.index]!.original, vRow.index)"
             >
               <template v-if="!rows[vRow.index]!.original?.[EXPAND_ROW_KEY]">
-                <td
-                  v-for="cell in rows[vRow.index]!.getVisibleCells()"
+                <template
+                  v-for="(cell, cellIndex) in rows[vRow.index]!.getVisibleCells()"
                   :key="cell.id"
-                  :style="getColumnStyle(cell.column)"
-                  class="group-hover:!bg-[#fafafa]"
-                  :class="[isShadowPinnedColumn(cell.column)]"
-                  v-bind="props?.customCell?.(cell.column.columnDef?.meta!, cell.column.getIndex())"
                 >
-                  <FlexRender
-                    v-if="cell.column.id === CHECKBOX_COLUMN_KEY"
-                    :render="cell.column.columnDef.cell"
-                    :props="cell.getContext()"
-                  />
-                  <BodyCell v-else :cell="cell">
-                    <template v-if="$slots.bodyCell" #bodyCell="slotProps">
-                      <!-- 树形结构（第一列添加展开图标和缩进） -->
-                      <div
-                        v-if="
-                          props.treeConfig?.enabled &&
-                          cell.column.id === props.columns[0]?.columnKey
-                        "
-                        class="flex h-full items-center gap-[8px]"
-                        :style="{
-                          paddingLeft: `${rows[vRow.index]!.depth * (props.treeConfig?.indentSize ?? 16)}px`,
-                        }"
-                      >
-                        <ExpandIcon
-                          :class="[rows[vRow.index]!.getCanExpand() ? 'visible' : 'invisible']"
-                          class="flex-shrink-0"
-                          :expand="rows[vRow.index]!.getIsExpanded()"
-                          @expand="rows[vRow.index]!.toggleExpanded()"
-                        />
-                        <slot name="bodyCell" v-bind="slotProps">
-                          {{ slotProps.row[slotProps.columnKey] }}
-                        </slot>
-                      </div>
-                      <slot v-else name="bodyCell" v-bind="slotProps" />
-                    </template>
-                  </BodyCell>
-                </td>
+                  <td
+                    v-if="
+                      canRenderCell(
+                        rows[vRow.index]!.original,
+                        cell.column.columnDef?.meta!,
+                        vRow.index,
+                        cellIndex,
+                      )
+                    "
+                    :style="getColumnStyle(cell.column)"
+                    class="group-hover:!bg-[#fafafa]"
+                    :class="[isShadowPinnedColumn(cell.column)]"
+                    v-bind="
+                      props.customCellAttributes(
+                        rows[vRow.index]!.original,
+                        cell.column.columnDef?.meta!,
+                        vRow.index,
+                        cellIndex,
+                      )
+                    "
+                  >
+                    <FlexRender
+                      v-if="cell.column.id === CHECKBOX_COLUMN_KEY"
+                      :render="cell.column.columnDef.cell"
+                      :props="cell.getContext()"
+                    />
+                    <BodyCell v-else :cell="cell">
+                      <template v-if="$slots.bodyCell" #bodyCell="slotProps">
+                        <!-- 树形结构（第一列添加展开图标和缩进） -->
+                        <div
+                          v-if="
+                            props.treeConfig?.enabled &&
+                            cell.column.id === props.columns[0]?.columnKey
+                          "
+                          class="flex h-full items-center gap-[8px]"
+                          :style="{
+                            paddingLeft: `${rows[vRow.index]!.depth * (props.treeConfig?.indentSize ?? 16)}px`,
+                          }"
+                        >
+                          <ExpandIcon
+                            :class="[rows[vRow.index]!.getCanExpand() ? 'visible' : 'invisible']"
+                            class="flex-shrink-0"
+                            :expand="rows[vRow.index]!.getIsExpanded()"
+                            @expand="rows[vRow.index]!.toggleExpanded()"
+                          />
+                          <slot name="bodyCell" v-bind="slotProps">
+                            {{ slotProps.row[slotProps.columnKey] }}
+                          </slot>
+                        </div>
+                        <slot v-else name="bodyCell" v-bind="slotProps" />
+                      </template>
+                    </BodyCell>
+                  </td>
+                </template>
               </template>
               <!-- 自定义展开行的模板 -->
               <td
@@ -134,6 +153,8 @@
                   width: hasFixedColumns ? `${tableContainerWidth}px` : 'auto',
                   maxWidth: hasFixedColumns ? `${tableContainerWidth}px` : 'none',
                 }"
+                class="p-[12px]"
+                :colspan="table.getAllLeafColumns().length"
               >
                 <slot name="expandedRowRender" :row="rows[vRow.index]!.original" />
               </td>
@@ -141,12 +162,13 @@
 
             <tr
               v-if="paddingBottom > 0"
-              :style="{ display: 'flex', height: `${paddingBottom}px`, border: 'none' }"
+              :style="{ height: `${paddingBottom}px`, border: 'none' }"
             />
             <!-- 底部提示模板 (作为最后一行) -->
-            <tr v-if="showNoMoreTip" :style="{ display: 'flex', borderBottom: 'none' }">
+            <tr v-if="showNoMoreTip" :style="{ borderBottom: 'none' }">
               <td
-                class="flex w-full items-center justify-center border-b-0 text-[rgba(0,0,0,0.32)]"
+                :colspan="table.getAllLeafColumns().length"
+                class="!border-b-0 p-[12px] text-center text-[14px] text-[rgba(0,0,0,0.32)]"
               >
                 <slot name="customLoadNoMore">
                   {{ noMoreText }}
@@ -159,7 +181,10 @@
           </tfoot>
         </table>
         <!-- 空状态 -->
-        <div v-if="!virtualRows.length" class="absolute inset-0 flex items-center justify-center">
+        <div
+          v-if="!virtualRows.length && !props.loading"
+          class="absolute inset-0 flex items-center justify-center"
+        >
           <slot name="customEmpty"> 当前内容为空 </slot>
         </div>
       </div>
@@ -208,22 +233,22 @@ import {
   EXPAND_COLUMN_KEY,
   EXPAND_ROW_DATA_INDEX,
   EXPAND_ROW_KEY,
-  TABLE_DEFAULT_STYLE,
   vTableDefaultProps,
-} from './constant/index.ts'
+} from './constant'
 import ExpandIcon from './icons/ExpandIcon.vue'
-import type { VTableCheckboxProps, VTableData, VTablePaginationProps } from './interface/index.ts'
-import type { VTableInstance, VTableProps, VTableSlots } from './interface/table.ts'
+import type {
+  VTableCheckboxProps,
+  VTableColumn,
+  VTableData,
+  VTableInstance,
+  VTablePaginationProps,
+  VTableProps,
+  VTableSlots,
+} from './interface'
 import VCheckbox from './libs/VCheckbox.vue'
 import vLoading from './libs/VLoading'
 import VPagination from './libs/VPagination.vue'
-import {
-  buildData,
-  convertSizeToPixels,
-  convertToColumnDefList,
-  getAllRowKeys,
-  simpleHash,
-} from './utils/index.ts'
+import { buildData, convertToColumnDefList, getAllRowKeys, simpleHash } from './utils'
 
 defineOptions({ name: 'VTable' })
 
@@ -234,23 +259,25 @@ const $slots = defineSlots<VTableSlots<TData>>()
 const tableContainerRef = ref<HTMLDivElement | null>(null)
 const tableContainerWidth = ref(0)
 let resizeObserver: ResizeObserver | null = null
-// 初始化 ResizeObserver（在 onMounted 中调用）
 const initResizeObserver = () => {
   if (!tableContainerRef.value) return
-
   resizeObserver = new ResizeObserver((entries) => {
     for (const entry of entries) {
       tableContainerWidth.value = entry.contentRect.width
     }
   })
-
   resizeObserver.observe(tableContainerRef.value)
 }
 /** 计算自适应列的实际宽度 */
 const adaptiveColumnWidthMap = computed(() => {
-  const allColumns = table.getAllColumns()
+  const allColumns = table.getAllLeafColumns()
   const containerWidth = tableContainerWidth.value || 0
   if (containerWidth === 0) return {}
+  // 筛选出自适应列（未设置 size 的列）
+  const adaptiveColumns = allColumns.filter((col) => !col.columnDef.size)
+  const adaptiveCount = adaptiveColumns.length
+  if (adaptiveCount === 0) return {}
+
   // 计算固定列总宽度
   const fixedWidthTotal = allColumns.reduce((sum, col) => {
     // 统计所有设置列宽的列
@@ -259,17 +286,19 @@ const adaptiveColumnWidthMap = computed(() => {
     }
     return sum
   }, 0)
-  // 筛选出自适应列（未设置 size 的列）
-  const adaptiveColumns = allColumns.filter((col) => !col.columnDef.size)
-  const adaptiveCount = adaptiveColumns.length
-  if (adaptiveCount === 0) return {}
-  const remainingWidth = Math.max(0, containerWidth - fixedWidthTotal)
-  // 1.第一种情况：固定列总宽 < 容器宽度，则自适应列均分剩余空间
-  if (remainingWidth > 0) {
+  // 计算自适应列的最小总宽度
+  const adaptiveMinWidthTotal = adaptiveCount * props.adaptiveColumnWidth
+
+  // 计算剩余可用宽度（避免垂直滚动条导致的计算误差）
+  const tolerance = 20
+  const remainingWidth = containerWidth - fixedWidthTotal
+
+  // 1. 剩余宽度 >= 自适应列最小总宽度 - 误差，则自适应列均分剩余空间
+  if (remainingWidth >= adaptiveMinWidthTotal - tolerance) {
     const avgWidth = Math.floor(remainingWidth / adaptiveCount)
     // 计算余数（因为可能均分之后，不能整除的情况）
     const remainder = remainingWidth % adaptiveCount
-    // 将余数分配给前 remainder 列，避免像素损失
+    // 将余数分配给前 remainder 列，避免误差
     return adaptiveColumns.reduce(
       (map, col, index) => {
         map[col.id] = avgWidth + (index < remainder ? 1 : 0)
@@ -278,7 +307,7 @@ const adaptiveColumnWidthMap = computed(() => {
       {} as Record<string, number>,
     )
   }
-  // 2. 第二种情况：固定列总宽 >= 容器宽度，自适应列使用最小宽度
+  // 2. 剩余宽度 < 自适应列最小总宽度，所有自适应列使用最小宽度
   return adaptiveColumns.reduce(
     (map, col) => {
       map[col.id] = props.adaptiveColumnWidth
@@ -287,27 +316,21 @@ const adaptiveColumnWidthMap = computed(() => {
     {} as Record<string, number>,
   )
 })
-/** 获取表格列宽 */
+/** 获取表格列宽（用于 colgroup） */
 const getColumnWidth = (column: Column<TData>) => {
-  let width: string | undefined
-  const actualSize = column.getSize()
   const definedSize = column.columnDef.size
   if (definedSize) {
-    // 1.有固定宽度，使用实际宽度（可能被拖拽调整过）
-    width = `${actualSize}px`
+    // 1. 用户传了固定宽度，使用实际宽度（可能被拖拽调整过）
+    return `${column.getSize()}px`
   } else {
-    // 2.未传入 size 时，则需要设置成自适应列宽
+    // 2. 用户没传，使用自适应列宽
     const adaptiveWidth = adaptiveColumnWidthMap.value[column.id]
-    if (adaptiveWidth) {
-      width = `${adaptiveWidth}px`
-    }
+    return adaptiveWidth ? `${adaptiveWidth}px` : `${props.adaptiveColumnWidth}px`
   }
-  return width
 }
 // #endregion
 
 // #region tanstack-table 核心逻辑
-
 /** checkbox 列 */
 const CHECKBOX_COLUMN = computed<ColumnDef<TData>>(() => ({
   id: CHECKBOX_COLUMN_KEY,
@@ -620,15 +643,25 @@ const noMoreText = computed(() => props.loadMoreConfig?.noMoreText || '没有更
 // #region 表格样式相关逻辑
 const borderColor = computed(() => props.borderConfig?.borderColor || '#f0f0f0')
 const borderStyle = computed(() => props.borderConfig?.borderStyle || 'solid')
+/** 判断单元格是否应该渲染（被合并的单元格返回 false） */
+const canRenderCell = (
+  row: TData,
+  column: VTableColumn,
+  rowIndex: number,
+  colIndex: number,
+): boolean => {
+  const attrs = props.customCellAttributes(row, column, rowIndex, colIndex) || {}
+  // 当 colspan 或 rowspan 为 0 时，不渲染该单元格
+  if (attrs.colspan === 0 || attrs.rowspan === 0) {
+    return false
+  }
+  return true
+}
 const getColumnStyle = (column: Column<TData>): CSSProperties => {
   const meta = column.columnDef.meta
   const pinPosition = column.getIsPinned()
-  // 处理自适应列宽
-  const width = getColumnWidth(column)
   const baseStyle: CSSProperties = {
-    ...TABLE_DEFAULT_STYLE,
-    width,
-    flex: width ? `0 0 ${width}` : '1 0 0',
+    padding: '12px',
     textAlign: meta?.columnAlign || 'left',
   }
   // 处理固定列逻辑
@@ -643,9 +676,8 @@ const getColumnStyle = (column: Column<TData>): CSSProperties => {
     baseStyle.backgroundColor = '#ffffff'
   }
   if (column.id === CHECKBOX_COLUMN_KEY) {
-    baseStyle.display = 'flex'
-    baseStyle.alignItems = 'center'
-    baseStyle.justifyContent = 'flex-end'
+    baseStyle.textAlign = 'right'
+    baseStyle.paddingRight = '0'
   }
   return baseStyle
 }
@@ -661,27 +693,6 @@ const isShadowPinnedColumn = (column: Column<TData>): string => {
   }
   return ''
 }
-/** 计算表格宽度 */
-const tableWidth = computed(() => {
-  const allColumns = table.getAllColumns()
-  const containerWidth = tableContainerWidth.value || 0
-  // 容器宽度为 0 时，返回 100%
-  if (containerWidth === 0) return '100%'
-  // 计算所有列的总宽度
-  const totalWidth = allColumns.reduce((sum, col) => {
-    const size = col.columnDef.size
-    // 如果有固定宽度，使用固定宽度
-    if (size) {
-      const fixedWidth = convertSizeToPixels(size, containerWidth)
-      return sum + fixedWidth
-    }
-    // 如果是自适应列，使用计算出的自适应宽度
-    const adaptiveWidth = adaptiveColumnWidthMap.value[col.id]
-    const width = adaptiveWidth || props.adaptiveColumnWidth
-    return sum + width
-  }, 0)
-  return totalWidth <= containerWidth ? '100%' : `${totalWidth}px`
-})
 // #endregion
 
 onMounted(() => {
@@ -706,7 +717,7 @@ defineExpose<VTableInstance>({
   /** 滚动到指定行 */
   scrollToIndex: async (index: number) => {
     nextTick(() => {
-      rowVirtualizer.value.scrollToIndex(index, { align: 'start', behavior: 'smooth' })
+      rowVirtualizer.value.scrollToIndex(index, { align: 'start' })
       virtualRows.value = rowVirtualizer.value.getVirtualItems()
     })
   },

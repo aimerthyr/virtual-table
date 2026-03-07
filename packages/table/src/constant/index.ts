@@ -1,4 +1,3 @@
-import type { CSSProperties } from 'vue'
 import type { VTableProps } from '../interface'
 import { defineDefaultProps } from '../utils/type'
 
@@ -10,11 +9,6 @@ export const EXPAND_COLUMN_KEY = 'EXPAND_COLUMN_KEY'
 export const EXPAND_ROW_KEY = '_isExpandRow'
 /** data 中 展开子行的数据属性 */
 export const EXPAND_ROW_DATA_INDEX = '_expandChildren'
-/** 表格默认样式 */
-export const TABLE_DEFAULT_STYLE: CSSProperties = {
-  padding: '12px',
-  minWidth: '0px',
-}
 /** 表格默认 props */
 export const vTableDefaultProps = defineDefaultProps<VTableProps<any>>({
   columns: () => [],
@@ -54,9 +48,9 @@ export const vTableDefaultProps = defineDefaultProps<VTableProps<any>>({
     childrenKey: 'children',
     indentSize: 16,
   }),
-  customRow: undefined,
-  customHeaderCell: undefined,
-  customCell: undefined,
+  customRowAttributes: () => ({}),
+  customHeaderCellAttributes: () => ({}),
+  customCellAttributes: () => ({}),
   onTableChange: () => {},
   onScrollToBottom: () => {},
   onExpandedRowsChange: () => {},

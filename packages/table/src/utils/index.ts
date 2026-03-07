@@ -19,6 +19,7 @@ export function convertToColumnDefList<T>(
     enableResizing: col.columnEnableResize ?? false,
     minSize: col.columnMinWidth ?? 50,
     maxSize: col.columnMaxWidth,
+    columns: convertToColumnDefList<T>(col.columnChildren || [], containerWidth),
     meta: col,
   }))
 }

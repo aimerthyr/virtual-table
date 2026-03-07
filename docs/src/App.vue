@@ -7,15 +7,27 @@
         <a-tag color="green">当前数据: {{ tableData.length }} 条</a-tag>
       </div>
     </h2>
-    <div class="mb-[12px] flex gap-[12px]">
+    <div class="mb-[12px] flex flex-col gap-[12px]">
+      <div class="flex gap-[16px]">
+        <div class="flex flex-col gap-[4px]">
+          <div class="text-[14px] font-medium">展开模式</div>
+          <a-radio-group v-model:value="expandMode" @change="handleExpandModeChange">
+            <a-radio value="expand">expand 自定义</a-radio>
+            <a-radio value="tree">tree</a-radio>
+          </a-radio-group>
+        </div>
+        <div class="flex flex-col gap-[4px]">
+          <div class="text-[14px] font-medium">表头分组</div>
+          <a-radio-group v-model:value="columnMode">
+            <a-radio value="normal">普通列</a-radio>
+            <a-radio value="grouped">表头分组</a-radio>
+          </a-radio-group>
+        </div>
+      </div>
       <div class="flex items-center gap-[16px]">
         <a-checkbox v-model:checked="useScrollLoad" @change="handleLoadModeChange">
           启用滚动加载
         </a-checkbox>
-        <a-radio-group v-model:value="expandMode" @change="handleExpandModeChange">
-          <a-radio value="expand">expand 自定义展开模式</a-radio>
-          <a-radio value="tree">tree 模式</a-radio>
-        </a-radio-group>
         <a-button @click="handleClear">重置表格状态</a-button>
       </div>
     </div>
@@ -98,7 +110,7 @@
             :value="filterModelValue"
             placeholder="输入关键词"
             style="width: 200px; margin-bottom: 8px"
-            @input="(e) => setFilterValue(e.target.value)"
+            @input="(e: any) => setFilterValue(e.target.value)"
             @press-enter="confirm"
           />
           <div style="display: flex; gap: 8px">
@@ -156,6 +168,7 @@ const currentPage = ref(1)
 const expandMode = ref('expand')
 const enableExpandRow = ref(true)
 const enableTreeExpand = ref(false)
+const columnMode = ref<'normal' | 'grouped'>('normal')
 
 const paginationState = ref<VTablePaginationState>({ pageIndex: 1, pageSize: 20 })
 const sortState = ref<VTableSortingState>([])
@@ -165,8 +178,8 @@ const selectionState = ref<VTableSelectionState>({})
 const columnPinningState = ref<VTableColumnPinningState>({})
 const vTableRef = useTemplateRef('vTableRef')
 
-// 列配置
-const columns: VTableColumn[] = [
+// 普通列配置（不分组）
+const normalColumns: VTableColumn[] = [
   {
     columnKey: 'id',
     columnHeader: '员工id',
@@ -177,7 +190,7 @@ const columns: VTableColumn[] = [
   {
     columnKey: 'name',
     columnHeader: '姓名',
-    columnWidth: '50%',
+    columnWidth: 120,
     columnEnableFilter: true,
     columnEnableResize: true,
   },
@@ -219,6 +232,86 @@ const columns: VTableColumn[] = [
   },
 ]
 
+// 分组列配置（表头分组）
+const groupedColumns: VTableColumn[] = [
+  {
+    columnKey: 'id',
+    columnHeader: '员工id',
+    columnWidth: 100,
+    columnMaxWidth: 300,
+    columnEnableResize: true,
+  },
+  // 表头分组示例：基本信息
+  {
+    columnKey: 'basicInfo',
+    columnHeader: '基本信息',
+    columnChildren: [
+      {
+        columnKey: 'name',
+        columnHeader: '姓名',
+        columnWidth: 120,
+        columnEnableFilter: true,
+        columnEnableResize: true,
+      },
+      {
+        columnKey: 'age',
+        columnHeader: '年龄',
+        columnWidth: 100,
+        columnAlign: 'center',
+        columnEnableSort: true,
+      },
+    ],
+  },
+  // 表头分组示例：联系方式
+  {
+    columnKey: 'contactInfo',
+    columnHeader: '联系方式',
+    columnChildren: [
+      {
+        columnKey: 'email',
+        columnHeader: '邮箱',
+        columnWidth: 220,
+        columnEnableFilter: true,
+      },
+      {
+        columnKey: 'department',
+        columnHeader: '部门',
+        columnWidth: 150,
+        columnEnableFilter: true,
+      },
+    ],
+  },
+  // 表头分组示例：状态信息
+  {
+    columnKey: 'statusInfo',
+    columnHeader: '状态信息',
+    columnChildren: [
+      {
+        columnKey: 'status',
+        columnHeader: '状态',
+        columnWidth: 120,
+        columnAlign: 'center',
+      },
+      {
+        columnKey: 'createTime',
+        columnHeader: '创建时间',
+        columnWidth: 180,
+        columnEnableSort: true,
+      },
+    ],
+  },
+  {
+    columnKey: 'action',
+    columnHeader: '操作',
+    columnAlign: 'left',
+  },
+]
+
+// 根据模式动态切换列配置
+const columns = computed(() => {
+  return columnMode.value === 'normal' ? normalColumns : groupedColumns
+})
+
 // 模拟后端数据生成
 function generateMockData(page: number, pageSize: number): TableRow[] {
   const departments = ['技术部', '产品部', '运营部']
@@ -234,8 +327,8 @@ function generateMockData(page: number, pageSize: number): TableRow[] {
       name: `员工${id}`,
       age: 25 + (id % 20),
       email: `user${id}@company.com`,
-      department: departments[id % 3],
-      status: statuses[id % 8 === 0 ? 1 : 0], // 每8个有1个停用
+      department: departments[id % 3]!,
+      status: statuses[id % 8 === 0 ? 1 : 0]!,
       level: 1,
       createTime: new Date(2024, 0, id).toLocaleDateString(),
       children:
@@ -246,8 +339,8 @@ function generateMockData(page: number, pageSize: number): TableRow[] {
                 name: `下属${id}-1`,
                 age: 22 + (id % 15),
                 email: `sub${id}_1@company.com`,
-                department: departments[id % 3],
-                status: 'active',
+                department: departments[id % 3]!,
+                status: 'active' as const,
                 level: 2,
                 createTime: new Date(2024, 1, id).toLocaleDateString(),
               },
@@ -288,14 +381,16 @@ async function fetchDataByPage(params: {
   // 模拟排序
   if (params.sortList.length > 0) {
     const sort = params.sortList[0]
-    data.sort((a, b) => {
-      const aVal = a[sort.id as keyof TableRow]
-      const bVal = b[sort.id as keyof TableRow]
-      if (sort.desc) {
-        return aVal! > bVal! ? -1 : 1
-      }
-      return aVal! > bVal! ? 1 : -1
-    })
+    if (sort) {
+      data.sort((a, b) => {
+        const aVal = a[sort.id as keyof TableRow]
+        const bVal = b[sort.id as keyof TableRow]
+        if (sort.desc) {
+          return aVal! > bVal! ? -1 : 1
+        }
+        return aVal! > bVal! ? 1 : -1
+      })
+    }
   }
 
   tableData.value = data

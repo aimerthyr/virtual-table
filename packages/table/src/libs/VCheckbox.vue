@@ -72,6 +72,7 @@ const handleChange = (e: Event) => {
   align-items: center;
   cursor: pointer;
   user-select: none;
+  vertical-align: middle;
 
   &:hover .checkbox-inner {
     border-color: @primary-color;
