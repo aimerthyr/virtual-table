@@ -2,7 +2,7 @@
   <div class="sorter-icon inline-flex flex-col items-center">
     <svg
       class="sorter-up h-[10px] w-[10px]"
-      :class="{ 'text-[#1677ff]': sort === 'asc' }"
+      :class="{ active: sort === 'asc' }"
       viewBox="0 0 1024 1024"
       version="1.1"
       fill="currentColor"
@@ -14,7 +14,7 @@
     </svg>
     <svg
       class="sorter-down h-[10px] w-[10px]"
-      :class="{ 'text-[#1677ff]': sort === 'desc' }"
+      :class="{ active: sort === 'desc' }"
       viewBox="0 0 1024 1024"
       version="1.1"
       fill="currentColor"
@@ -39,9 +39,12 @@ defineProps<{
 
 <style lang="less" scoped>
 .sorter-icon {
-  color: rgb(0 0 0 / 0.29);
+  color: var(--v-table-header-icon-color);
 }
 .sorter-down {
   margin-top: -0.3em;
+}
+.active {
+  color: var(--v-table-primary-color);
 }
 </style>

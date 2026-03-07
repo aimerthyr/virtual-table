@@ -1,4 +1,4 @@
-import type { VTableProps } from '../interface'
+import type { VTableProps, VTableThemeConfig } from '../interface'
 import { defineDefaultProps } from '../utils/type'
 
 /** checkbox 选择列 */
@@ -23,11 +23,8 @@ export const vTableDefaultProps = defineDefaultProps<VTableProps<any>>({
   adaptiveColumnWidth: 120,
   defaultExpandAllRows: false,
   columnResizeMode: 'onChange',
-  borderConfig: () => ({
-    enabled: false,
-    borderStyle: 'solid',
-    borderColor: '#f0f0f0',
-  }),
+  themeConfig: () => ({}),
+  bordered: false,
   rowSelectionConfig: () => ({
     enabled: false,
     getRowCheckDisabled: () => false,
@@ -55,3 +52,25 @@ export const vTableDefaultProps = defineDefaultProps<VTableProps<any>>({
   onScrollToBottom: () => {},
   onExpandedRowsChange: () => {},
 })
+/** 默认主题配置 */
+export const defaultThemeConfig: VTableThemeConfig = {
+  primaryColor: '#1677ff',
+  header: {
+    color: 'rgba(0, 0, 0, 0.88)',
+    backgroundColor: '#fafafa',
+    borderRadius: 8,
+    splitColor: '#f0f0f0',
+    padding: 12,
+    headerIconColor: 'rgba(0, 0, 0, 0.30)',
+  },
+  body: {
+    color: 'rgba(0, 0, 0, 0.88)',
+    backgroundColor: '#ffffff',
+    padding: 12,
+  },
+  rowHoverColor: '#fafafa',
+  border: {
+    borderStyle: 'solid',
+    borderColor: '#f0f0f0',
+  },
+}

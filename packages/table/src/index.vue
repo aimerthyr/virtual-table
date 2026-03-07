@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full flex-col">
+  <div class="flex h-full flex-col" :style="cssVariables">
     <div
       v-loading="{ spinning: props.loading, indicator: $slots?.customLoadingIcon?.() }"
       class="relative min-h-0 flex-1"
@@ -9,10 +9,7 @@
         class="h-full overflow-x-auto"
         :class="{ 'overflow-y-auto': props.fixedHeader }"
       >
-        <table
-          :class="{ 'v-table-bordered': props.borderConfig?.enabled }"
-          :style="{ width: '100%' }"
-        >
+        <table class="v-table" :class="{ 'v-table-bordered': props.bordered }">
           <colgroup>
             <col
               v-for="column in table.getAllLeafColumns()"
@@ -20,7 +17,11 @@
               :style="{ width: getColumnWidth(column) }"
             />
           </colgroup>
-          <thead :class="{ sticky: props.fixedHeader }" :style="{ top: 0, zIndex: 12 }">
+          <thead
+            class="v-table-header"
+            :class="{ sticky: props.fixedHeader }"
+            :style="{ top: 0, zIndex: 12 }"
+          >
             <slot name="customHeader" :columns="columns" :table="table">
               <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                 <th
@@ -29,8 +30,8 @@
                   :colspan="header.colSpan"
                   class="relative"
                   :class="[
-                    header.id === CHECKBOX_COLUMN_KEY ? 'checkbox-col' : '',
-                    header.id === EXPAND_COLUMN_KEY ? 'expand-col' : '',
+                    header.column.id === CHECKBOX_COLUMN_KEY ? 'checkbox-col' : '',
+                    header.column.id === EXPAND_COLUMN_KEY ? 'expand-col' : '',
                     isShadowPinnedColumn(header.column),
                   ]"
                   :style="getColumnStyle(header.column)"
@@ -70,7 +71,7 @@
             </slot>
           </thead>
 
-          <tbody>
+          <tbody class="v-table-body">
             <tr v-if="paddingTop > 0" :style="{ height: `${paddingTop}px` }" />
 
             <tr
@@ -81,7 +82,7 @@
               :style="{
                 minHeight: `${vRow.size}px`,
               }"
-              :class="[props.enableRowHover ? 'group hover:!bg-[#fafafa]' : '']"
+              :class="{ 'v-table-row-hover': props.enableRowHover }"
               v-bind="props?.customRowAttributes?.(rows[vRow.index]!.original, vRow.index)"
             >
               <template v-if="!rows[vRow.index]!.original?.[EXPAND_ROW_KEY]">
@@ -99,7 +100,6 @@
                       )
                     "
                     :style="getColumnStyle(cell.column)"
-                    class="group-hover:!bg-[#fafafa]"
                     :class="[isShadowPinnedColumn(cell.column)]"
                     v-bind="
                       props.customCellAttributes(
@@ -235,6 +235,7 @@ import {
   EXPAND_ROW_KEY,
   vTableDefaultProps,
 } from './constant'
+import { useTheme } from './hooks/useTheme'
 import ExpandIcon from './icons/ExpandIcon.vue'
 import type {
   VTableCheckboxProps,
@@ -366,7 +367,7 @@ const CHECKBOX_COLUMN = computed<ColumnDef<TData>>(() => ({
 const EXPAND_COLUMN: ColumnDef<TData> = {
   id: EXPAND_COLUMN_KEY,
   accessorKey: EXPAND_COLUMN_KEY,
-  size: 50,
+  size: 42,
   header: () => {
     return ''
   },
@@ -641,8 +642,8 @@ const noMoreText = computed(() => props.loadMoreConfig?.noMoreText || '没有更
 // #endregion
 
 // #region 表格样式相关逻辑
-const borderColor = computed(() => props.borderConfig?.borderColor || '#f0f0f0')
-const borderStyle = computed(() => props.borderConfig?.borderStyle || 'solid')
+const { cssVariables } = useTheme(props.themeConfig)
+
 /** 判断单元格是否应该渲染（被合并的单元格返回 false） */
 const canRenderCell = (
   row: TData,
@@ -673,11 +674,6 @@ const getColumnStyle = (column: Column<TData>): CSSProperties => {
       baseStyle.right = `${column.getAfter('right')}px`
     }
     baseStyle.zIndex = 10
-    baseStyle.backgroundColor = '#ffffff'
-  }
-  if (column.id === CHECKBOX_COLUMN_KEY) {
-    baseStyle.textAlign = 'right'
-    baseStyle.paddingRight = '0'
   }
   return baseStyle
 }
@@ -725,77 +721,103 @@ defineExpose<VTableInstance>({
 </script>
 
 <style lang="less" scoped>
-@borderColor: v-bind('borderColor');
-@borderStyle: v-bind('borderStyle');
-
-table {
-  border-collapse: collapse;
+.border-mixin(@position: bottom) {
+  border-@{position}: 1px var(--v-table-border-style) var(--v-table-border-color);
+}
+.v-table {
+  border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
-}
+  width: 100%;
 
-tr > th,
-tr > td {
-  border-bottom: 1px @borderStyle @borderColor;
-}
+  &-header tr {
+    &:not(:last-child) th {
+      &.checkbox-col,
+      &.expand-col {
+        border-bottom: none;
+      }
+    }
+    th {
+      position: relative;
+      background-color: var(--v-table-header-bg);
+      .border-mixin(bottom);
 
-/* 表头样式 */
-thead {
-  tr {
-    background-color: #ffffff;
+      &:not(.checkbox-col, .expand-col, :last-child)::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        inset-inline-end: 0;
+        width: 1px;
+        height: 1.6em;
+        background-color: var(--v-table-header-split-color);
+        transform: translateY(-50%);
+      }
+
+      &:first-child {
+        border-start-start-radius: var(--v-table-header-border-radius);
+      }
+      &:last-child {
+        border-start-end-radius: var(--v-table-header-border-radius);
+      }
+    }
+  }
+
+  &-body tr {
+    &.v-table-row-hover:hover {
+      background-color: var(--v-table-row-hover-color);
+    }
+
+    td {
+      background-color: var(--v-table-body-bg);
+      .border-mixin(bottom);
+    }
+  }
+
+  &.v-table-bordered {
+    .v-table-header th {
+      &::before {
+        display: none;
+      }
+      .border-mixin(right);
+      &:first-child {
+        .border-mixin(left);
+      }
+    }
+    .v-table-header tr:first-child > th {
+      .border-mixin(top);
+    }
+
+    .v-table-body td {
+      .border-mixin(right);
+      &:first-child {
+        .border-mixin(left);
+      }
+    }
   }
 }
 
-/* 带边框样式 */
-table.v-table-bordered {
-  thead {
-    tr > th {
-      border-right: 1px @borderStyle @borderColor;
-    }
-    tr > th:first-child {
-      border-left: 1px @borderStyle @borderColor;
-    }
-    tr:first-child > th {
-      border-top: 1px @borderStyle @borderColor;
-    }
-  }
-  tbody {
-    tr > td {
-      border-right: 1px @borderStyle @borderColor;
-    }
-    tr > td:first-child {
-      border-left: 1px @borderStyle @borderColor;
-    }
-  }
+// 固定列阴影样式
+.pinned-shadow-base() {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: -1px;
+  width: 30px;
+  transition: box-shadow 0.3s;
+  pointer-events: none;
 }
 
-.pinned-left-shadow {
-  &::after {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: -1px;
-    width: 30px;
-    transform: translateX(100%);
-    transition: box-shadow 0.3s;
-    content: '';
-    pointer-events: none;
-    box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.15);
-  }
+.pinned-left-shadow::after {
+  .pinned-shadow-base();
+  right: 0;
+  transform: translateX(100%);
+  box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.15);
 }
 
-.pinned-right-shadow {
-  &::before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: -1px;
-    width: 30px;
-    transform: translateX(-100%);
-    transition: box-shadow 0.3s;
-    content: '';
-    pointer-events: none;
-    box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.15);
-  }
+.pinned-right-shadow::after {
+  .pinned-shadow-base();
+  left: 0;
+  transform: translateX(-100%);
+  box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.15);
 }
 </style>

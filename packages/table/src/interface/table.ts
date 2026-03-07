@@ -1,7 +1,6 @@
 import type { HTMLAttributes, TdHTMLAttributes, ThHTMLAttributes, VNode } from 'vue'
 import type { Table } from '@tanstack/vue-table'
 import type {
-  VTableBorderConfig,
   VTableChangeState,
   VTableColumn,
   VTableExpandedState,
@@ -12,6 +11,7 @@ import type {
   VTableTreeConfig,
 } from './base'
 import type { VTableCheckboxProps, VTablePaginationProps } from './components'
+import type { VTableThemeConfig } from './theme'
 
 /** slots 类型定义 */
 export interface VTableSlots<TData = any> {
@@ -76,8 +76,8 @@ export interface VTableProps<TData = any> {
   fixedHeader?: boolean
   /** 是否允许取消排序 */
   enableSortingRemoval?: boolean
-  /** 边框样式配置 */
-  borderConfig?: VTableBorderConfig
+  /** 是否显示边框 */
+  bordered?: boolean
   /** 选择行功能配置 */
   rowSelectionConfig?: VTableRowSelectionConfig<TData>
   /** 加载更多配置 */
@@ -98,6 +98,8 @@ export interface VTableProps<TData = any> {
   columnResizeMode?: 'onChange' | 'onEnd'
   /** 是否固定表尾（表尾不随着滚动） */
   fixedFooter?: boolean
+  /** 自定义主题配置（可覆盖默认配置） */
+  themeConfig?: VTableThemeConfig
   /** 自定义数据行属性 */
   customRowAttributes?: (row: TData, rowIndex: number) => HTMLAttributes
   /** 自定义表头单元格属性 */

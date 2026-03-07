@@ -1,6 +1,6 @@
 <template>
   <svg
-    class="h-[12px] w-[12px]"
+    class="filter-icon h-[12px] w-[12px]"
     viewBox="0 0 1024 1024"
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"
@@ -15,3 +15,12 @@
 <script lang="ts" setup>
 defineOptions({ name: 'FilterIcon' })
 </script>
+
+<style lang="less" scoped>
+.filter-icon {
+  color: var(--v-table-header-icon-color);
+  &.active {
+    color: var(--v-table-primary-color);
+  }
+}
+</style>

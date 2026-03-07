@@ -183,15 +183,15 @@ const handlePageChange = (page: number) => {
 }
 
 .pagination-item:hover:not(.pagination-disabled):not(.pagination-item-active) {
-  border-color: #40a9ff;
-  color: #40a9ff;
+  border-color: var(--v-table-primary-color);
+  color: var(--v-table-primary-color);
 }
 
 .pagination-item-active {
   font-weight: 600;
   color: #fff;
-  background-color: #1890ff;
-  border-color: #1890ff;
+  background-color: var(--v-table-primary-color);
+  border-color: var(--v-table-primary-color);
   cursor: default;
 }
 

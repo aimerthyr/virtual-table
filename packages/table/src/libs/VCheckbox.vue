@@ -53,9 +53,9 @@ const handleChange = (e: Event) => {
 @checkbox-border-width: 1px;
 @checkbox-border-radius: 2px;
 
-@primary-color: #1890ff;
-@primary-color-hover: #40a9ff;
-@primary-color-active: #096dd9;
+@primary-color: var(--v-table-primary-color);
+@primary-color-hover: var(--v-table-primary-color);
+@primary-color-active: var(--v-table-primary-color);
 @border-color-base: #d9d9d9;
 @disabled-color: rgba(0, 0, 0, 0.25);
 @disabled-bg: #f5f5f5;
@@ -68,8 +68,9 @@ const handleChange = (e: Event) => {
 
 // ========== Checkbox 容器 ==========
 .checkbox-wrapper {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
   user-select: none;
   vertical-align: middle;

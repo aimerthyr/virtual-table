@@ -115,7 +115,7 @@ const handleDoubleClick = () => {
     width: 1px;
     margin-left: 7px;
     height: 100% !important;
-    background-color: #1677ff;
+    background-color: var(--v-table-primary-color);
     opacity: 0;
     transition: opacity 0.2s;
   }

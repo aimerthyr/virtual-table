@@ -73,7 +73,7 @@ const onClick = (e: MouseEvent) => {
   &:hover,
   &:active {
     border-color: currentcolor;
-    color: #69c0ff;
+    color: var(--v-table-primary-color);
   }
 
   &::before,

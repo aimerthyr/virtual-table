@@ -90,11 +90,11 @@ const handleSelect = (option: { label: string; value: string | number }) => {
 }
 
 .select:not(.select-disabled):hover .select-selector {
-  border-color: #40a9ff;
+  border-color: var(--v-table-primary-color);
 }
 
 .select-open .select-selector {
-  border-color: #40a9ff;
+  border-color: var(--v-table-primary-color);
   box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
 }
 

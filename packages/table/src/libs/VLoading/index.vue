@@ -5,7 +5,7 @@
         <div
           v-for="i in 4"
           :key="i"
-          class="dot-item animate-fade absolute origin-center scale-75 rounded-full bg-[#1677ff] opacity-[0.3]"
+          class="dot-item animate-fade absolute origin-center scale-[0.75] rounded-full opacity-[0.3]"
         />
       </div>
     </slot>
@@ -77,6 +77,7 @@ const sizeOptions = computed<{ containerSize: string; dotSize: string }>(() => {
 .dot-item {
   width: v-bind('sizeOptions.dotSize');
   height: v-bind('sizeOptions.dotSize');
+  background-color: var(--v-table-primary-color);
 
   &:nth-child(1) {
     top: 0;

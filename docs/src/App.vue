@@ -56,9 +56,7 @@
       :loading="loading"
       :row-height="56"
       :fixed-header="true"
-      :border-config="{
-        borderStyle: 'dashed',
-      }"
+      :bordered="true"
       row-key="id"
       :row-selection-config="{
         enabled: true,
@@ -82,7 +80,12 @@
       :on-table-change="handleTableChange"
       :on-scroll-to-bottom="handleScrollToBottom"
       :on-expanded-rows-change="handleExpandedChange"
-      :custom-row="customRowHandler"
+      :custom-row-attributes="customRowHandler"
+      :theme-config="{
+        border: {
+          borderStyle: 'dashed',
+        },
+      }"
     >
       <!-- 自定义单元格 -->
       <template #bodyCell="{ columnKey, row }">
@@ -423,7 +426,7 @@ async function fetchDataByScroll(isLoadMore = false) {
 // 事件处理
 const handleFixColumn = () => {
   columnPinningState.value = {
-    left: [CHECKBOX_COLUMN_KEY, EXPAND_COLUMN_KEY, 'createTime'],
+    left: [CHECKBOX_COLUMN_KEY, EXPAND_COLUMN_KEY, 'name'],
     right: ['action'],
   }
 }
