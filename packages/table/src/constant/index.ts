@@ -73,4 +73,9 @@ export const defaultThemeConfig: VTableThemeConfig = {
     borderStyle: 'solid',
     borderColor: '#f0f0f0',
   },
+  zIndex: {
+    pinnedColumn: 10,
+    fixedHeader: 12,
+    fixedFooter: 12,
+  },
 }

@@ -32,6 +32,16 @@ export interface VTableBorderStyle {
   borderColor: string
 }
 
+/** z-index 层级配置 */
+export interface VTableZIndexConfig {
+  /** 固定列（左右固定） */
+  pinnedColumn?: number
+  /** 固定表头 */
+  fixedHeader?: number
+  /** 固定表尾 */
+  fixedFooter?: number
+}
+
 /** 表格主题配置 */
 export interface VTableThemeConfig {
   /** 主色 */
@@ -44,4 +54,6 @@ export interface VTableThemeConfig {
   border?: Partial<VTableBorderStyle>
   /** 行 hover 颜色 */
   rowHoverColor?: string
+  /** z-index 层级配置 */
+  zIndex?: VTableZIndexConfig
 }

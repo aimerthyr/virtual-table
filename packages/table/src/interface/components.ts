@@ -41,3 +41,9 @@ export interface VTablePaginationProps {
   /** 页码变化回调 */
   onPageChange: (pageIndex: number, pageSize: number) => void
 }
+
+/** 展开图标自定义组件接口定义 */
+export interface VTableExpandIconProps {
+  expand: boolean
+  onExpandChange: () => void
+}

@@ -25,7 +25,7 @@
           ref="tableHeaderRef"
           class="v-table-header"
           :class="{ sticky: props.fixedHeader }"
-          :style="{ top: 0, zIndex: 12 }"
+          :style="{ top: 0, zIndex: themeConfig.zIndex?.fixedHeader }"
         >
           <slot name="customHeader" :columns="columns" :table="table">
             <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
@@ -102,7 +102,11 @@
                     )
                   "
                   :style="getColumnStyle(cell.column)"
-                  :class="[isShadowPinnedColumn(cell.column)]"
+                  :class="[
+                    cell.column.id === CHECKBOX_COLUMN_KEY ? 'checkbox-col' : '',
+                    cell.column.id === EXPAND_COLUMN_KEY ? 'expand-col' : '',
+                    isShadowPinnedColumn(cell.column),
+                  ]"
                   v-bind="
                     props.customCellAttributes?.(
                       rows[vRow.index]!.original,
@@ -130,12 +134,22 @@
                           paddingLeft: `${rows[vRow.index]!.depth * (props.treeConfig?.indentSize ?? 16)}px`,
                         }"
                       >
-                        <ExpandIcon
-                          :class="[rows[vRow.index]!.getCanExpand() ? 'visible' : 'invisible']"
+                        <div
                           class="flex-shrink-0"
-                          :expand="rows[vRow.index]!.getIsExpanded()"
-                          @expand="rows[vRow.index]!.toggleExpanded()"
-                        />
+                          :class="[rows[vRow.index]!.getCanExpand() ? 'visible' : 'invisible']"
+                        >
+                          <slot
+                            :expand="rows[vRow.index]!.getIsExpanded()"
+                            :on-expand-change="rows[vRow.index]!.toggleExpanded"
+                            name="customExpandIcon"
+                          >
+                            <ExpandIcon
+                              :expand="rows[vRow.index]!.getIsExpanded()"
+                              @expand-change="rows[vRow.index]!.toggleExpanded"
+                            />
+                          </slot>
+                        </div>
+
                         <slot name="bodyCell" v-bind="slotProps">
                           {{ slotProps.row[slotProps.columnKey] }}
                         </slot>
@@ -147,7 +161,7 @@
               </template>
             </template>
             <!-- 自定义展开行的模板 -->
-            <td v-else :colspan="table.getAllLeafColumns().length">
+            <td v-else class="!p-0" :colspan="table.getAllLeafColumns().length">
               <div
                 class="overflow-hidden p-[12px]"
                 :style="{
@@ -174,7 +188,10 @@
             </td>
           </tr>
         </tbody>
-        <tfoot :class="{ sticky: props.fixedFooter }" :style="{ bottom: 0, zIndex: 12 }">
+        <tfoot
+          :class="{ sticky: props.fixedFooter }"
+          :style="{ bottom: 0, zIndex: themeConfig.zIndex?.fixedFooter }"
+        >
           <slot name="customFooter" />
         </tfoot>
       </table>
@@ -242,6 +259,7 @@ import type {
   VTableCheckboxProps,
   VTableColumn,
   VTableData,
+  VTableExpandIconProps,
   VTableInstance,
   VTablePaginationProps,
   VTableProps,
@@ -375,15 +393,16 @@ const EXPAND_COLUMN: ColumnDef<TData> = {
     return ''
   },
   cell: ({ row }: { row: Row<TData> }) => {
+    const expandProps: VTableExpandIconProps = {
+      expand: row.getIsExpanded(),
+      onExpandChange: row.toggleExpanded,
+    }
     return h(
       'div',
       {
         class: 'flex items-center justify-center w-full h-full',
       },
-      h(ExpandIcon, {
-        expand: row.getIsExpanded(),
-        onExpand: () => row.toggleExpanded(),
-      }),
+      $slots?.customExpandIcon?.(expandProps) || h(ExpandIcon, expandProps),
     )
   },
 }
@@ -523,6 +542,9 @@ const table = useVueTable<TData>({
   onColumnSizingChange: (updaterOrValue) => {
     columnSizing.value =
       typeof updaterOrValue === 'function' ? updaterOrValue(columnSizing.value) : updaterOrValue
+    nextTick(() => {
+      props.onColumnSizingChange?.(columnSizing.value)
+    })
   },
   getSubRows: (row) => {
     // 如果开启了自定义可展开行
@@ -545,7 +567,7 @@ const setAllRowsExpand = () => {
 }
 const PaginationComponent = computed(() => {
   const paginationProps: VTablePaginationProps = {
-    pageIndex: pagination.value.pageIndex,
+    pageIndex: pagination.value.pageIndex || 1,
     pageSize: pagination.value.pageSize,
     total:
       props.paginationConfig?.mode === 'client' ? props.data.length : props.paginationConfig.total,
@@ -639,7 +661,7 @@ const noMoreText = computed(() => props.loadMoreConfig?.noMoreText || '没有更
 // #endregion
 
 // #region 表格样式相关逻辑
-const { cssVariables } = useTheme(props.themeConfig)
+const { cssVariables, themeConfig } = useTheme(props.themeConfig)
 
 /** 判断单元格是否应该渲染（被合并的单元格返回 false） */
 const canRenderCell = (
@@ -662,7 +684,6 @@ const getColumnStyle = (column: Column<TData>): CSSProperties => {
   const meta = column.columnDef.meta
   const pinPosition = column.getIsPinned()
   const baseStyle: CSSProperties = {
-    padding: '12px',
     textAlign: meta?.columnAlign || 'left',
   }
   // 处理固定列逻辑
@@ -673,7 +694,7 @@ const getColumnStyle = (column: Column<TData>): CSSProperties => {
     } else {
       baseStyle.right = `${column.getAfter('right')}px`
     }
-    baseStyle.zIndex = 10
+    baseStyle.zIndex = themeConfig.value.zIndex?.pinnedColumn
   }
   return baseStyle
 }
@@ -709,12 +730,12 @@ onBeforeUnmount(() => {
   }
 })
 
-defineExpose<VTableInstance>({
-  /** 滚动到指定行 */
-  scrollToIndex: async (index: number) => {
+defineExpose<VTableInstance<TData>>({
+  tanstackTable: table,
+  /** 滚动到指定下标 */
+  scrollToIndex: async (index: number, behavior: 'auto' | 'smooth' = 'smooth') => {
     nextTick(() => {
-      rowVirtualizer.value.scrollToIndex(index, { align: 'start' })
-      virtualRows.value = rowVirtualizer.value.getVirtualItems()
+      rowVirtualizer.value.scrollToIndex(index, { align: 'start', behavior })
     })
   },
 })
@@ -729,6 +750,7 @@ defineExpose<VTableInstance>({
   border-spacing: 0;
   table-layout: fixed;
   width: 100%;
+  font-size: 14px;
 
   &-header tr {
     &:not(:last-child) th {
@@ -739,7 +761,10 @@ defineExpose<VTableInstance>({
     }
     th {
       position: relative;
+      font-weight: 600;
       background-color: var(--v-table-header-bg);
+      color: var(--v-table-header-color);
+      padding: var(--v-table-header-padding);
       .border-mixin(bottom);
 
       &:not(.checkbox-col, .expand-col, :last-child)::before {
@@ -770,6 +795,8 @@ defineExpose<VTableInstance>({
     td {
       background-color: var(--v-table-body-bg);
       .border-mixin(bottom);
+      padding: var(--v-table-body-padding);
+      color: var(--v-table-body-color);
     }
   }
 

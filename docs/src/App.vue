@@ -14,6 +14,7 @@
           <a-radio-group v-model:value="expandMode" @change="handleExpandModeChange">
             <a-radio value="expand">expand 自定义</a-radio>
             <a-radio value="tree">tree</a-radio>
+            <a-radio value="">不设置</a-radio>
           </a-radio-group>
         </div>
         <div class="flex flex-col gap-[4px]">
@@ -54,7 +55,7 @@
       :data="tableData"
       :columns="columns"
       :loading="loading"
-      :row-height="56"
+      :row-height="49"
       :fixed-header="true"
       :bordered="true"
       :enable-row-hover="true"
@@ -83,6 +84,7 @@
       :on-expanded-rows-change="handleExpandedChange"
       :custom-row-attributes="customRowHandler"
       :custom-cell-attributes="customCellHandler"
+      :on-column-sizing-change="handleColumnSizingChange"
       :theme-config="{
         border: {
           borderStyle: 'dashed',
@@ -141,6 +143,7 @@ import VTable, {
   type VTableColumn,
   type VTableColumnFiltersState,
   type VTableColumnPinningState,
+  type VTableColumnSizingState,
   type VTableExpandedState,
   type VTablePaginationState,
   type VTableSelectionState,
@@ -429,9 +432,12 @@ const handleExpandModeChange = () => {
   if (expandMode.value === 'expand') {
     enableExpandRow.value = true
     enableTreeExpand.value = false
-  } else {
+  } else if (expandMode.value === 'tree') {
     enableExpandRow.value = false
     enableTreeExpand.value = true
+  } else {
+    enableExpandRow.value = false
+    enableTreeExpand.value = false
   }
   handleClear()
   handleRefresh()
@@ -478,6 +484,10 @@ const handleExpandedChange = (state: VTableExpandedState) => {
 
 const handleSelectionChange = (rows: TableRow[]) => {
   selectedRows.value = rows
+}
+
+const handleColumnSizingChange = (state: VTableColumnSizingState) => {
+  console.log('列宽调整:', state)
 }
 
 const handleLoadModeChange = () => {

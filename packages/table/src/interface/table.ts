@@ -3,6 +3,7 @@ import type { Table } from '@tanstack/vue-table'
 import type {
   VTableChangeState,
   VTableColumn,
+  VTableColumnSizingState,
   VTableExpandedState,
   VTableLoadMoreConfig,
   VTablePaginationConfig,
@@ -10,26 +11,35 @@ import type {
   VTableRowSelectionConfig,
   VTableTreeConfig,
 } from './base'
-import type { VTableCheckboxProps, VTablePaginationProps } from './components'
+import type {
+  VTableCheckboxProps,
+  VTableExpandIconProps,
+  VTablePaginationProps,
+  VTablePopoverProps,
+} from './components'
 import type { VTableThemeConfig } from './theme'
 
 /** slots 类型定义 */
 export interface VTableSlots<TData = any> {
   /** 自定义头部渲染 */
-  customHeader?: (data: { columns: VTableColumn[]; table: Table<TData> }) => VNode
+  customHeader?: (props: { columns: VTableColumn[]; table: Table<TData> }) => VNode
   /** 自定义单元格 */
-  bodyCell?: (data: {
+  bodyCell?: (props: {
     columnKey: string
     column: VTableColumn
     row: TData
     rowIndex: number
   }) => VNode
   /** 自定义列头 */
-  headerCell?: (data: { columnKey: string; column: VTableColumn }) => VNode
+  headerCell?: (props: { columnKey: string; column: VTableColumn }) => VNode
   /** 自定义筛选图标 */
-  customFilterIcon?: (data: { columnKey: string; filtered: boolean; column: VTableColumn }) => VNode
+  customFilterIcon?: (props: {
+    columnKey: string
+    filtered: boolean
+    column: VTableColumn
+  }) => VNode
   /** 自定义筛选下拉 */
-  customFilterDropdown?: (data: {
+  customFilterDropdown?: (props: {
     confirm: () => void
     reset: () => void
     setFilterValue: (value: any) => void
@@ -37,14 +47,9 @@ export interface VTableSlots<TData = any> {
     filterModelValue: any
   }) => VNode
   /** 自定义展开行 */
-  expandedRowRender?: (data: { row: TData }) => VNode
+  expandedRowRender?: (props: { row: TData }) => VNode
   /** 自定义 Popover */
-  customPopover?: (props: {
-    open: boolean
-    onOpenChange: (value: boolean) => void
-    trigger: () => VNode
-    content: () => VNode
-  }) => VNode
+  customPopover?: (props: VTablePopoverProps) => VNode
   /** 自定义分页器 */
   customPagination?: (props: VTablePaginationProps) => VNode
   /** 自定义 checkbox */
@@ -57,6 +62,8 @@ export interface VTableSlots<TData = any> {
   customLoadNoMore?: () => VNode
   /** 自定义表尾 */
   customFooter?: () => VNode
+  /** 自定义展开图表 */
+  customExpandIcon?: (props: VTableExpandIconProps) => VNode
   [key: string]: ((...args: any[]) => VNode) | undefined
 }
 
@@ -122,11 +129,15 @@ export interface VTableProps<TData = any> {
   onScrollToBottom?: () => void
   /** 展开行变化回调 */
   onExpandedRowsChange?: (expandState: VTableExpandedState) => void
+  /** 列宽调整回调 */
+  onColumnSizingChange?: (columnSizing: VTableColumnSizingState) => void
   // #endregion
 }
 
 /** VTable 实例类型定义 */
-export interface VTableInstance {
-  /** 滚动到指定行 */
-  scrollToIndex: (index: number) => void
+export interface VTableInstance<TData = any> {
+  /** tanstack 表格实例 */
+  tanstackTable: Table<TData>
+  /** 滚动到指定下标(从 0 开始，默认是平滑滚动) */
+  scrollToIndex: (index: number, behavior?: 'auto' | 'smooth') => void
 }

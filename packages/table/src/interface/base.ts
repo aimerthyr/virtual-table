@@ -2,6 +2,7 @@ import type {
   ColumnDef,
   ColumnFiltersState,
   ColumnPinningState,
+  ColumnSizingState,
   ExpandedState,
   PaginationState,
   RowSelectionState,
@@ -22,6 +23,7 @@ export type VTableColumnFiltersState = ColumnFiltersState
 export type VTableExpandedState = ExpandedState
 export type VTableSelectionState = RowSelectionState
 export type VTableColumnPinningState = ColumnPinningState
+export type VTableColumnSizingState = ColumnSizingState
 
 /** 列配置 */
 export interface VTableColumn<TData = any> {

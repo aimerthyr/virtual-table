@@ -3,33 +3,24 @@
 </template>
 
 <script setup lang="ts">
+import type { VTableExpandIconProps } from '../interface'
+
 defineOptions({ name: 'ExpandIcon' })
 
-const props = withDefaults(
-  defineProps<{
-    expand: boolean // 展开
-    expandable?: boolean // 是否可展开
-    onExpand?: (value: boolean, e: MouseEvent) => void
-  }>(),
-  {
-    expandable: true,
-    onExpand: () => {},
-  },
-)
+const props = defineProps<VTableExpandIconProps>()
 
 const classNames = computed(() => {
   return {
     [`row-expand-icon`]: true,
-    [`row-expand-icon-spaced`]: !props.expandable,
-    [`row-expand-icon-expanded`]: props.expandable && props.expand,
-    [`row-expand-icon-collapsed`]: props.expandable && !props.expand,
+    [`row-expand-icon-expanded`]: props.expand,
+    [`row-expand-icon-collapsed`]: !props.expand,
   }
 })
 
 const onClick = (e: MouseEvent) => {
-  if (!props.expandable) return
-  props.onExpand?.(props.expand, e)
   e.stopPropagation()
+  if (!props.onExpandChange) return
+  props.onExpandChange?.()
 }
 </script>
 

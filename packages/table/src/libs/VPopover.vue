@@ -27,7 +27,7 @@ const props = withDefaults(
   defineProps<{ open?: boolean; onOpenChange?: (value: boolean) => void; placement?: Placement }>(),
   {
     open: false,
-    placement: 'bottom-start',
+    placement: 'bottom-end',
     onOpenChange: () => {},
   },
 )
@@ -35,20 +35,13 @@ const props = withDefaults(
 const referenceRef = ref<HTMLElement | null>(null)
 const floatingRef = ref<HTMLElement | null>(null)
 
-const crossAxisOffset = computed(() => {
-  const placement = props.placement
-  if (placement.includes('-start')) return -12
-  if (placement.includes('-end')) return 12
-  return 0
-})
-
 const { floatingStyles } = useFloating(referenceRef, floatingRef, {
   placement: computed(() => props.placement),
   middleware: [
-    offset({
+    offset(({ placement }) => ({
       mainAxis: 12,
-      crossAxis: crossAxisOffset.value,
-    }),
+      crossAxis: placement.includes('-start') ? -12 : placement.includes('-end') ? 16 : 0,
+    })),
     flip(),
     shift({ padding: 8 }),
   ],

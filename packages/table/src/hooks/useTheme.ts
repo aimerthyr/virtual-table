@@ -20,6 +20,10 @@ export function useTheme(config: VTableThemeConfig) {
         ...defaultThemeConfig.border,
         ...config?.border,
       },
+      zIndex: {
+        ...defaultThemeConfig.zIndex,
+        ...config?.zIndex,
+      },
     }
   })
 
@@ -49,10 +53,16 @@ export function useTheme(config: VTableThemeConfig) {
       // 边框样式变量
       '--v-table-border-style': config.border?.borderStyle,
       '--v-table-border-color': config.border?.borderColor,
+
+      // z-index
+      '--v-table-pinned-column': config.zIndex?.pinnedColumn,
+      '--v-table-fixed-header': config.zIndex?.fixedHeader,
+      '--v-table-fixed-footer': config.zIndex?.fixedFooter,
     }
   })
 
   return {
     cssVariables,
+    themeConfig,
   }
 }
