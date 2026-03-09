@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import type { VTableCheckboxProps } from '@/interface'
+import type { VTableCheckboxProps } from '../interface'
 
 defineOptions({ name: 'VCheckbox' })
 

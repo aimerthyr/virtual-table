@@ -5,12 +5,12 @@
       indicator: $slots?.customLoadingIcon?.(),
       bottom: paginationRef?.offsetHeight,
     }"
-    class="flex h-full flex-col"
+    class="v-table-wrapper"
     :style="cssVariables"
   >
     <div
       ref="tableContainerRef"
-      class="min-h-0 flex-1 overflow-x-auto"
+      class="min-h-0 flex-1"
       :class="{ 'overflow-y-auto': props.fixedHeader }"
     >
       <table class="v-table" :class="{ 'v-table-bordered': props.bordered }">
@@ -53,7 +53,7 @@
                     :render="header.column.columnDef.header"
                     :props="header.getContext()"
                   />
-                  <HeaderCell v-else :header="header">
+                  <HeaderCell v-else :header="header" :table="table">
                     <template v-if="$slots.headerCell" #headerCell="slotProps">
                       <slot name="headerCell" v-bind="slotProps" />
                     </template>
@@ -65,6 +65,9 @@
                     </template>
                     <template v-if="$slots.customPopover" #customPopover="slotProps">
                       <slot name="customPopover" v-bind="slotProps" />
+                    </template>
+                    <template v-if="$slots.customSorterIcon" #customSorterIcon="slotProps">
+                      <slot name="customSorterIcon" v-bind="slotProps" />
                     </template>
                   </HeaderCell>
                 </template>
@@ -121,40 +124,18 @@
                     :render="cell.column.columnDef.cell"
                     :props="cell.getContext()"
                   />
-                  <BodyCell v-else :cell="cell">
-                    <template v-if="$slots.bodyCell" #bodyCell="slotProps">
-                      <!-- 树形结构（第一列添加展开图标和缩进） -->
-                      <div
-                        v-if="
-                          props.treeConfig?.enabled &&
-                          cell.column.id === props.columns[0]?.columnKey
-                        "
-                        class="flex h-full items-center gap-[8px]"
-                        :style="{
-                          paddingLeft: `${rows[vRow.index]!.depth * (props.treeConfig?.indentSize ?? 16)}px`,
-                        }"
-                      >
-                        <div
-                          class="flex-shrink-0"
-                          :class="[rows[vRow.index]!.getCanExpand() ? 'visible' : 'invisible']"
-                        >
-                          <slot
-                            :expand="rows[vRow.index]!.getIsExpanded()"
-                            :on-expand-change="rows[vRow.index]!.toggleExpanded"
-                            name="customExpandIcon"
-                          >
-                            <ExpandIcon
-                              :expand="rows[vRow.index]!.getIsExpanded()"
-                              @expand-change="rows[vRow.index]!.toggleExpanded"
-                            />
-                          </slot>
-                        </div>
-
-                        <slot name="bodyCell" v-bind="slotProps">
-                          {{ slotProps.row[slotProps.columnKey] }}
-                        </slot>
-                      </div>
-                      <slot v-else name="bodyCell" v-bind="slotProps" />
+                  <BodyCell
+                    v-else
+                    :cell="cell"
+                    :tree-config="props.treeConfig"
+                    :columns="props.columns"
+                    :row="rows[vRow.index]!"
+                  >
+                    <template #bodyCell="slotProps">
+                      <slot name="bodyCell" v-bind="slotProps" />
+                    </template>
+                    <template #customExpandIcon="slotProps">
+                      <slot name="customExpandIcon" v-bind="slotProps" />
                     </template>
                   </BodyCell>
                 </td>
@@ -163,7 +144,7 @@
             <!-- 自定义展开行的模板 -->
             <td v-else class="!p-0" :colspan="table.getAllLeafColumns().length">
               <div
-                class="overflow-hidden p-[12px]"
+                class="overflow-hidden"
                 :style="{
                   position: hasFixedColumns ? 'sticky' : 'static',
                   left: 0,
@@ -192,7 +173,13 @@
           :class="{ sticky: props.fixedFooter }"
           :style="{ bottom: 0, zIndex: themeConfig.zIndex?.fixedFooter }"
         >
-          <slot name="customFooter" />
+          <tr>
+            <td class="!p-0" :colspan="table.getAllLeafColumns().length">
+              <div class="overflow-hidden">
+                <slot name="customFooter" />
+              </div>
+            </td>
+          </tr>
         </tfoot>
       </table>
       <!-- 空状态 -->
@@ -310,11 +297,9 @@ const adaptiveColumnWidthMap = computed(() => {
   }, 0)
   // 计算自适应列的最小总宽度
   const adaptiveMinWidthTotal = adaptiveCount * props.adaptiveColumnWidth
-
   // 计算剩余可用宽度（避免垂直滚动条导致的计算误差）
   const tolerance = 20
   const remainingWidth = containerWidth - fixedWidthTotal
-
   // 1. 剩余宽度 >= 自适应列最小总宽度 - 误差，则自适应列均分剩余空间
   if (remainingWidth >= adaptiveMinWidthTotal - tolerance) {
     const avgWidth = Math.floor(remainingWidth / adaptiveCount)
@@ -357,7 +342,7 @@ const getColumnWidth = (column: Column<TData>) => {
 const CHECKBOX_COLUMN = computed<ColumnDef<TData>>(() => ({
   id: CHECKBOX_COLUMN_KEY,
   accessorKey: CHECKBOX_COLUMN_KEY,
-  size: 40,
+  size: props.defaultCheckboxColumnWidth,
   header: ({ table }: { table: Table<TData> }) => {
     const selectableRows = table.getRowModel().rows.filter((row) => row.getCanSelect())
     const selectedSelectableRows = selectableRows.filter((row) => row.getIsSelected())
@@ -388,7 +373,7 @@ const CHECKBOX_COLUMN = computed<ColumnDef<TData>>(() => ({
 const EXPAND_COLUMN: ColumnDef<TData> = {
   id: EXPAND_COLUMN_KEY,
   accessorKey: EXPAND_COLUMN_KEY,
-  size: 42,
+  size: props.defaultExpandColumnWidth,
   header: () => {
     return ''
   },
@@ -593,7 +578,6 @@ const rowVirtualizerOptions = computed(() => {
     useAnimationFrameWithResizeObserver: true,
     onChange: (instance: Virtualizer<HTMLDivElement, HTMLDivElement>) => {
       if (instance.scrollOffset && instance.scrollOffset < 0) return
-      // 非滚动状态立即更新
       if (!instance.isScrolling) {
         virtualRows.value = instance.getVirtualItems()
         return
@@ -662,7 +646,6 @@ const noMoreText = computed(() => props.loadMoreConfig?.noMoreText || '没有更
 
 // #region 表格样式相关逻辑
 const { cssVariables, themeConfig } = useTheme(props.themeConfig)
-
 /** 判断单元格是否应该渲染（被合并的单元格返回 false） */
 const canRenderCell = (
   row: TData,
@@ -745,6 +728,12 @@ defineExpose<VTableInstance<TData>>({
 .border-mixin(@position: bottom) {
   border-@{position}: 1px var(--v-table-border-style) var(--v-table-border-color);
 }
+
+.v-table-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
 .v-table {
   border-collapse: separate;
   border-spacing: 0;

@@ -64,8 +64,8 @@
 </template>
 
 <script setup lang="ts">
-import type { VTablePaginationProps } from '@/interface'
 import ArrowIcon from '../icons/ArrowIcon.vue'
+import type { VTablePaginationProps } from '../interface'
 import VSelect from './VSelect.vue'
 
 defineOptions({ name: 'VPagination' })

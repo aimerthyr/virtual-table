@@ -59,7 +59,6 @@ const selectedLabel = computed(() => {
 const handleOpenChange = (isOpen: boolean) => {
   open.value = isOpen
   if (isOpen && selectRef.value) {
-    // 打开时获取触发器宽度
     dropdownWidth.value = `${selectRef.value.offsetWidth}px`
   }
 }
@@ -118,15 +117,15 @@ const handleSelect = (option: { label: string; value: string | number }) => {
 
 .select-dropdown {
   max-height: 256px;
-  overflow: hidden; /* 隐藏溢出，让圆角生效 */
+  overflow: hidden;
   background: #fff;
-  border-radius: 6px; /* 添加圆角 */
+  border-radius: 6px;
 }
 
 .select-dropdown-inner {
   max-height: 256px;
   padding: 4px;
-  overflow-y: auto; /* 滚动条放在内层 */
+  overflow-y: auto;
 }
 
 .select-item {

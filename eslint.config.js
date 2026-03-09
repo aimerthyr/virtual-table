@@ -71,6 +71,7 @@ export default tseslint.config(
           math: 'always',
         },
       ],
+      'no-useless-escape': 'off',
     },
   },
 )

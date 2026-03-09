@@ -1,18 +1,31 @@
 <template>
   <div class="flex h-full w-full items-center">
     <div
-      :class="[
-        columnMeta?.columnAlign === 'right' ? 'inline-flex' : 'flex',
-        canSort ? 'cursor-pointer' : '',
-      ]"
-      class="min-w-0 flex-1 items-center gap-[4px]"
+      :class="[canSort ? 'cursor-pointer' : '']"
+      class="flex min-w-0 flex-1 items-center gap-[4px]"
       @click="handleHeaderClick"
     >
-      <slot name="headerCell" :column="columnMeta" :column-key="columnId">
-        <component :is="headerRender" />
-      </slot>
-      <div class="ml-auto flex items-center">
-        <SorterIcon v-if="canSort" :class="{ 'mr-[16px]': canFilter }" :sort="currentSort" />
+      <div
+        class="flex min-w-0 flex-1 items-center"
+        :class="
+          columnMeta?.columnAlign === 'center'
+            ? 'justify-center'
+            : columnMeta?.columnAlign === 'right'
+              ? 'justify-end'
+              : 'justify-start'
+        "
+      >
+        <slot name="headerCell" :column="columnMeta" :column-key="columnId">
+          <component :is="headerRender" />
+        </slot>
+      </div>
+      <div class="flex items-center gap-[16px]">
+        <div v-if="canSort">
+          <slot name="customSorterIcon" :sort="currentSort">
+            <SorterIcon :sort="currentSort" />
+          </slot>
+        </div>
+
         <HeaderFilter v-if="canFilter" :header="props.header">
           <template v-if="$slots.customFilterDropdown" #customFilterDropdown="slotProps">
             <slot name="customFilterDropdown" v-bind="slotProps" />
@@ -34,14 +47,22 @@
       @touchstart="handleTouchStart"
       @dblclick.stop="handleDoubleClick"
     >
-      <div class="resize-handle-line" />
+      <div
+        class="resize-handle-line"
+        :style="{
+          transform:
+            table.options.columnResizeMode === 'onEnd' && header.column.getIsResizing()
+              ? `translateX(${table.getState().columnSizingInfo.deltaOffset ?? 0}px)`
+              : '',
+        }"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, h } from 'vue'
-import type { Header } from '@tanstack/vue-table'
+import type { Header, Table } from '@tanstack/vue-table'
 import SorterIcon from '../icons/SorterIcon.vue'
 import type { VTableSlots } from '../interface'
 import HeaderFilter from './HeaderFilter.tsx'
@@ -52,6 +73,7 @@ defineSlots<VTableSlots>()
 
 const props = defineProps<{
   header: Header<any, any>
+  table: Table<any>
 }>()
 
 const column = computed(() => props.header.column)
@@ -103,11 +125,11 @@ const handleDoubleClick = () => {
   height: 100% !important;
   bottom: 0;
   left: auto !important;
-  right: -8px;
+  right: 0;
   cursor: col-resize;
   touch-action: none;
   user-select: auto;
-  width: 16px;
+  width: 8px;
   z-index: 1;
 
   .resize-handle-line {

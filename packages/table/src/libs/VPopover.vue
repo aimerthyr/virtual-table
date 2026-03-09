@@ -92,7 +92,6 @@ onUnmounted(() => {
   transform: rotate(45deg);
 }
 
-/* 淡入淡出动画 */
 .popover-fade-enter-active {
   transition: opacity 0.15s ease;
 }

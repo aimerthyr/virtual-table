@@ -1,6 +1,7 @@
 import type { HTMLAttributes, TdHTMLAttributes, ThHTMLAttributes, VNode } from 'vue'
 import type { Table } from '@tanstack/vue-table'
 import type {
+  VTableBodyCellProps,
   VTableChangeState,
   VTableColumn,
   VTableColumnSizingState,
@@ -16,6 +17,7 @@ import type {
   VTableExpandIconProps,
   VTablePaginationProps,
   VTablePopoverProps,
+  VTableSorterIconProps,
 } from './components'
 import type { VTableThemeConfig } from './theme'
 
@@ -24,12 +26,7 @@ export interface VTableSlots<TData = any> {
   /** 自定义头部渲染 */
   customHeader?: (props: { columns: VTableColumn[]; table: Table<TData> }) => VNode
   /** 自定义单元格 */
-  bodyCell?: (props: {
-    columnKey: string
-    column: VTableColumn
-    row: TData
-    rowIndex: number
-  }) => VNode
+  bodyCell?: (props: VTableBodyCellProps<TData>) => VNode
   /** 自定义列头 */
   headerCell?: (props: { columnKey: string; column: VTableColumn }) => VNode
   /** 自定义筛选图标 */
@@ -62,8 +59,10 @@ export interface VTableSlots<TData = any> {
   customLoadNoMore?: () => VNode
   /** 自定义表尾 */
   customFooter?: () => VNode
-  /** 自定义展开图表 */
+  /** 自定义展开图标 */
   customExpandIcon?: (props: VTableExpandIconProps) => VNode
+  /** 自定义组件图标 */
+  customSorterIcon?: (props: VTableSorterIconProps) => VNode
   [key: string]: ((...args: any[]) => VNode) | undefined
 }
 
@@ -95,7 +94,7 @@ export interface VTableProps<TData = any> {
   treeConfig?: VTableTreeConfig
   /** 是否启用展开行功能 */
   enableExpandRow?: boolean
-  /** 是否启用 行 hover 高亮 */
+  /** 是否启用行 hover 高亮 */
   enableRowHover?: boolean
   /** 自适应列宽（当列数很多时，会出现横向滚动条，那么就需要设置自适应列的最小列宽） */
   adaptiveColumnWidth?: number
@@ -107,6 +106,10 @@ export interface VTableProps<TData = any> {
   fixedFooter?: boolean
   /** 自定义主题配置（可覆盖默认配置） */
   themeConfig?: VTableThemeConfig
+  /** 默认 checkbox 列宽 */
+  defaultCheckboxColumnWidth?: number
+  /** 默认展开列的列宽 */
+  defaultExpandColumnWidth?: number
   /** 自定义数据行属性 */
   customRowAttributes?: (row: TData, rowIndex: number) => HTMLAttributes
   /** 自定义表头单元格属性 */

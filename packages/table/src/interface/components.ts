@@ -47,3 +47,8 @@ export interface VTableExpandIconProps {
   expand: boolean
   onExpandChange: () => void
 }
+
+/** 排序图标自定义组件接口定义 */
+export interface VTableSorterIconProps {
+  sort: 'asc' | 'desc' | null
+}

@@ -62,12 +62,10 @@ export function convertSizeToPixels(
   containerWidth: number,
 ): number {
   if (!size) return 0
-  // 使用原生 typeof 判断数字类型
   if (typeof size === 'number') return size
   // 处理百分比：'20%' -> 实际像素
   if (typeof size === 'string' && size.endsWith('%')) {
     const percentage = parseFloat(size)
-    // 使用 Math.round 避免小数精度问题
     return Math.round((containerWidth * percentage) / 100)
   }
   // 处理 px 字符串：'100px' -> 100

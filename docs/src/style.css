@@ -2,6 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-#app {
-  height: 100%;
+body {
+  font-size: 14px;
 }

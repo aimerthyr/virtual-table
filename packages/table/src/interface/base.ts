@@ -17,12 +17,19 @@ export type VTableData<T = Record<string, any>> = T & {
   [EXPAND_ROW_DATA_INDEX]?: Array<VTableData<T>>
 }
 
+/** 排序状态 */
 export type VTableSortingState = SortingState
+/** 分页状态 */
 export type VTablePaginationState = PaginationState
+/** 筛选状态 */
 export type VTableColumnFiltersState = ColumnFiltersState
+/** 展开状态 */
 export type VTableExpandedState = ExpandedState
+/** 选择状态 */
 export type VTableSelectionState = RowSelectionState
+/** 固定列状态 */
 export type VTableColumnPinningState = ColumnPinningState
+/** 列宽状态 */
 export type VTableColumnSizingState = ColumnSizingState
 
 /** 列配置 */
@@ -107,4 +114,11 @@ export type VTableBorderConfig = {
   borderStyle?: 'solid' | 'dashed'
   /** 边框颜色 */
   borderColor?: string
+}
+
+export type VTableBodyCellProps<TData = any> = {
+  columnKey: string
+  column: VTableColumn
+  row: TData
+  rowIndex: number
 }

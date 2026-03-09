@@ -6,7 +6,10 @@ import { defineConfig } from 'vite'
 import { resolve } from 'path'
 
 // 文档站点配置
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  // GitHub Pages 项目站点需要以仓库名作为基础路径。
+  // 本地开发仍然使用根路径，避免 dev server 访问不便。
+  base: command === 'build' ? '/virtual-table/' : '/',
   plugins: [
     vue(),
     // 自动导入 Vue API
@@ -19,6 +22,7 @@ export default defineConfig({
       },
     }),
     Components({
+      globs: ['src/components/**/*.vue'],
       resolvers: [
         AntDesignVueResolver({
           importStyle: false, // css in js
@@ -38,4 +42,4 @@ export default defineConfig({
     // 排除本地包的预构建
     exclude: ['@aimerthyr/virtual-table'],
   },
-})
+}))
