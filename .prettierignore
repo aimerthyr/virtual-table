@@ -22,3 +22,6 @@ yarn.lock
 # 其他
 .DS_Store
 *.tgz
+
+# 自动生成的文件
+**/auto-imports.d.ts

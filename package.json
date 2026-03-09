@@ -13,8 +13,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky",
-    "release": "bash scripts/release.sh"
+    "prepare": "husky"
   },
   "lint-staged": {
     "*.{js,ts,vue}": [
