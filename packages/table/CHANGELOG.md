@@ -13,3 +13,12 @@
 - 完整的 TypeScript 类型支持
 - 基于 TanStack Table 和 TanStack Virtual
 - 内置基础样式
+
+## [1.1.0] - 2026-03-09
+
+### Changed
+
+- 支持自定义footer、加载没有更多区域、自定义展开按钮
+- 支持表头分组及行列单元格合并
+- 支持动态配置表格主题
+- VTbale 官网发布
