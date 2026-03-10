@@ -28,13 +28,13 @@
 </template>
 
 <script setup lang="ts">
+import type { VTableSorterIconProps } from '..'
+
 defineOptions({
   name: 'SorterIcon',
 })
 
-defineProps<{
-  sort?: 'asc' | 'desc' | null
-}>()
+defineProps<VTableSorterIconProps>()
 </script>
 
 <style lang="less" scoped>
