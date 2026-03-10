@@ -38,6 +38,7 @@
     "type": "git",
     "url": "https://github.com/aimerthyr/virtual-table"
   },
+  "homepage": "https://aimerthyr.github.io/virtual-table",
   "peerDependencies": {
     "vue": "^3.5.0"
   },

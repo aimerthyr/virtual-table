@@ -131,10 +131,10 @@
                     :columns="props.columns"
                     :row="rows[vRow.index]!"
                   >
-                    <template #bodyCell="slotProps">
+                    <template v-if="$slots.bodyCell" #bodyCell="slotProps">
                       <slot name="bodyCell" v-bind="slotProps" />
                     </template>
-                    <template #customExpandIcon="slotProps">
+                    <template v-if="$slots.customExpandIcon" #customExpandIcon="slotProps">
                       <slot name="customExpandIcon" v-bind="slotProps" />
                     </template>
                   </BodyCell>

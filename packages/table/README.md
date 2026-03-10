@@ -15,6 +15,11 @@
 - 基于 Vue 3 Composition API 与 TypeScript 构建
 - 底层依赖 TanStack Table 与 TanStack Virtual，扩展能力强
 
+## 官网
+
+**在线地址：**
+[https://aimerthyr.github.io/virtual-table/](https://aimerthyr.github.io/virtual-table/)
+
 ## 安装
 
 ```bash

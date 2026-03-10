@@ -56,12 +56,10 @@ export interface VTableColumn<TData = any> {
   columnMinWidth?: number
   /** 子列（用于表头分组） */
   columnChildren?: VTableColumn<TData>[]
-  /** 可自行拓展字段 */
-  [key: string]: any
 }
 
 /** 表格状态（分页，排序，筛选） */
-export type VTableChangeState = {
+export interface VTableChangeState {
   pagination: VTablePaginationState
   sortList: VTableSortingState
   filterList: VTableColumnFiltersState
@@ -69,7 +67,7 @@ export type VTableChangeState = {
 
 export type VTableRowKey<TData> = string | number | ((row: TData) => string | number)
 
-export type VTableRowSelectionConfig<TData> = {
+export interface VTableRowSelectionConfig<TData> {
   /** 是否开启 checkbox 列 */
   enabled?: boolean
   /** 判断该行是否禁用选择 */
@@ -78,14 +76,14 @@ export type VTableRowSelectionConfig<TData> = {
   onChange?: (selectedRows: TData[]) => void
 }
 
-export type VTableLoadMoreConfig = {
+export interface VTableLoadMoreConfig {
   /** 是否显示"没有更多了"提示 */
   showNoMore?: boolean
   /** 自定义"没有更多了"文本 */
   noMoreText?: string
 }
 
-export type VTablePaginationConfig = {
+export interface VTablePaginationConfig {
   /** 总数（必须要传, 客户端分页可以不传，自动以传入的 data 长度作为总数） */
   total: number
   /** 是否开启分页 */
@@ -98,7 +96,7 @@ export type VTablePaginationConfig = {
   paginationExtraProps?: Record<string, any>
 }
 
-export type VTableTreeConfig = {
+export interface VTableTreeConfig {
   /** 是否启用树形结构 */
   enabled?: boolean
   /** 子节点字段名，默认为 'children' */
@@ -107,7 +105,7 @@ export type VTableTreeConfig = {
   indentSize?: number
 }
 
-export type VTableBorderConfig = {
+export interface VTableBorderConfig {
   /** 是否显示边框 */
   enabled?: boolean
   /** 边框样式 */
@@ -116,7 +114,7 @@ export type VTableBorderConfig = {
   borderColor?: string
 }
 
-export type VTableBodyCellProps<TData = any> = {
+export interface VTableBodyCellProps<TData = any> {
   columnKey: string
   column: VTableColumn
   row: TData
