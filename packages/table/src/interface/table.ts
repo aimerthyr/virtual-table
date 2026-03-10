@@ -4,12 +4,17 @@ import type {
   VTableBodyCellProps,
   VTableChangeState,
   VTableColumn,
+  VTableColumnFiltersState,
+  VTableColumnPinningState,
   VTableColumnSizingState,
   VTableExpandedState,
   VTableLoadMoreConfig,
   VTablePaginationConfig,
+  VTablePaginationState,
   VTableRowKey,
   VTableRowSelectionConfig,
+  VTableSelectionState,
+  VTableSortingState,
   VTableTreeConfig,
 } from './base'
 import type {
@@ -124,6 +129,30 @@ export interface VTableProps<TData = any> {
     rowIndex: number,
     colIndex: number,
   ) => TdHTMLAttributes | null
+
+  // #region v-model 类型定义
+  /** 默认筛选状态 */
+  defaultFilter?: VTableColumnFiltersState
+  /** 默认排序状态 */
+  defaultSort?: VTableSortingState
+  /** 默认分页状态 */
+  defaultPagination?: VTablePaginationState
+  /** 默认展开状态 */
+  defaultExpanded?: VTableExpandedState
+  /** 默认选择状态 */
+  defaultSelection?: VTableSelectionState
+  /** 默认列固定状态 */
+  defaultColumnPinning?: VTableColumnPinningState
+  /** 默认列宽调整状态 */
+  defaultColumnSizing?: VTableColumnSizingState
+  'onUpdate:defaultFilter'?: (filter: VTableColumnFiltersState) => void
+  'onUpdate:defaultSort'?: (sort: VTableSortingState) => void
+  'onUpdate:defaultPagination'?: (pagination: VTablePaginationState) => void
+  'onUpdate:defaultExpanded'?: (expanded: VTableExpandedState) => void
+  'onUpdate:defaultSelection'?: (selection: VTableSelectionState) => void
+  'onUpdate:defaultColumnPinning'?: (columnPinning: VTableColumnPinningState) => void
+  'onUpdate:defaultColumnSizing'?: (columnSizing: VTableColumnSizingState) => void
+  // #endregion
 
   // #region 事件定义区域
   /** 表格状态变化（筛选，排序，分页） */
