@@ -83,6 +83,9 @@ export interface VTableLoadMoreConfig {
   noMoreText?: string
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface VTablePaginationExtraProps {}
+
 export interface VTablePaginationConfig {
   /** 总数（必须要传, 客户端分页可以不传，自动以传入的 data 长度作为总数） */
   total: number
@@ -93,7 +96,7 @@ export interface VTablePaginationConfig {
   /** 服务端分页还是前端分页 */
   mode?: 'client' | 'server'
   /** 分页器额外属性（如果你自己定义了分页器组件，则用于回传给你自己定义的组件） */
-  paginationExtraProps?: Record<string, any>
+  paginationExtraProps?: VTablePaginationExtraProps
 }
 
 export interface VTableTreeConfig {

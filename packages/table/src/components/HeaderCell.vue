@@ -20,11 +20,11 @@
         </slot>
       </div>
       <div class="flex items-center gap-[16px]">
-        <div v-if="canSort">
+        <template v-if="canSort">
           <slot name="customSorterIcon" :sort="currentSort">
             <SorterIcon :sort="currentSort" />
           </slot>
-        </div>
+        </template>
 
         <HeaderFilter v-if="canFilter" :header="props.header">
           <template v-if="$slots.customFilterDropdown" #customFilterDropdown="slotProps">
