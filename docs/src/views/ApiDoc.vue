@@ -129,12 +129,20 @@
 
     <!-- 右侧锚点导航 -->
     <aside class="api-doc-anchor">
-      <a-anchor :affix="false" :target-offset="80" :items="anchorItems" />
+      <a-anchor
+        :affix="false"
+        :target-offset="64"
+        :items="anchorItems"
+        :get-current-anchor="getCurrentAnchor"
+        @click="handleAnchorClick"
+      />
     </aside>
   </div>
 </template>
 
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue'
+
 defineOptions({ name: 'ApiDoc' })
 
 // 锚点导航配置
@@ -145,6 +153,88 @@ const anchorItems = [
   { key: 'slots', href: '#slots', title: 'Slots' },
   { key: 'methods', href: '#methods', title: 'Methods' },
 ]
+
+// 当前激活的锚点
+const currentAnchor = ref('#overview')
+const handleAnchorClick = (e: MouseEvent, link: { href: string; title: string }) => {
+  e.preventDefault()
+  const targetId = link.href.replace('#', '')
+  const targetElement = document.getElementById(targetId)
+  if (targetElement) {
+    const headerHeight = 64
+    const elementPosition = targetElement.getBoundingClientRect().top
+    const offsetPosition = elementPosition + window.pageYOffset - headerHeight
+    currentAnchor.value = link.href
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth',
+    })
+  }
+}
+
+const getCurrentAnchor = () => {
+  return currentAnchor.value
+}
+
+const updateCurrentAnchor = () => {
+  const sections = anchorItems.map((item) => item.key)
+  const headerHeight = 64
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+  for (let i = sections.length - 1; i >= 0; i--) {
+    const section = document.getElementById(sections[i]!)
+    if (section) {
+      const rect = section.getBoundingClientRect()
+      const sectionTop = rect.top + scrollTop - headerHeight
+      if (scrollTop >= sectionTop - 10) {
+        currentAnchor.value = `#${sections[i]}`
+        return
+      }
+    }
+  }
+  currentAnchor.value = '#overview'
+}
+
+// 监听滚动事件
+let scrollTimer: number | null = null
+const handleScroll = () => {
+  if (scrollTimer) {
+    clearTimeout(scrollTimer)
+  }
+  scrollTimer = window.setTimeout(() => {
+    updateCurrentAnchor()
+  }, 100)
+}
+
+// 页面加载时检查 URL hash
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+  updateCurrentAnchor()
+  const hash = window.location.hash
+  const match = hash.match(/#\/api#(.+)/)
+  if (match) {
+    const targetId = match[1]
+    setTimeout(() => {
+      const targetElement = document.getElementById(targetId!)
+      if (targetElement) {
+        const headerHeight = 64
+        const elementPosition = targetElement.getBoundingClientRect().top
+        const offsetPosition = elementPosition + window.pageYOffset - headerHeight
+        currentAnchor.value = `#${targetId}`
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth',
+        })
+      }
+    }, 100)
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+  if (scrollTimer) {
+    clearTimeout(scrollTimer)
+  }
+})
 
 // Props 表格配置
 const propsColumns = [
@@ -506,13 +596,15 @@ const methodsData = [
 .api-doc-anchor {
   width: 180px;
   position: sticky;
-  top: 88px;
+  top: 80px;
   height: fit-content;
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
 }
 
 .doc-section {
   margin-bottom: 64px;
-  scroll-margin-top: 80px;
+  scroll-margin-top: 64px;
 
   &:last-child {
     margin-bottom: 0;

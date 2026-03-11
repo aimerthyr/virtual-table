@@ -313,13 +313,19 @@
 
     <!-- 右侧锚点导航 -->
     <aside class="examples-anchor">
-      <a-anchor :affix="false" :target-offset="80" :items="anchorItems" />
+      <a-anchor
+        :affix="false"
+        :target-offset="64"
+        :items="anchorItems"
+        :get-current-anchor="getCurrentAnchor"
+        @click="handleAnchorClick"
+      />
     </aside>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { CodeOutlined, CopyOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import BasicExample from '../examples/BasicExample.vue'
@@ -1592,6 +1598,89 @@ const copyCode = async (key: string) => {
     message.error('复制失败，请手动复制')
   }
 }
+
+const currentAnchor = ref('#basic')
+const handleAnchorClick = (e: MouseEvent, link: { href: string; title: string }) => {
+  e.preventDefault()
+  const targetId = link.href.replace('#', '')
+  const targetElement = document.getElementById(targetId)
+  if (targetElement) {
+    const headerHeight = 64
+    const elementPosition = targetElement.getBoundingClientRect().top
+    const offsetPosition = elementPosition + window.pageYOffset - headerHeight
+    currentAnchor.value = link.href
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth',
+    })
+  }
+}
+
+// 获取当前激活的锚点
+const getCurrentAnchor = () => {
+  return currentAnchor.value
+}
+
+// 更新当前激活的锚点（基于滚动位置）
+const updateCurrentAnchor = () => {
+  const sections = anchorItems.map((item) => item.key)
+  const headerHeight = 64
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+
+  for (let i = sections.length - 1; i >= 0; i--) {
+    const section = document.getElementById(sections[i]!)
+    if (section) {
+      const rect = section.getBoundingClientRect()
+      const sectionTop = rect.top + scrollTop - headerHeight
+      if (scrollTop >= sectionTop - 10) {
+        currentAnchor.value = `#${sections[i]}`
+        return
+      }
+    }
+  }
+  currentAnchor.value = '#basic'
+}
+
+// 监听滚动事件
+let scrollTimer: number | null = null
+const handleScroll = () => {
+  if (scrollTimer) {
+    clearTimeout(scrollTimer)
+  }
+  scrollTimer = window.setTimeout(() => {
+    updateCurrentAnchor()
+  }, 100)
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+  updateCurrentAnchor()
+  const hash = window.location.hash
+  const match = hash.match(/#\/examples#(.+)/)
+  if (match) {
+    const targetId = match[1]
+    setTimeout(() => {
+      const targetElement = document.getElementById(targetId!)
+      if (targetElement) {
+        const headerHeight = 64
+        const elementPosition = targetElement.getBoundingClientRect().top
+        const offsetPosition = elementPosition + window.pageYOffset - headerHeight
+        currentAnchor.value = `#${targetId}`
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth',
+        })
+      }
+    }, 100)
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+  if (scrollTimer) {
+    clearTimeout(scrollTimer)
+  }
+})
 </script>
 
 <style scoped lang="less">
@@ -1618,8 +1707,10 @@ const copyCode = async (key: string) => {
 .examples-anchor {
   width: 180px;
   position: sticky;
-  top: 88px;
+  top: 80px;
   height: fit-content;
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
 }
 
 .page-title {
@@ -1638,7 +1729,7 @@ const copyCode = async (key: string) => {
 
 .example-section {
   margin-bottom: 64px;
-  scroll-margin-top: 80px;
+  scroll-margin-top: 64px;
 
   &:last-child {
     margin-bottom: 0;
