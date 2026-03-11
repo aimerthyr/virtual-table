@@ -62,8 +62,8 @@ const data = ref([
 
 const columns: VTableColumn[] = [
   { columnKey: 'id', columnHeader: 'ID', columnWidth: 80 },
-  { columnKey: 'name', columnHeader: '姓名', columnWidth: 120 },
-  { columnKey: 'age', columnHeader: '年龄', columnWidth: 100, columnAlign: 'center' },
+  { columnKey: 'name', columnHeader: '姓名', columnWidth: '30%' },
+  { columnKey: 'age', columnHeader: '年龄', columnWidth: '20%', columnAlign: 'center' },
   { columnKey: 'email', columnHeader: '邮箱', columnWidth: 200 },
   { columnKey: 'phone', columnHeader: '电话', columnWidth: 150 },
   { columnKey: 'address', columnHeader: '地址', columnWidth: 200 },

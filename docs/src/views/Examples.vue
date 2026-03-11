@@ -209,7 +209,7 @@
       <!-- 列宽调整 -->
       <section id="column-resize" class="example-section">
         <h2 class="example-title">列宽调整</h2>
-        <p class="example-desc">拖动列边缘调整列宽，支持最小/最大宽度限制。</p>
+        <p class="example-desc">拖动列边缘调整列宽，支持最小/最大宽度限制，列宽可设置百分比</p>
 
         <div class="example-demo">
           <ColumnResizeExample />
@@ -801,8 +801,8 @@ const data = ref([
 
 const columns: VTableColumn[] = [
   { columnKey: 'id', columnHeader: 'ID', columnWidth: 80 },
-  { columnKey: 'name', columnHeader: '姓名', columnWidth: 120 },
-  { columnKey: 'age', columnHeader: '年龄', columnWidth: 100, columnAlign: 'center' },
+  { columnKey: 'name', columnHeader: '姓名', columnWidth: '30%' },
+  { columnKey: 'age', columnHeader: '年龄', columnWidth: '20%', columnAlign: 'center' },
   { columnKey: 'email', columnHeader: '邮箱', columnWidth: 200 },
   { columnKey: 'phone', columnHeader: '电话', columnWidth: 150 },
   { columnKey: 'address', columnHeader: '地址', columnWidth: 200 },

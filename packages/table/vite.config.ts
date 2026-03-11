@@ -7,7 +7,16 @@ import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [
-    vue(),
+    vue({
+      // 优化Vue编译
+      template: {
+        compilerOptions: {
+          // 启用生产优化
+          hoistStatic: true,
+          cacheHandlers: true,
+        },
+      },
+    }),
     vueJsx(),
     AutoImport({
       imports: ['vue'],
@@ -36,11 +45,25 @@ export default defineConfig({
       external: ['vue'],
       output: {
         exports: 'named',
+        globals: {
+          vue: 'Vue',
+        },
+        compact: true,
       },
     },
-    // 生成 sourcemap
-    sourcemap: true,
+    sourcemap: process.env.NODE_ENV === 'development',
     // 清空输出目录
     emptyOutDir: true,
+    // 启用压缩
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true, // 移除console
+        drop_debugger: true, // 移除debugger
+        pure_funcs: ['console.log'], // 移除特定函数调用
+      },
+    },
+    // 设置chunk大小警告阈值
+    chunkSizeWarningLimit: 1000,
   },
 })
