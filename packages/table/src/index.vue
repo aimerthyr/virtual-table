@@ -277,7 +277,13 @@ const initResizeObserver = () => {
   })
   resizeObserver.observe(tableContainerRef.value)
 }
-/** 计算自适应列的实际宽度 */
+/**
+ * 计算自适应列的实际宽度
+ * 1. 如果用户都设置了列宽，并且还没有超出表格宽度，则需要自动拉伸除 checkbox 和 expand 列外的其他列
+ * 2. 如果用户存在未设置列宽的列，则又会有两种情况
+ *   a. 总列宽未超出表格宽度时，将剩余空间分配未设置列宽的列
+ *   b. 总列宽超出表格宽度，则所有未设置列宽的列都使用最小宽度
+ *  */
 const adaptiveColumnWidthMap = computed(() => {
   const allColumns = table.getAllLeafColumns()
   const containerWidth = tableContainerWidth.value || 0
@@ -285,55 +291,63 @@ const adaptiveColumnWidthMap = computed(() => {
   // 筛选出自适应列（未设置 size 的列）
   const adaptiveColumns = allColumns.filter((col) => !col.columnDef.size)
   const adaptiveCount = adaptiveColumns.length
-  if (adaptiveCount === 0) return {}
-
-  // 计算固定列总宽度
-  const fixedWidthTotal = allColumns.reduce((sum, col) => {
-    // 统计所有设置列宽的列
-    if (col.columnDef.size) {
-      return sum + Math.round(col.getSize())
-    }
-    return sum
-  }, 0)
-  // 计算自适应列的最小总宽度
-  const adaptiveMinWidthTotal = adaptiveCount * props.adaptiveColumnWidth
-  // 计算剩余可用宽度（避免垂直滚动条导致的计算误差）
+  // 计算设置列宽的总宽度
+  const fixedWidthTotal = allColumns.reduce(
+    (sum, col) => (col.columnDef.size ? sum + Math.round(col.getSize()) : sum),
+    0,
+  )
+  // 避免垂直滚动条导致的计算误差
   const tolerance = 20
   const remainingWidth = containerWidth - fixedWidthTotal
-  // 1. 剩余宽度 >= 自适应列最小总宽度 - 误差，则自适应列均分剩余空间
-  if (remainingWidth >= adaptiveMinWidthTotal - tolerance) {
-    const avgWidth = Math.floor(remainingWidth / adaptiveCount)
-    // 计算余数（因为可能均分之后，不能整除的情况）
-    const remainder = remainingWidth % adaptiveCount
-    // 将余数分配给前 remainder 列，避免误差
-    return adaptiveColumns.reduce(
-      (map, col, index) => {
-        map[col.id] = avgWidth + (index < remainder ? 1 : 0)
+
+  /** 将 extraTotal 均分给 columns，余数依次补给前几列；getBase 提供每列的基础宽度 */
+  const distribute = (
+    columns: Column<TData>[],
+    extraTotal: number,
+    getBase: (col: Column<TData>) => number = () => 0,
+  ): Record<string, number> => {
+    const count = columns.length
+    const avg = Math.floor(extraTotal / count)
+    const rem = extraTotal % count
+    return columns.reduce(
+      (map, col, i) => {
+        map[col.id] = getBase(col) + avg + (i < rem ? 1 : 0)
         return map
       },
       {} as Record<string, number>,
     )
   }
-  // 2. 剩余宽度 < 自适应列最小总宽度，所有自适应列使用最小宽度
-  return adaptiveColumns.reduce(
-    (map, col) => {
-      map[col.id] = props.adaptiveColumnWidth
-      return map
-    },
-    {} as Record<string, number>,
-  )
+
+  if (adaptiveCount === 0) {
+    // 全列定宽但不足容器时，将剩余空间分配给非 checkbox/expand 列
+    if (remainingWidth <= tolerance) return {}
+    const stretchableColumns = allColumns.filter(
+      (col) => col.id !== CHECKBOX_COLUMN_KEY && col.id !== EXPAND_COLUMN_KEY,
+    )
+    if (stretchableColumns.length === 0) return {}
+    return distribute(stretchableColumns, remainingWidth, (col) => Math.round(col.getSize()))
+  }
+
+  // 剩余空间充足时均分，不足时各列退回最小宽度（两种情况统一用 distribute 处理）
+  const adaptiveMinWidthTotal = adaptiveCount * props.adaptiveColumnWidth
+  const totalForAdaptive =
+    remainingWidth >= adaptiveMinWidthTotal - tolerance ? remainingWidth : adaptiveMinWidthTotal
+  return distribute(adaptiveColumns, totalForAdaptive)
 })
 /** 获取表格列宽（用于 colgroup） */
 const getColumnWidth = (column: Column<TData>) => {
+  // 先读取自适应的列宽配置（一共有三种情况，都未命中才走下面）
+  const adaptiveWidth = adaptiveColumnWidthMap.value[column.id]
+  if (adaptiveWidth) {
+    return `${adaptiveWidth}px`
+  }
   const definedSize = column.columnDef.size
   if (definedSize) {
-    // 1. 用户传了固定宽度，使用实际宽度（可能被拖拽调整过）
+    // 用户传了固定宽度，使用实际宽度（可能被拖拽调整过）
     return `${column.getSize()}px`
-  } else {
-    // 2. 用户没传，使用自适应列宽
-    const adaptiveWidth = adaptiveColumnWidthMap.value[column.id]
-    return adaptiveWidth ? `${adaptiveWidth}px` : `${props.adaptiveColumnWidth}px`
   }
+  // 用户没传，使用默认自适应列宽
+  return `${props.adaptiveColumnWidth}px`
 }
 // #endregion
 

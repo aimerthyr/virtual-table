@@ -62,7 +62,7 @@ export function convertSizeToPixels(
   containerWidth: number,
 ): number {
   if (!size) return 0
-  if (typeof size === 'number') return size
+  if (isNumeric(size)) return Number(size)
   // 处理百分比：'20%' -> 实际像素
   if (typeof size === 'string' && size.endsWith('%')) {
     const percentage = parseFloat(size)
@@ -73,4 +73,12 @@ export function convertSizeToPixels(
     return Math.round(parseFloat(size))
   }
   return 0
+}
+
+export function isNumeric(value: unknown): boolean {
+  if (value === null || value === undefined) {
+    return false
+  }
+  const num = Number(value)
+  return Number.isFinite(num)
 }
