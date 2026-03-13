@@ -9,7 +9,7 @@ export type LoadingDirectiveOptions =
       spinning: boolean
       size?: LoadingSize
       /** 自定义 loading 图标 */
-      indicator?: VNode
+      indicator?: VNode[]
       bottom?: number
     }
 

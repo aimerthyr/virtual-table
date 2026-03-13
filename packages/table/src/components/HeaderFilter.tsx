@@ -65,8 +65,8 @@ export default defineComponent({
       const customPopover = slots?.customPopover?.({
         open: open.value,
         onOpenChange: (value) => (open.value = value),
-        trigger: trigger,
-        content: content,
+        trigger: trigger as any,
+        content: content as any,
       })
 
       return (

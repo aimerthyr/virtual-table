@@ -23,9 +23,9 @@ export interface VTablePopoverProps {
   /** 显示状态变化回调 */
   onOpenChange: (value: boolean) => void
   /** 触发区域 */
-  trigger: () => VNode
+  trigger: () => VNode[]
   /** 下拉内容 */
-  content: () => VNode
+  content: () => VNode[]
 }
 
 /**

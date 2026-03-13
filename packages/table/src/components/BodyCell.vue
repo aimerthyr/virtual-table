@@ -15,21 +15,17 @@
         <ExpandIcon :expand="props.row.getIsExpanded()" @expand-change="props.row.toggleExpanded" />
       </slot>
     </div>
-    <slot name="bodyCell" v-bind="bodyCellSlotProps">
-      <component :is="cellRender" />
-    </slot>
-  </div>
-
-  <slot v-else name="bodyCell" v-bind="bodyCellSlotProps">
     <component :is="cellRender" />
-  </slot>
+  </div>
+  <component :is="cellRender" v-else />
 </template>
 
 <script setup lang="ts">
 import { computed, h } from 'vue'
 import type { Cell, Row } from '@tanstack/vue-table'
 import ExpandIcon from '../icons/ExpandIcon.vue'
-import type { VTableBodyCellProps, VTableColumn, VTableSlots, VTableTreeConfig } from '../interface'
+import type { VTableColumn, VTableSlots, VTableTreeConfig } from '../interface'
+import { hasPassSlot } from '../utils'
 
 defineOptions({ name: 'BodyCell' })
 
@@ -40,9 +36,24 @@ const props = defineProps<{
   row: Row<any>
 }>()
 
-defineSlots<VTableSlots>()
+const slots = defineSlots<VTableSlots>()
+
+const columnKey = computed(() => props.cell.column.id)
+const rowIndex = computed(() => props.cell.row.index)
+const row = computed(() => props.cell.row.original)
+const column = computed(() => props.cell.column.columnDef.meta!)
 
 const cellRender = computed(() => {
+  const bodyCellContent = slots.bodyCell?.({
+    columnKey: columnKey.value,
+    row: row.value,
+    column: column.value,
+    rowIndex: rowIndex.value,
+  })
+  const vNode = bodyCellContent?.[0]
+  if (hasPassSlot(vNode)) {
+    return () => bodyCellContent
+  }
   const cellDef = props.cell.column.columnDef.cell
   if (typeof cellDef === 'function') {
     const result = cellDef(props.cell.getContext())
@@ -50,14 +61,5 @@ const cellRender = computed(() => {
   }
   // 默认显示单元格值
   return h('span', props.cell.getValue() ?? '')
-})
-
-const bodyCellSlotProps = computed<VTableBodyCellProps>(() => {
-  return {
-    row: props.cell.row.original,
-    column: props.cell.column.columnDef.meta!,
-    columnKey: props.cell.column.id,
-    rowIndex: props.cell.row.index,
-  }
 })
 </script>

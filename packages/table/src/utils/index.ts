@@ -1,3 +1,4 @@
+import type { VNode } from 'vue'
 import type { ColumnDef } from '@tanstack/vue-table'
 import { EXPAND_ROW_DATA_INDEX, EXPAND_ROW_KEY } from '../constant'
 import type { VTableColumn, VTableRowKey } from '../interface'
@@ -81,4 +82,14 @@ export function isNumeric(value: unknown): boolean {
   }
   const num = Number(value)
   return Number.isFinite(num)
+}
+
+/**
+ * 是否外部传递了插槽 （仅用于判断透传插槽）
+ * 由于存在透传，所以不能单纯直接判断是否有插槽，还需要判断是否有子节点 */
+export function hasPassSlot(vNode?: VNode): boolean {
+  if (!vNode) return false
+  return (
+    Array.isArray(vNode.children) && vNode.children.some((child) => child && (child as VNode).type)
+  )
 }

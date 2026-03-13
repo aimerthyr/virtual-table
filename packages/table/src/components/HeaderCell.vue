@@ -15,9 +15,7 @@
               : 'justify-start'
         "
       >
-        <slot name="headerCell" :column="columnMeta" :column-key="columnId">
-          <component :is="headerRender" />
-        </slot>
+        <component :is="headerRender" />
       </div>
       <div class="flex items-center gap-[16px]">
         <template v-if="canSort">
@@ -63,13 +61,15 @@
 <script setup lang="ts">
 import { computed, h } from 'vue'
 import type { Header, Table } from '@tanstack/vue-table'
+import { CHECKBOX_COLUMN_KEY, EXPAND_COLUMN_KEY } from '../constant'
 import SorterIcon from '../icons/SorterIcon.vue'
 import type { VTableSlots } from '../interface'
+import { hasPassSlot } from '../utils'
 import HeaderFilter from './HeaderFilter.tsx'
 
 defineOptions({ name: 'HeaderCell' })
 
-defineSlots<VTableSlots>()
+const slots = defineSlots<VTableSlots>()
 
 const props = defineProps<{
   header: Header<any, any>
@@ -83,6 +83,18 @@ const columnId = computed(() => column.value.id)
 
 /** 渲染表头默认值 */
 const headerRender = computed(() => {
+  // checkbox 和 expand 列不在这里处理
+  if ([CHECKBOX_COLUMN_KEY, EXPAND_COLUMN_KEY].includes(columnId.value)) {
+    return
+  }
+  const headerCellContent = slots.headerCell?.({
+    columnKey: columnId.value,
+    column: columnMeta.value,
+  })
+  const vNode = headerCellContent?.[0]
+  if (hasPassSlot(vNode)) {
+    return () => headerCellContent
+  }
   const headerDef = columnDef.value.header
   if (typeof headerDef === 'function') {
     const result = headerDef(props.header.getContext())

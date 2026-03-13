@@ -29,17 +29,17 @@ import type { VTableThemeConfig } from './theme'
 /** slots 类型定义 */
 export interface VTableSlots<TData = any> {
   /** 自定义头部渲染 */
-  customHeader?: (props: { columns: VTableColumn[]; table: Table<TData> }) => VNode
+  customHeader?: (props: { columns: VTableColumn[]; table: Table<TData> }) => VNode[]
   /** 自定义单元格 */
-  bodyCell?: (props: VTableBodyCellProps<TData>) => VNode
+  bodyCell?: (props: VTableBodyCellProps<TData>) => VNode[]
   /** 自定义列头 */
-  headerCell?: (props: { columnKey: string; column: VTableColumn }) => VNode
+  headerCell?: (props: { columnKey: string; column: VTableColumn }) => VNode[]
   /** 自定义筛选图标 */
   customFilterIcon?: (props: {
     columnKey: string
     filtered: boolean
     column: VTableColumn
-  }) => VNode
+  }) => VNode[]
   /** 自定义筛选下拉 */
   customFilterDropdown?: (props: {
     confirm: () => void
@@ -47,28 +47,28 @@ export interface VTableSlots<TData = any> {
     setFilterValue: (value: any) => void
     column: VTableColumn
     filterModelValue: any
-  }) => VNode
+  }) => VNode[]
   /** 自定义展开行 */
-  expandedRowRender?: (props: { row: TData }) => VNode
+  expandedRowRender?: (props: { row: TData }) => VNode[]
   /** 自定义 Popover */
-  customPopover?: (props: VTablePopoverProps) => VNode
+  customPopover?: (props: VTablePopoverProps) => VNode[]
   /** 自定义分页器 */
-  customPagination?: (props: VTablePaginationProps) => VNode
+  customPagination?: (props: VTablePaginationProps) => VNode[]
   /** 自定义 checkbox */
-  customCheckbox?: (props: VTableCheckboxProps) => VNode
+  customCheckbox?: (props: VTableCheckboxProps) => VNode[]
   /** 自定义空状态 */
-  customEmpty?: () => VNode
+  customEmpty?: () => VNode[]
   /** 自定义 loading 图标 */
-  customLoadingIcon?: () => VNode
+  customLoadingIcon?: () => VNode[]
   /** 自定义加载没有更多区域 */
-  customLoadNoMore?: () => VNode
+  customLoadNoMore?: () => VNode[]
   /** 自定义表尾 */
-  customFooter?: () => VNode
+  customFooter?: () => VNode[]
   /** 自定义展开图标 */
-  customExpandIcon?: (props: VTableExpandIconProps) => VNode
+  customExpandIcon?: (props: VTableExpandIconProps) => VNode[]
   /** 自定义组件图标 */
-  customSorterIcon?: (props: VTableSorterIconProps) => VNode
-  [key: string]: ((...args: any[]) => VNode) | undefined
+  customSorterIcon?: (props: VTableSorterIconProps) => VNode[]
+  [key: string]: ((...args: any[]) => VNode[]) | undefined
 }
 
 /** props 类型定义 */

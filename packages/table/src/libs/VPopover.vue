@@ -19,8 +19,8 @@ import { flip, offset, shift, useFloating, type Placement } from '@floating-ui/v
 defineOptions({ name: 'VPopover' })
 
 defineSlots<{
-  default: () => VNode
-  content: () => VNode
+  default: () => VNode[]
+  content: () => VNode[]
 }>()
 
 const props = withDefaults(
