@@ -94,7 +94,7 @@ const headerRender = computed(() => {
     })
     const vNode = headerCellContent?.[0]
     if (hasPassSlot(vNode)) {
-      return () => headerCellContent
+      return headerCellContent
     }
     const headerDef = columnDef.value.header
     if (typeof headerDef === 'function') {
