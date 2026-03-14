@@ -38,28 +38,30 @@ const props = defineProps<{
 
 const slots = defineSlots<VTableSlots>()
 
-const columnKey = computed(() => props.cell.column.id)
-const rowIndex = computed(() => props.cell.row.index)
-const row = computed(() => props.cell.row.original)
+const columnKey = props.cell.column.id
+const rowIndex = props.cell.row.index
+const originalRow = computed(() => props.cell.row.original)
 const column = computed(() => props.cell.column.columnDef.meta!)
 
 const cellRender = computed(() => {
-  const bodyCellContent = slots.bodyCell?.({
-    columnKey: columnKey.value,
-    row: row.value,
-    column: column.value,
-    rowIndex: rowIndex.value,
-  })
-  const vNode = bodyCellContent?.[0]
-  if (hasPassSlot(vNode)) {
-    return () => bodyCellContent
+  return () => {
+    const bodyCellContent = slots.bodyCell?.({
+      columnKey,
+      rowIndex,
+      row: originalRow.value,
+      column: column.value,
+    })
+    const vNode = bodyCellContent?.[0]
+    if (hasPassSlot(vNode)) {
+      return bodyCellContent
+    }
+    const cellDef = props.cell.column.columnDef.cell
+    if (typeof cellDef === 'function') {
+      const result = cellDef(props.cell.getContext())
+      return typeof result === 'string' ? h('span', result) : result
+    }
+    // 默认显示单元格值
+    return h('span', props.cell.getValue() ?? '')
   }
-  const cellDef = props.cell.column.columnDef.cell
-  if (typeof cellDef === 'function') {
-    const result = cellDef(props.cell.getContext())
-    return typeof result === 'string' ? h('span', result) : result
-  }
-  // 默认显示单元格值
-  return h('span', props.cell.getValue() ?? '')
 })
 </script>

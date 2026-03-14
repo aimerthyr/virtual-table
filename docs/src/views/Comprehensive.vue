@@ -94,7 +94,7 @@
       <!-- 自定义单元格 -->
       <template #bodyCell="{ columnKey, row }">
         <template v-if="columnKey === 'name'">
-          <a-tag :color="row.level === 1 ? 'blue' : 'green'">{{ row.name }}</a-tag>
+          <a-tag :color="row.level === 1 ? 'blue' : 'green'">{{ formatName(row.name) }}</a-tag>
         </template>
         <template v-else-if="columnKey === 'status'">
           <a-badge
@@ -210,6 +210,10 @@ const normalColumns: VTableColumn[] = [
     columnWidth: '20%',
     columnAlign: 'center',
     columnEnableSort: true,
+    /** 使用函数性能比插槽低，推荐使用插槽(如果内部无状态，例如下面的代码，则性能影响较小，只有在组件较为复杂，则可以改成 bodyCell 插槽) */
+    columnCell(ctx) {
+      return ctx.getValue()
+    },
   },
   {
     columnKey: 'email',
@@ -540,8 +544,22 @@ const handleClear = () => {
   handleRefresh()
 }
 
+const formatName = (name: string) => {
+  console.log('是否重新调用', name)
+  return name
+}
+
 const handleEdit = (row: TableRow) => {
   console.log('编辑:', row)
+  /** 如果你使用的插槽，则可以直接修改 row 的属性 */
+  row.name = 'xxx'
+  // 如果你使用的函数，或者默认渲染，则需要通过修改 data 来进行数据变更
+  // tableData.value = tableData.value.map((item) => {
+  //   if (item.id === row.id) {
+  //     return { ...item, age: 300 }
+  //   }
+  //   return item
+  // })
 }
 
 const handleDelete = (row: TableRow) => {

@@ -81,7 +81,7 @@
 
           <tr
             v-for="vRow in virtualRows"
-            :key="renderRowKeys[vRow.index]"
+            :key="rows[vRow.index]!.id!"
             :ref="(el: any) => measureElement(el, rows[vRow.index]?.original?.[EXPAND_ROW_KEY])"
             :data-index="vRow.index"
             :style="{
@@ -230,7 +230,6 @@ import {
   type Table,
 } from '@tanstack/vue-table'
 import { Virtualizer, useVirtualizer, type VirtualItem } from '@tanstack/vue-virtual'
-import { hash } from 'ohash'
 import BodyCell from './components/BodyCell.vue'
 import HeaderCell from './components/HeaderCell.vue'
 import {
@@ -405,9 +404,6 @@ const EXPAND_COLUMN: ColumnDef<TData> = {
     )
   },
 }
-const renderRowKeys = computed(() => {
-  return rows.value.map((row) => `${row.id}_${hash(row.original)}`)
-})
 const columnFilters = defineModel<ColumnFiltersState>('defaultFilter', { default: () => [] })
 const columnSorts = defineModel<SortingState>('defaultSort', { default: () => [] })
 const pagination = defineModel<PaginationState>('defaultPagination', {

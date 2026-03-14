@@ -119,9 +119,6 @@ importers:
       '@tanstack/vue-virtual':
         specifier: ^3.13.19
         version: 3.13.19(vue@3.5.29(typescript@5.9.3))
-      ohash:
-        specifier: ^2.0.11
-        version: 2.0.11
       vue:
         specifier: ^3.5.0
         version: 3.5.29(typescript@5.9.3)
@@ -1640,9 +1637,6 @@ packages:
 
   obug@2.1.1:
     resolution: {integrity: sha512-uTqF9MuPraAQ+IsnPf366RG4cP9RtUi7MLO1N3KEc+wb0a6yKpeL0lmk2IB1jY5KHPAlTc6T/JRdC/YqxHNwkQ==}
-
-  ohash@2.0.11:
-    resolution: {integrity: sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ==}
 
   onetime@7.0.0:
     resolution: {integrity: sha512-VXJjc87FScF88uafS3JllDgvAm+c/Slfz06lorj2uAY34rlUu0Nt+v8wreiImcrgAjjIHp1rXpTDlLOGw29WwQ==}
@@ -3723,8 +3717,6 @@ snapshots:
   object-hash@3.0.0: {}
 
   obug@2.1.1: {}
-
-  ohash@2.0.11: {}
 
   onetime@7.0.0:
     dependencies:

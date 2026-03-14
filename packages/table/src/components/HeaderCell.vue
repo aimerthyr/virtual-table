@@ -83,25 +83,27 @@ const columnId = computed(() => column.value.id)
 
 /** 渲染表头默认值 */
 const headerRender = computed(() => {
-  // checkbox 和 expand 列不在这里处理
-  if ([CHECKBOX_COLUMN_KEY, EXPAND_COLUMN_KEY].includes(columnId.value)) {
-    return
+  return () => {
+    // checkbox 和 expand 列不在这里处理
+    if ([CHECKBOX_COLUMN_KEY, EXPAND_COLUMN_KEY].includes(columnId.value)) {
+      return
+    }
+    const headerCellContent = slots.headerCell?.({
+      columnKey: columnId.value,
+      column: columnMeta.value,
+    })
+    const vNode = headerCellContent?.[0]
+    if (hasPassSlot(vNode)) {
+      return () => headerCellContent
+    }
+    const headerDef = columnDef.value.header
+    if (typeof headerDef === 'function') {
+      const result = headerDef(props.header.getContext())
+      return typeof result === 'string' ? h('span', result) : result
+    }
+    // 默认显示 header 字符串或列 ID
+    return h('span', String(headerDef ?? columnId.value))
   }
-  const headerCellContent = slots.headerCell?.({
-    columnKey: columnId.value,
-    column: columnMeta.value,
-  })
-  const vNode = headerCellContent?.[0]
-  if (hasPassSlot(vNode)) {
-    return () => headerCellContent
-  }
-  const headerDef = columnDef.value.header
-  if (typeof headerDef === 'function') {
-    const result = headerDef(props.header.getContext())
-    return typeof result === 'string' ? h('span', result) : result
-  }
-  // 默认显示 header 字符串或列 ID
-  return h('span', String(headerDef ?? columnId.value))
 })
 
 // #region 排序相关

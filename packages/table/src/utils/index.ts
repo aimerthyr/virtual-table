@@ -26,12 +26,19 @@ export function convertToColumnDefList<T>(
 }
 
 /** 给 data 添加组件内部属性（仅当 enableExpandRow 时添加展开行结构） */
-export function buildData<T>(data: T[], enableExpandRow = false) {
+export function buildData<T extends Record<string, any>>(data: T[], enableExpandRow = false) {
   if (!enableExpandRow) return data
-  return data.map((v) => ({
-    ...v,
-    [EXPAND_ROW_DATA_INDEX]: [{ ...v, [EXPAND_ROW_KEY]: true }],
-  }))
+  return data.map((row) => {
+    if (!row[EXPAND_ROW_DATA_INDEX]) {
+      ;(row as any)[EXPAND_ROW_DATA_INDEX] = [
+        {
+          ...row,
+          [EXPAND_ROW_KEY]: true,
+        },
+      ]
+    }
+    return row
+  })
 }
 
 /** 获取所有行的 key */
