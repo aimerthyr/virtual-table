@@ -42,7 +42,10 @@ export default defineComponent({
 
     const trigger = () => (
       <div class="relative h-[22px] cursor-pointer">
-        <div class="absolute left-1/2 top-1/2 flex h-[30px] w-[20px] translate-x-[-50%] translate-y-[-50%] items-center justify-center hover:bg-[#0000000f] hover:text-[#00000073]">
+        <div
+          style={{ transform: `translateX(-50%) translateY(-50%)` }}
+          class="absolute left-1/2 top-1/2 flex h-[30px] w-[20px] items-center justify-center hover:bg-[#0000000f] hover:text-[#00000073]"
+        >
           {slots.customFilterIcon?.({
             columnKey: column.value.id,
             filtered: column.value.getIsFiltered(),

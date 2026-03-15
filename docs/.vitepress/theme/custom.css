@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --vp-c-brand-1: #3865f5;
+  --vp-c-brand-2: #5a7dfc;
+  --vp-c-brand-3: #7d96ff;
+  --vp-c-brand-soft: rgba(86, 114, 205, 0.14);
+}

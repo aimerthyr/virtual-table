@@ -16,7 +16,6 @@
       v-model:default-pagination="pagination"
       :data="tableData"
       :columns="columns"
-      :bordered="true"
       :loading="loading"
       :pagination-config="{
         enabled: true,

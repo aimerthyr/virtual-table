@@ -14,6 +14,7 @@
       enabled: true,
     }"
     :default-checkbox-column-width="82"
+    :adaptive-column-width="180"
   >
     <!-- 自定义表头单元格 -->
     <template #headerCell="{ column }">

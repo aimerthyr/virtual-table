@@ -1,5 +1,5 @@
 <template>
-  <VTable :data="data" :columns="columns" :bordered="true" row-key="id" :enable-expand-row="true">
+  <VTable :data="data" :columns="columns" row-key="id" :enable-expand-row="true">
     <template #expandedRowRender="{ row }">
       <div class="bg-gray-50 p-4">
         <p><strong>详细信息：</strong></p>

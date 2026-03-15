@@ -58,7 +58,7 @@ export const vTableDefaultProps = defineDefaultProps<VTableProps<any>>({
 })
 /** 默认主题配置 */
 export const defaultThemeConfig: VTableThemeConfig = {
-  primaryColor: '#1677ff',
+  primaryColor: '#3865f5',
   header: {
     color: 'rgba(0, 0, 0, 0.88)',
     backgroundColor: '#fafafa',

@@ -15,7 +15,6 @@
       v-model:default-filter="filterState"
       :data="displayData"
       :columns="columns"
-      :bordered="true"
       :theme-config="themeConfig"
       :enable-row-hover="true"
       :fixed-header="true"

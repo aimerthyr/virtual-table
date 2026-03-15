@@ -66,7 +66,7 @@ export interface VTableSlots<TData = any> {
   customFooter?: () => VNode[]
   /** 自定义展开图标 */
   customExpandIcon?: (props: VTableExpandIconProps) => VNode[]
-  /** 自定义组件图标 */
+  /** 自定义排序图标 */
   customSorterIcon?: (props: VTableSorterIconProps) => VNode[]
   [key: string]: ((...args: any[]) => VNode[]) | undefined
 }

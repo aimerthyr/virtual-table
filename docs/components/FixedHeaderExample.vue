@@ -1,6 +1,7 @@
 <template>
-  <div class="h-[400px]">
+  <div style="height: 400px">
     <VTable
+      class="h-full"
       :data="data"
       :columns="columns"
       :fixed-header="true"

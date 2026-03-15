@@ -1,10 +1,5 @@
 <template>
-  <VTable
-    :data="data"
-    :columns="columns"
-    :bordered="true"
-    :custom-cell-attributes="customCellHandler"
-  />
+  <VTable :data="data" :columns="columns" :custom-cell-attributes="customCellHandler" />
 </template>
 
 <script setup lang="ts">

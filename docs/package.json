@@ -4,16 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
   },
   "dependencies": {
     "@aimerthyr/virtual-table": "workspace:*",
     "@ant-design/icons-vue": "^7.0.1",
-    "ant-design-vue": "^4.2.6",
-    "highlight.js": "^11.11.1",
-    "vue-router": "^4.4.5",
-    "dedent": "^1.7.2"
+    "ant-design-vue": "^4.2.6"
+  },
+  "devDependencies": {
+    "vitepress": "2.0.0-alpha.16"
   }
 }

@@ -22,7 +22,6 @@
       v-model:default-column-sizing="columnSizing"
       :data="data"
       :columns="columns"
-      :bordered="true"
       :column-resize-mode="resizeMode"
       @column-sizing-change="handleColumnSizingChange"
     />

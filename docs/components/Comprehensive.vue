@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-[calc(100vh-96px)] flex-col bg-white p-[24px]">
+  <div style="height: calc(100vh - 64px)" class="flex flex-col bg-white p-[24px]">
     <h2 class="mb-[16px] flex gap-[16px]">
       综合示例
       <div>
@@ -57,7 +57,6 @@
       :loading="loading"
       :row-height="49"
       :fixed-header="true"
-      :bordered="true"
       :enable-row-hover="true"
       row-key="id"
       :row-selection-config="{
@@ -79,12 +78,12 @@
         showNoMore: useScrollLoad && hasNoMore,
         noMoreText: '已加载全部数据',
       }"
-      :on-table-change="handleTableChange"
-      :on-scroll-to-bottom="handleScrollToBottom"
-      :on-expanded-rows-change="handleExpandedChange"
       :custom-row-attributes="customRowHandler"
       :custom-cell-attributes="customCellHandler"
-      :on-column-sizing-change="handleColumnSizingChange"
+      :@table-change="handleTableChange"
+      :@scroll-to-bottom="handleScrollToBottom"
+      :@expanded-rows-change="handleExpandedChange"
+      :@column-sizing-change="handleColumnSizingChange"
       :theme-config="{
         border: {
           borderStyle: 'dashed',

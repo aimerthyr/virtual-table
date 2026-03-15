@@ -6,7 +6,10 @@
       paddingLeft: `${props.row.depth * (props.treeConfig?.indentSize ?? 16)}px`,
     }"
   >
-    <div class="flex-shrink-0" :class="[props.row.getCanExpand() ? 'visible' : 'invisible']">
+    <div
+      class="flex flex-shrink-0 items-center"
+      :class="[props.row.getCanExpand() ? 'visible' : 'invisible']"
+    >
       <slot
         :expand="props.row.getIsExpanded()"
         :on-expand-change="props.row.toggleExpanded"

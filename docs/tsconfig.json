@@ -7,6 +7,6 @@
       "@aimerthyr/virtual-table": ["../packages/table/src/index.ts"]
     }
   },
-  "include": ["src/**/*", "../packages/table/src/**/*"],
+  "include": ["components/**/*", "../packages/table/src/**/*", "auto-imports.d.ts"],
   "exclude": ["node_modules"]
 }

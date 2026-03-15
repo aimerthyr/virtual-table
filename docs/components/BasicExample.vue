@@ -1,5 +1,5 @@
 <template>
-  <VTable :data="data" :columns="columns" :bordered="true" />
+  <VTable :data="data" :columns="columns" :bordered="false" />
 </template>
 
 <script setup lang="ts">

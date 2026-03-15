@@ -8,7 +8,6 @@
       v-model:default-column-pinning="columnPinning"
       :data="data"
       :columns="columns"
-      :bordered="true"
       row-key="id"
     />
   </div>

@@ -6,7 +6,6 @@
     <VTable
       :data="data"
       :columns="columns"
-      :bordered="true"
       row-key="id"
       :row-selection-config="{
         enabled: true,
