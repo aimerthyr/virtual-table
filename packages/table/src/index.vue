@@ -10,7 +10,7 @@
   >
     <div
       ref="tableContainerRef"
-      class="min-h-0 flex-1"
+      class="v-table-container min-h-0 flex-1"
       :class="{ 'overflow-y-auto': props.fixedHeader }"
     >
       <table class="v-table" :class="{ 'v-table-bordered': props.bordered }">
@@ -845,5 +845,29 @@ defineExpose<VTableInstance<TData>>({
   left: 0;
   transform: translateX(-100%);
   box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.15);
+}
+
+.v-table-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.v-table-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.v-table-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.v-table-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.v-table-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
 }
 </style>
