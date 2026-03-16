@@ -40,6 +40,9 @@ export default defineConfig({
         link: 'https://juejin.cn/post/7616654151096483883',
       },
     ],
+    lastUpdated: {
+      text: '最后更新时间',
+    },
   },
   locales: {
     root: {
@@ -52,4 +55,5 @@ export default defineConfig({
       noExternal: ['ant-design-vue', '@ant-design/icons-vue'],
     },
   },
+  lastUpdated: true,
 })
