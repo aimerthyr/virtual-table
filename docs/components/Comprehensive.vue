@@ -80,15 +80,15 @@
       }"
       :custom-row-attributes="customRowHandler"
       :custom-cell-attributes="customCellHandler"
-      :@table-change="handleTableChange"
-      :@scroll-to-bottom="handleScrollToBottom"
-      :@expanded-rows-change="handleExpandedChange"
-      :@column-sizing-change="handleColumnSizingChange"
       :theme-config="{
         border: {
           borderStyle: 'dashed',
         },
       }"
+      @table-change="handleTableChange"
+      @scroll-to-bottom="handleScrollToBottom"
+      @expanded-rows-change="handleExpandedChange"
+      @column-sizing-change="handleColumnSizingChange"
     >
       <!-- 自定义单元格 -->
       <template #bodyCell="{ columnKey, row }">

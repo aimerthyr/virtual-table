@@ -45,11 +45,12 @@
   "dependencies": {
     "@floating-ui/vue": "^1.1.10",
     "@tanstack/vue-table": "^8.21.3",
-    "@tanstack/vue-virtual": "^3.13.19"
+    "@tanstack/vue-virtual": "^3.13.23"
   },
   "devDependencies": {
     "@vitejs/plugin-vue-jsx": "^5.1.4",
     "less": "^4.5.1",
+    "terser": "^5.46.1",
     "vite-plugin-dts": "^4.5.4"
   }
 }

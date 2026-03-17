@@ -56,13 +56,6 @@ export default defineConfig({
     emptyOutDir: true,
     // 启用压缩
     minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true, // 移除console
-        drop_debugger: true, // 移除debugger
-        pure_funcs: ['console.log'], // 移除特定函数调用
-      },
-    },
     // 设置chunk大小警告阈值
     chunkSizeWarningLimit: 1000,
   },

@@ -54,3 +54,56 @@ const columns: VTableColumn[] = [
 ]
 </script>
 ```
+
+### 注册全局组件
+
+**第一种方式（推荐）**
+
+```bash
+npm install -D unplugin-vue-components
+```
+
+```ts
+// vite.config.ts
+import Components from 'unplugin-vue-components/vite'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  plugins: [
+    Components({
+      // ...其余配置
+      resolvers: [
+        (name: string) => {
+          if (name === 'VTable') {
+            return {
+              name: 'VTable',
+              from: '@aimerthyr/virtual-table',
+            }
+          }
+        },
+      ],
+    }),
+  ],
+})
+```
+
+第二种方式
+
+```ts
+// main.ts
+import VTable from '@aimerthyr/virtual-table'
+
+const app = createApp(App)
+app.component('VTable', VTable)
+```
+
+```ts
+// 根目录新建一个 components.d.ts 文件
+export {}
+declare module 'vue' {
+  export interface GlobalComponents {
+    // ...其他全局组件
+    VTable: (typeof import('@aimerthyr/virtual-table'))['VTable']
+  }
+}
+```

@@ -161,10 +161,12 @@
           <tr v-if="showNoMoreTip" :style="{ borderBottom: 'none' }">
             <td
               :colspan="table.getAllLeafColumns().length"
-              class="!border-b-0 p-[12px] text-center text-[14px] text-[rgba(0,0,0,0.32)]"
+              class="!border-b-0 !p-0 text-center text-[14px] text-[rgba(0,0,0,0.32)]"
             >
               <slot name="customLoadNoMore">
-                {{ noMoreText }}
+                <div class="p-[12px]">
+                  {{ noMoreText }}
+                </div>
               </slot>
             </td>
           </tr>

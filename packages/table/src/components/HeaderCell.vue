@@ -17,7 +17,7 @@
       >
         <component :is="headerRender" />
       </div>
-      <div class="flex items-center gap-[16px]">
+      <div v-if="canSort || canFilter" class="flex items-center gap-[20px]">
         <template v-if="canSort">
           <slot name="customSorterIcon" :sort="currentSort">
             <SorterIcon :sort="currentSort" />
