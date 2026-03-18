@@ -46,7 +46,12 @@ export default defineConfig({
             { text: '综合示例', link: '/examples/comprehensive' },
           ],
         },
-        lastUpdated: { text: '最后更新时间' },
+        lastUpdated: {
+          text: '最后更新时间',
+          formatOptions: {
+            forceLocale: true,
+          },
+        },
       },
     },
     es: {
@@ -63,6 +68,11 @@ export default defineConfig({
             { text: 'Basic Examples', link: '/es/examples/' },
             { text: 'Comprehensive Examples', link: '/es/examples/comprehensive' },
           ],
+        },
+        lastUpdated: {
+          formatOptions: {
+            forceLocale: true,
+          },
         },
       },
     },

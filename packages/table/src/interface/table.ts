@@ -115,6 +115,8 @@ export interface VTableProps<TData = any> {
   defaultCheckboxColumnWidth?: number
   /** 默认展开列的列宽 */
   defaultExpandColumnWidth?: number
+  /** 表格布局模式 (固定宽度 / 内容自适应) */
+  layoutMode?: 'fixed' | 'contentFit'
   /** 自定义数据行属性 */
   customRowAttributes?: (row: TData, rowIndex: number) => HTMLAttributes
   /** 自定义表头单元格属性 */

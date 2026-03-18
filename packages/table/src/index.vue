@@ -13,12 +13,16 @@
       class="v-table-container min-h-0 flex-1"
       :class="{ 'overflow-y-auto': props.fixedHeader }"
     >
-      <table class="v-table" :class="{ 'v-table-bordered': props.bordered }">
+      <table
+        class="v-table"
+        :class="{ 'v-table-bordered': props.bordered }"
+        :style="{ width: props.layoutMode === 'fixed' ? '100%' : 'max-content' }"
+      >
         <colgroup>
           <col
             v-for="column in table.getAllLeafColumns()"
             :key="column.id"
-            :style="{ width: getColumnWidth(column) }"
+            :style="{ width: columnWidthMap[column.id] }"
           />
         </colgroup>
         <thead
@@ -186,7 +190,7 @@
       </table>
       <!-- 空状态 -->
       <div
-        v-if="!virtualRows.length && !props.loading"
+        v-if="!virtualRows.length"
         :style="{ height: `calc(100% - ${tableHeaderRef?.offsetHeight ?? 0}px)` }"
         class="flex items-center justify-center"
       >
@@ -278,78 +282,37 @@ const initResizeObserver = () => {
   })
   resizeObserver.observe(tableContainerRef.value)
 }
-/**
- * 计算自适应列的实际宽度
- * 1. 如果用户都设置了列宽，并且还没有超出表格宽度，则需要自动拉伸除 checkbox 和 expand 列外的其他列
- * 2. 如果用户存在未设置列宽的列，则又会有两种情况
- *   a. 总列宽未超出表格宽度时，将剩余空间分配未设置列宽的列
- *   b. 总列宽超出表格宽度，则所有未设置列宽的列都使用最小宽度
- *  */
-const adaptiveColumnWidthMap = computed(() => {
+const columnWidthConfig = computed(() => {
   const allColumns = table.getAllLeafColumns()
   const containerWidth = tableContainerWidth.value || 0
-  if (containerWidth === 0) return {}
-  // 筛选出自适应列（未设置 size 的列）
-  const adaptiveColumns = allColumns.filter((col) => !col.columnDef.size)
-  const adaptiveCount = adaptiveColumns.length
-  // 计算设置列宽的总宽度
-  const fixedWidthTotal = allColumns.reduce(
-    (sum, col) => (col.columnDef.size ? sum + Math.round(col.getSize()) : sum),
-    0,
-  )
-  // 避免垂直滚动条导致的计算误差
-  const tolerance = 20
-  const remainingWidth = containerWidth - fixedWidthTotal
-
-  /** 将 extraTotal 均分给 columns，余数依次补给前几列；getBase 提供每列的基础宽度 */
-  const distribute = (
-    columns: Column<TData>[],
-    extraTotal: number,
-    getBase: (col: Column<TData>) => number = () => 0,
-  ): Record<string, number> => {
-    const count = columns.length
-    const avg = Math.floor(extraTotal / count)
-    const rem = extraTotal % count
-    return columns.reduce(
-      (map, col, i) => {
-        map[col.id] = getBase(col) + avg + (i < rem ? 1 : 0)
-        return map
-      },
-      {} as Record<string, number>,
-    )
-  }
-
-  if (adaptiveCount === 0) {
-    // 全列定宽但不足容器时，将剩余空间分配给非 checkbox/expand 列
-    if (remainingWidth <= tolerance) return {}
-    const stretchableColumns = allColumns.filter(
-      (col) => col.id !== CHECKBOX_COLUMN_KEY && col.id !== EXPAND_COLUMN_KEY,
-    )
-    if (stretchableColumns.length === 0) return {}
-    return distribute(stretchableColumns, remainingWidth, (col) => Math.round(col.getSize()))
-  }
-
-  // 剩余空间充足时均分，不足时各列退回最小宽度（两种情况统一用 distribute 处理）
-  const adaptiveMinWidthTotal = adaptiveCount * props.adaptiveColumnWidth
-  const totalForAdaptive =
-    remainingWidth >= adaptiveMinWidthTotal - tolerance ? remainingWidth : adaptiveMinWidthTotal
-  return distribute(adaptiveColumns, totalForAdaptive)
+  const MIN_WIDTH = props.adaptiveColumnWidth
+  let fixedTotal = 0
+  let flexCount = 0
+  allColumns.forEach((col) => {
+    if (col.columnDef.size) fixedTotal += Number(col.columnDef.size)
+    else flexCount += 1
+  })
+  // 计算 “剩余空间” 平分给每一个自适应列后，每列能分到多少像素 （剩余空间 = 容器总宽度 - 固定列总宽度）
+  const avg = flexCount > 0 ? (containerWidth - fixedTotal) / flexCount : 0
+  // 如果平分后的像素比最小自适应列宽还小，则认为空间不足
+  const isCramped = flexCount > 0 && avg < MIN_WIDTH
+  return { isCramped, minWidth: MIN_WIDTH }
 })
-/** 获取表格列宽（用于 colgroup） */
-const getColumnWidth = (column: Column<TData>) => {
-  // 先读取自适应的列宽配置（一共有三种情况，都未命中才走下面）
-  const adaptiveWidth = adaptiveColumnWidthMap.value[column.id]
-  if (adaptiveWidth) {
-    return `${adaptiveWidth}px`
-  }
-  const definedSize = column.columnDef.size
-  if (definedSize) {
-    // 用户传了固定宽度，使用实际宽度（可能被拖拽调整过）
-    return `${column.getSize()}px`
-  }
-  // 用户没传，使用默认自适应列宽
-  return `${props.adaptiveColumnWidth}px`
-}
+const columnWidthMap = computed(() => {
+  const allColumns = table.getAllLeafColumns()
+  const { isCramped, minWidth } = columnWidthConfig.value
+  const map: Record<string, string> = {}
+  allColumns.forEach((column) => {
+    // 如果设置了宽度，则直接使用
+    if (column.columnDef.size) {
+      map[column.id] = `${column.getSize()}px`
+    } else {
+      // 反之如果没有，则需要判断是否为空间不足，如果是则设置最小宽度，反之使用 auto 来填满剩余空间
+      map[column.id] = isCramped ? `${minWidth}px` : 'auto'
+    }
+  })
+  return map
+})
 // #endregion
 
 // #region tanstack-table 核心逻辑
@@ -750,8 +713,8 @@ defineExpose<VTableInstance<TData>>({
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
-  width: 100%;
   font-size: 14px;
+  min-width: 100%;
 
   &-header tr {
     &:not(:last-child) th {
@@ -768,7 +731,7 @@ defineExpose<VTableInstance<TData>>({
       padding: var(--v-table-header-padding);
       .border-mixin(bottom);
 
-      &:not(.checkbox-col, .expand-col, :last-child)::before {
+      &:not(.checkbox-col, .expand-col, :last-child, .pinned-left-shadow)::before {
         content: '';
         position: absolute;
         top: 50%;
@@ -824,7 +787,7 @@ defineExpose<VTableInstance<TData>>({
   }
 }
 
-// 固定列阴影样式
+// #region --------------------------------------- 固定列阴影样式区域 ---------------------------------------
 .pinned-shadow-base() {
   content: '';
   position: absolute;
@@ -849,8 +812,12 @@ defineExpose<VTableInstance<TData>>({
   box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.15);
 }
 
+// #endregion --------------------------------------- 固定列阴影样式区域 ---------------------------------------
+
+// #region --------------------------------------- 滚动条样式区域 ---------------------------------------
 .v-table-container::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 .v-table-container::-webkit-scrollbar-track {
@@ -868,8 +835,12 @@ defineExpose<VTableInstance<TData>>({
   background-color: rgba(0, 0, 0, 0.4);
 }
 
-.v-table-container {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+@supports not selector(::-webkit-scrollbar) {
+  .v-table-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+  }
 }
+
+// #endregion --------------------------------------- 滚动条样式区域 ---------------------------------------
 </style>

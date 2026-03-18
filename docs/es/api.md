@@ -50,6 +50,7 @@ Display the API documentation for the VTable component.
 | `customRowAttributes` | Custom data row attributes | `(row, rowIndex) => HTMLAttributes` | `() => ({})` |
 | `customHeaderCellAttributes` | Custom table header cell attributes | `(column, colIndex) => ThHTMLAttributes` | `() => ({})` |
 | `customCellAttributes` | Custom table body cell attributes (supports merging cells) | `(row, column, rowIndex, colIndex) => TdHTMLAttributes` or `null` | `() => ({})` |
+| `layoutMode` | Table layout mode (fixed width / content fit) | `'fixed'` &#124; `'contentFit'` | `'fixed'` |
 
 ---
 

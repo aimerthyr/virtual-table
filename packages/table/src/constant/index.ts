@@ -48,6 +48,7 @@ export const vTableDefaultProps = defineDefaultProps<VTableProps<any>>({
   themeConfig: () => ({}),
   defaultCheckboxColumnWidth: 40,
   defaultExpandColumnWidth: 42,
+  layoutMode: 'fixed',
   customRowAttributes: () => ({}),
   customHeaderCellAttributes: () => ({}),
   customCellAttributes: () => ({}),

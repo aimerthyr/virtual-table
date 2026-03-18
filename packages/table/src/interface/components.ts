@@ -38,7 +38,7 @@ export interface VTablePaginationProps {
   pageIndex: number
   /** 总条数 */
   total: number
-  /** 页码变化回调 */
+  /** 页码/每页条数变化回调 */
   onPageChange: (pageIndex: number, pageSize: number) => void
 }
 
