@@ -6,7 +6,22 @@ title: 参考
 
 展示 VTable 组件的 API 文档。
 
-### Props
+### 状态
+
+> 支持双向绑定,用于控制表格内部状态
+
+<!-- prettier-ignore -->
+| 状态名 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `defaultFilter` | 筛选状态 | `VTableColumnFiltersState` | `[]` |
+| `defaultSort` | 排序状态 | `VTableSortingState` | `[]` |
+| `defaultPagination` | 分页状态 | `VTablePaginationState` | `{}` |
+| `defaultExpanded` | 展开状态 | `VTableExpandedState` | `[]` |
+| `defaultSelection` | 选择状态 | `VTableSelectionState` | `[]` |
+| `defaultColumnPinning` | 列固定状态 | `VTableColumnPinningState` | `{}` |
+| `defaultColumnSizing` | 列宽状态 | `VTableColumnSizingState` | `{}` |
+
+### 属性
 
 <!-- prettier-ignore -->
 | 属性名 | 说明 | 类型 | 默认值 |
@@ -38,7 +53,7 @@ title: 参考
 
 ---
 
-### Events
+### 事件
 
 <!-- prettier-ignore -->
 | 事件名 | 说明 | 回调参数 |
@@ -50,7 +65,7 @@ title: 参考
 
 ---
 
-### Slots
+### 插槽
 
 <!-- prettier-ignore -->
 | 插槽名 | 说明 | 参数 |
@@ -73,9 +88,9 @@ title: 参考
 
 ---
 
-### Methods
+### 方法
 
-通过 ref 调用组件实例方法：
+> 通过 ref 调用组件实例方法
 
 <!-- prettier-ignore -->
 | 方法名 | 说明 | 参数 | 返回值 |
