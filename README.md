@@ -1,5 +1,7 @@
 # @aimerthyr/virtual-table
 
+[English](./README.en.md) | 简体中文
+
 基于 Vue 3、TanStack Table 和 TanStack Virtual 的高性能虚拟滚动表格组件。
 
 ## 介绍
