@@ -269,7 +269,7 @@ const combinedColumns: VTableColumn[] = [
       {
         columnKey: 'department',
         columnHeader: '部门',
-        columnWidth: 150,
+        columnWidth: 120,
       },
       {
         columnKey: 'age',
@@ -287,7 +287,7 @@ const combinedColumns: VTableColumn[] = [
       {
         columnKey: 'email',
         columnHeader: '邮箱',
-        columnWidth: 220,
+        columnWidth: 180,
       },
       {
         columnKey: 'status',
@@ -300,7 +300,7 @@ const combinedColumns: VTableColumn[] = [
   {
     columnKey: 'createTime',
     columnHeader: '创建时间',
-    columnWidth: 180,
+    columnWidth: 140,
   },
   {
     columnKey: 'action',

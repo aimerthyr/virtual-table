@@ -20,7 +20,7 @@
       >
         <colgroup>
           <col
-            v-for="column in table.getAllLeafColumns()"
+            v-for="column in allLeafColumns"
             :key="column.id"
             :style="{ width: columnWidthMap[column.id] }"
           />
@@ -41,9 +41,9 @@
                 :class="[
                   header.column.id === CHECKBOX_COLUMN_KEY ? 'checkbox-col' : '',
                   header.column.id === EXPAND_COLUMN_KEY ? 'expand-col' : '',
-                  isShadowPinnedColumn(header.column),
+                  shadowPinnedColumnMap.get(header.column.id),
                 ]"
-                :style="getColumnStyle(header.column)"
+                :style="columnStyleMap.get(header.column.id)"
                 v-bind="
                   props?.customHeaderCellAttributes?.(
                     header.column.columnDef?.meta!,
@@ -108,11 +108,11 @@
                       cellIndex,
                     )
                   "
-                  :style="getColumnStyle(cell.column)"
+                  :style="columnStyleMap.get(cell.column.id)"
                   :class="[
                     cell.column.id === CHECKBOX_COLUMN_KEY ? 'checkbox-col' : '',
                     cell.column.id === EXPAND_COLUMN_KEY ? 'expand-col' : '',
-                    isShadowPinnedColumn(cell.column),
+                    shadowPinnedColumnMap.get(cell.column.id),
                   ]"
                   v-bind="
                     props.customCellAttributes?.(
@@ -146,7 +146,7 @@
               </template>
             </template>
             <!-- 自定义展开行的模板 -->
-            <td v-else class="!p-0" :colspan="table.getAllLeafColumns().length">
+            <td v-else class="!p-0" :colspan="allLeafColumns.length">
               <div
                 class="overflow-hidden"
                 :style="{
@@ -164,7 +164,7 @@
           <!-- 底部提示模板 (作为最后一行) -->
           <tr v-if="showNoMoreTip" :style="{ borderBottom: 'none' }">
             <td
-              :colspan="table.getAllLeafColumns().length"
+              :colspan="allLeafColumns.length"
               class="!border-b-0 !p-0 text-center text-[14px] text-[rgba(0,0,0,0.32)]"
             >
               <slot name="customLoadNoMore">
@@ -180,7 +180,7 @@
           :style="{ bottom: 0, zIndex: themeConfig.zIndex?.fixedFooter }"
         >
           <tr>
-            <td class="!p-0" :colspan="table.getAllLeafColumns().length">
+            <td class="!p-0" :colspan="allLeafColumns.length">
               <div class="overflow-hidden">
                 <slot name="customFooter" />
               </div>
@@ -223,7 +223,6 @@ import {
   getExpandedRowModel,
   getPaginationRowModel,
   useVueTable,
-  type Column,
   type ColumnDef,
   type ColumnFiltersState,
   type ColumnPinningState,
@@ -268,6 +267,7 @@ const props = withDefaults(defineProps<VTableProps<TData>>(), vTableDefaultProps
 const $slots = defineSlots<VTableSlots<TData>>()
 
 // #region 自适应列宽计算
+const allLeafColumns = computed(() => table.getAllLeafColumns())
 const tableHeaderRef = ref<HTMLDivElement>()
 const paginationRef = ref<HTMLDivElement>()
 const tableContainerRef = ref<HTMLDivElement | null>(null)
@@ -574,9 +574,8 @@ const rowVirtualizerOptions = computed(() => {
   }
 })
 const rowVirtualizer = useVirtualizer(rowVirtualizerOptions)
-/** 当展开收起时，需要重新计算虚拟滚动的位置 */
 watch(
-  () => rows.value.length,
+  () => props.data,
   () => {
     rowVirtualizer.value.measure()
   },
@@ -638,36 +637,42 @@ const canRenderCell = (
   }
   return true
 }
-const getColumnStyle = (column: Column<TData>): CSSProperties => {
-  const meta = column.columnDef.meta
-  const pinPosition = column.getIsPinned()
-  const baseStyle: CSSProperties = {
-    textAlign: meta?.columnAlign || 'left',
-  }
-  // 处理固定列逻辑
-  if (pinPosition) {
-    baseStyle.position = 'sticky'
-    if (pinPosition === 'left') {
-      baseStyle.left = `${column.getStart('left')}px`
-    } else {
-      baseStyle.right = `${column.getAfter('right')}px`
+/** 列样式 Map */
+const columnStyleMap = computed(() => {
+  const map = new Map<string, CSSProperties>()
+  for (const column of allLeafColumns.value) {
+    const meta = column.columnDef.meta
+    const pinPosition = column.getIsPinned()
+    const style: CSSProperties = {
+      textAlign: meta?.columnAlign || 'left',
     }
-    baseStyle.zIndex = themeConfig.value.zIndex?.pinnedColumn
+    if (pinPosition) {
+      style.position = 'sticky'
+      if (pinPosition === 'left') {
+        style.left = `${column.getStart('left')}px`
+      } else {
+        style.right = `${column.getAfter('right')}px`
+      }
+      style.zIndex = themeConfig.value.zIndex?.pinnedColumn
+    }
+    map.set(column.id, style)
   }
-  return baseStyle
-}
-/** 判断是否为固定阴影列 */
-const isShadowPinnedColumn = (column: Column<TData>): string => {
-  const pinPosition = column.getIsPinned()
-  if (!pinPosition) return ''
-  if (pinPosition === 'left' && column.getIsLastColumn('left')) {
-    return 'pinned-left-shadow'
+  return map
+})
+/** 固定列阴影 Map */
+const shadowPinnedColumnMap = computed(() => {
+  const map = new Map<string, string>()
+  for (const column of allLeafColumns.value) {
+    const pinPosition = column.getIsPinned()
+    if (!pinPosition) continue
+    if (pinPosition === 'left' && column.getIsLastColumn('left')) {
+      map.set(column.id, 'pinned-left-shadow')
+    } else if (pinPosition === 'right' && column.getIsFirstColumn('right')) {
+      map.set(column.id, 'pinned-right-shadow')
+    }
   }
-  if (pinPosition === 'right' && column.getIsFirstColumn('right')) {
-    return 'pinned-right-shadow'
-  }
-  return ''
-}
+  return map
+})
 // #endregion
 
 onMounted(() => {
