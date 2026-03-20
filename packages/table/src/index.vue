@@ -574,8 +574,9 @@ const rowVirtualizerOptions = computed(() => {
   }
 })
 const rowVirtualizer = useVirtualizer(rowVirtualizerOptions)
+/** 展开收起时需要重新测量高度 */
 watch(
-  () => props.data,
+  () => rows.value.length,
   () => {
     rowVirtualizer.value.measure()
   },
