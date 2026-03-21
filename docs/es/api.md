@@ -63,6 +63,7 @@ Display the API documentation for the VTable component.
 | `onScrollToBottom` | Triggered when scrolling to the bottom | `() => void` |
 | `onExpandedRowsChange` | Triggered when the expanded rows change | `(state: VTableExpandedState) => void` |
 | `onColumnSizingChange` | Triggered when the column width changes | `(state: VTableColumnSizingState) => void` |
+| `onExpand` | Triggered when the expand icon is clicked | `(expanded: boolean, row: TData) => void` |
 
 ---
 

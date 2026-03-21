@@ -1,8 +1,9 @@
 import type { InjectionKey } from 'vue'
+import type { VTableProps } from '../interface'
 
-// 暂时用不着，后续可能会用， 所以先留着
-//  eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface VTableContext {}
+export interface VTableContext {
+  tableProps: VTableProps
+}
 
 const VTableContextKey: InjectionKey<VTableContext> = Symbol('vTableContextKey')
 

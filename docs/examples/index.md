@@ -408,6 +408,7 @@ onMounted(() => {
       enabled: true,
       childrenKey: 'children',
     }"
+    @expand="handleExpand"
   />
 </template>
 
@@ -439,6 +440,7 @@ const data = ref([
     id: 3,
     name: '运营部',
     count: 8,
+    children: [],
   },
 ])
 
@@ -446,6 +448,15 @@ const columns: VTableColumn[] = [
   { columnKey: 'name', columnHeader: '部门名称', columnWidth: 200 },
   { columnKey: 'count', columnHeader: '人数', columnAlign: 'center' },
 ]
+
+const handleExpand = (expanded: boolean, row: any) => {
+  if (row.id === 3 && expanded) {
+    row.children = [
+      { id: 211, name: '运营组1', count: 6 },
+      { id: 212, name: '运营组2', count: 4 },
+    ]
+  }
+}
 </script>
 ```
 

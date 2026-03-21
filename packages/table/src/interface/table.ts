@@ -165,6 +165,8 @@ export interface VTableProps<TData = any> {
   onExpandedRowsChange?: (expandState: VTableExpandedState) => void
   /** 列宽调整回调 */
   onColumnSizingChange?: (columnSizing: VTableColumnSizingState) => void
+  /** 点击展开图标回调 */
+  onExpand?: (expanded: boolean, row: TData) => void
   // #endregion
 }
 

@@ -550,15 +550,8 @@ const formatName = (name: string) => {
 
 const handleEdit = (row: TableRow) => {
   console.log('编辑:', row)
-  /** 如果你使用的插槽，则可以直接修改 row 的属性 */
   row.name = 'xxx'
-  // 如果你使用的函数，或者默认渲染，则需要通过修改 data 来进行数据变更
-  // tableData.value = tableData.value.map((item) => {
-  //   if (item.id === row.id) {
-  //     return { ...item, age: 300 }
-  //   }
-  //   return item
-  // })
+  row.age = 300
 }
 
 const handleDelete = (row: TableRow) => {

@@ -63,6 +63,7 @@ title: 参考
 | `onScrollToBottom` | 滚动到底部时触发 | `() => void` |
 | `onExpandedRowsChange` | 展开行变化时触发 | `(state: VTableExpandedState) => void` |
 | `onColumnSizingChange` | 列宽调整时触发 | `(state: VTableColumnSizingState) => void` |
+| `onExpand` | 点击展开图标触发 | `(expanded: boolean, row: TData) => void` |
 
 ---
 

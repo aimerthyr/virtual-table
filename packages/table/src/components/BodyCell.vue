@@ -1,9 +1,9 @@
 <template>
   <div
-    v-if="props.treeConfig?.enabled && props.cell.column.id === props.columns[0]?.columnKey"
+    v-if="tableProps.treeConfig?.enabled && props.cell.column.id === props.columns[0]?.columnKey"
     class="flex h-full items-center gap-[8px]"
     :style="{
-      paddingLeft: `${props.row.depth * (props.treeConfig?.indentSize ?? 16)}px`,
+      paddingLeft: `${props.row.depth * (tableProps.treeConfig?.indentSize ?? 16)}px`,
     }"
   >
     <div
@@ -12,10 +12,10 @@
     >
       <slot
         :expand="props.row.getIsExpanded()"
-        :on-expand-change="props.row.toggleExpanded"
         name="customExpandIcon"
+        @expand-change="handleExpandChange"
       >
-        <ExpandIcon :expand="props.row.getIsExpanded()" @expand-change="props.row.toggleExpanded" />
+        <ExpandIcon :expand="props.row.getIsExpanded()" @expand-change="handleExpandChange" />
       </slot>
     </div>
     <component :is="cellRender" />
@@ -26,25 +26,32 @@
 <script setup lang="ts">
 import { computed, h } from 'vue'
 import type { Cell, Row } from '@tanstack/vue-table'
+import { useInjectVTableContext } from '../context'
 import ExpandIcon from '../icons/ExpandIcon.vue'
-import type { VTableColumn, VTableSlots, VTableTreeConfig } from '../interface'
+import type { VTableColumn, VTableSlots } from '../interface'
 import { hasPassSlot } from '../utils'
 
 defineOptions({ name: 'BodyCell' })
 
 const props = defineProps<{
   cell: Cell<any, any>
-  treeConfig: VTableTreeConfig
   columns: VTableColumn[]
   row: Row<any>
 }>()
 
+const tableContext = useInjectVTableContext()
+const tableProps = computed(() => tableContext.tableProps)
 const slots = defineSlots<VTableSlots>()
 
 const columnKey = props.cell.column.id
 const rowIndex = props.cell.row.index
 const originalRow = computed(() => props.cell.row.original)
 const column = computed(() => props.cell.column.columnDef.meta!)
+
+const handleExpandChange = async () => {
+  props.row.toggleExpanded()
+  tableProps.value.onExpand?.(props.row.getIsExpanded(), originalRow.value)
+}
 
 const cellRender = computed(() => {
   return () => {

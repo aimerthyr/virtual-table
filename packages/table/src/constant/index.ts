@@ -56,6 +56,7 @@ export const vTableDefaultProps = defineDefaultProps<VTableProps<any>>({
   onScrollToBottom: () => {},
   onExpandedRowsChange: () => {},
   onColumnSizingChange: () => {},
+  onExpand: () => {},
 })
 /** 默认主题配置 */
 export const defaultThemeConfig: VTableThemeConfig = {

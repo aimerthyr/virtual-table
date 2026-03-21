@@ -128,13 +128,7 @@
                     :render="cell.column.columnDef.cell"
                     :props="cell.getContext()"
                   />
-                  <BodyCell
-                    v-else
-                    :cell="cell"
-                    :tree-config="props.treeConfig"
-                    :columns="props.columns"
-                    :row="rows[vRow.index]!"
-                  >
+                  <BodyCell v-else :cell="cell" :columns="props.columns" :row="rows[vRow.index]!">
                     <template v-if="$slots.bodyCell" #bodyCell="slotProps">
                       <slot name="bodyCell" v-bind="slotProps" />
                     </template>
@@ -244,6 +238,7 @@ import {
   EXPAND_ROW_KEY,
   vTableDefaultProps,
 } from './constant'
+import { useProvideVTableContext } from './context'
 import { useTheme } from './hooks/useTheme'
 import ExpandIcon from './icons/ExpandIcon.vue'
 import type {
@@ -410,7 +405,14 @@ const computedColumns = computed(() => {
   }
   return columns
 })
-const tableData = computed(() => buildData(props.data, props.enableExpandRow))
+const tableData = shallowRef<TData[]>([])
+watch(
+  () => props.data,
+  (newData) => {
+    tableData.value = buildData([...newData], props.enableExpandRow)
+  },
+  { deep: true, immediate: true },
+)
 const table = useVueTable<TData>({
   state: {
     get columnFilters() {
@@ -513,6 +515,19 @@ const table = useVueTable<TData>({
     }
     // 反之就是开启了 tree 模式，那直接读取用户提供的字段
     return (row as any)[props.treeConfig!.childrenKey!] as TData[] | undefined
+  },
+  getRowCanExpand: (row: Row<TData>) => {
+    // tree 模式：只要存在 children 数组（允许空数组），就显示展开按钮
+    if (props.treeConfig.enabled) {
+      const childrenKey = props.treeConfig.childrenKey ?? 'children'
+      const children = (row.original as any)?.[childrenKey]
+      return Array.isArray(children)
+    }
+    // 自定义展开行（默认均支持展开）
+    if (props.enableExpandRow) {
+      return true
+    }
+    return false
   },
 })
 /** 设置所有行展开 */
@@ -692,6 +707,10 @@ onBeforeUnmount(() => {
     resizeObserver.disconnect()
     resizeObserver = null
   }
+})
+
+useProvideVTableContext({
+  tableProps: props,
 })
 
 defineExpose<VTableInstance<TData>>({
