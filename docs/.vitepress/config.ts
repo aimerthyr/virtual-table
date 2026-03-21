@@ -39,6 +39,7 @@ export default defineConfig({
           { text: '指南', link: '/guide' },
           { text: '示例', link: '/examples/', activeMatch: '/examples/' },
           { text: '参考', link: '/api' },
+          { text: '关于', link: '/about' },
         ],
         sidebar: {
           '/examples/': [
@@ -62,6 +63,7 @@ export default defineConfig({
           { text: 'Guide', link: '/es/guide' },
           { text: 'Examples', link: '/es/examples/', activeMatch: '/es/examples/' },
           { text: 'Reference', link: '/es/api' },
+          { text: 'About', link: '/es/about' },
         ],
         sidebar: {
           '/es/examples/': [
