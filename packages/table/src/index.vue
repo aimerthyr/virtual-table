@@ -239,6 +239,7 @@ import {
   vTableDefaultProps,
 } from './constant'
 import { useProvideVTableContext } from './context'
+import { RowEditingFeature } from './features/rowEditing'
 import { useTheme } from './hooks/useTheme'
 import ExpandIcon from './icons/ExpandIcon.vue'
 import type {
@@ -377,6 +378,7 @@ const columnPinning = defineModel<ColumnPinningState>('defaultColumnPinning', {
 const columnSizing = defineModel<ColumnSizingState>('defaultColumnSizing', {
   default: () => ({}),
 })
+const editingRowId = ref<string | null>(null)
 
 const handlePageChange = (page: number, pageSize: number) => {
   pagination.value = { pageIndex: page, pageSize }
@@ -414,7 +416,11 @@ watch(
   { deep: true, immediate: true },
 )
 const table = useVueTable<TData>({
+  _features: [RowEditingFeature],
   state: {
+    get editingRowId() {
+      return editingRowId.value
+    },
     get columnFilters() {
       return columnFilters.value
     },
@@ -507,6 +513,10 @@ const table = useVueTable<TData>({
     nextTick(() => {
       props.onColumnSizingChange?.(columnSizing.value)
     })
+  },
+  onEditingRowIdChange: (updaterOrValue) => {
+    editingRowId.value =
+      typeof updaterOrValue === 'function' ? updaterOrValue(editingRowId.value) : updaterOrValue
   },
   getSubRows: (row) => {
     // 如果开启了自定义可展开行
@@ -720,6 +730,10 @@ defineExpose<VTableInstance<TData>>({
     nextTick(() => {
       rowVirtualizer.value.scrollToIndex(index, { align: 'start', behavior })
     })
+  },
+  /** 设置编辑行（传 null 退出编辑态） */
+  setEditingRow: (rowId: string | number | null) => {
+    table.setEditingRow(rowId === null ? null : String(rowId))
   },
 })
 </script>

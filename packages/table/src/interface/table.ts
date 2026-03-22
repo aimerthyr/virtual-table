@@ -176,4 +176,6 @@ export interface VTableInstance<TData = any> {
   tanstackTable: Table<TData>
   /** 滚动到指定下标(从 0 开始，默认是平滑滚动) */
   scrollToIndex: (index: number, behavior?: 'auto' | 'smooth') => void
+  /** 设置当前编辑行 (传 null 代表退出编辑态) */
+  setEditingRow: (rowId: string | number | null) => void
 }

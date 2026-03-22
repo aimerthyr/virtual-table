@@ -6,23 +6,27 @@ title: About
 
 ### Common Issues
 
-**1. The position of a row is not accurate or the table scrolls abnormally?**
+**1. The table state is abnormal, such as the expansion or selection is abnormal?**
+
+Please check if the `rowKey` property is configured, if configured, please ensure that the value of `rowKey` is unique, otherwise the table state may be abnormal.
+
+**2. The position of a row is not accurate or the table scrolls abnormally?**
 
 Please check if the `rowHeight` property is set, if set, please ensure that the value of `rowHeight` is correct, otherwise the position of a row may not be accurate.
 
-**2. It is recommended to use the `bodyCell` slot instead of the `customCell` function in the `column`**
+**3. It is recommended to use the `bodyCell` slot instead of the `customCell` function in the `column`**
 
 The reason is that bodyCell internally does caching processing, which can avoid unnecessary cell redrawing, while the customCell function will be called repeatedly.
 
-**3. The problem of multiple triggers of scroll loading**
+**4. The problem of multiple triggers of scroll loading**
 
 You need to pass in the `loading` state, which is used to control the problem of frequent triggers.
 
-**4. The pagination component cannot be displayed?**
+**5. The pagination component cannot be displayed?**
 
 The display of the pagination component depends on two values `paginationConfig.enabled` and `paginationConfig.total`, both must be set to display.
 
-**5. When setting the pagination state, both properties must be passed in**
+**6. When setting the pagination state, both properties must be passed in**
 
 ```vue
 // Incorrect passing ❌

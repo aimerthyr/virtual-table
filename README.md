@@ -372,6 +372,7 @@ const handleSelectionChange = (rows: any[]) => {
 | --------------- | -------------------------------------------------------- | ------------------- |
 | `tanstackTable` | `Table<TData>`                                           | TanStack Table 实例 |
 | `scrollToIndex` | `(index: number, behavior?: 'auto' \| 'smooth') => void` | 滚动到指定行        |
+| `setEditingRow` | `(rowId: string \| number \| null) => void`              | 设置当前编辑行      |
 
 使用示例：
 

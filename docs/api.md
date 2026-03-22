@@ -99,3 +99,4 @@ title: 参考
 | --- | --- | --- | --- |
 | `scrollToIndex` | 滚动到指定行索引 | `(index: number, behavior?: ScrollBehavior)` | `void` |
 | `tanstackTable` | 获取 TanStack Table 实例 | - | `Table` |
+| `setEditingRow` | 设置当前编辑行 | `(rowId: string | number | null)` | `void` |

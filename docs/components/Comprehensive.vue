@@ -91,9 +91,12 @@
       @column-sizing-change="handleColumnSizingChange"
     >
       <!-- 自定义单元格 -->
-      <template #bodyCell="{ columnKey, row }">
+      <template #bodyCell="{ columnKey, row, isEditing }">
         <template v-if="columnKey === 'name'">
-          <a-tag :color="row.level === 1 ? 'blue' : 'green'">{{ formatName(row.name) }}</a-tag>
+          <a-input v-if="isEditing" v-model:value="row.name" size="small" />
+          <a-tag v-else :color="row.level === 1 ? 'blue' : 'green'">
+            {{ formatName(row.name) }}
+          </a-tag>
         </template>
         <template v-else-if="columnKey === 'status'">
           <a-badge
@@ -103,8 +106,14 @@
         </template>
         <template v-else-if="columnKey === 'action'">
           <a-space>
-            <a-button type="link" size="small" @click="handleEdit(row)">编辑</a-button>
-            <a-button type="link" size="small" danger @click="handleDelete(row)">删除</a-button>
+            <template v-if="!isEditing">
+              <a-button type="link" size="small" @click="handleEdit(row)">编辑</a-button>
+              <a-button type="link" size="small" danger @click="handleDelete(row)">删除</a-button>
+            </template>
+            <template v-else>
+              <a-button type="link" size="small" @click="handleSave">保存</a-button>
+              <a-button type="link" size="small" danger @click="handleCancel(row)">取消</a-button>
+            </template>
           </a-space>
         </template>
       </template>
@@ -548,10 +557,24 @@ const formatName = (name: string) => {
   return name
 }
 
+const editingSnapshot = new Map<number, Partial<TableRow>>()
+
 const handleEdit = (row: TableRow) => {
-  console.log('编辑:', row)
-  row.name = 'xxx'
-  row.age = 300
+  editingSnapshot.set(row.id, { name: row.name })
+  vTableRef.value?.setEditingRow(row.id)
+}
+
+const handleSave = () => {
+  vTableRef.value?.setEditingRow(null)
+}
+
+const handleCancel = (row: TableRow) => {
+  const original = editingSnapshot.get(row.id)
+  if (original) {
+    Object.assign(row, original)
+    editingSnapshot.delete(row.id)
+  }
+  vTableRef.value?.setEditingRow(null)
 }
 
 const handleDelete = (row: TableRow) => {

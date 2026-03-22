@@ -122,4 +122,5 @@ export interface VTableBodyCellProps<TData = any> {
   column: VTableColumn
   row: TData
   rowIndex: number
+  isEditing: boolean
 }
