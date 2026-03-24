@@ -1,7 +1,9 @@
 <template>
   <div class="pagination">
     <!-- 总数显示 -->
-    <span class="pagination-total">共 {{ props.total }} 条</span>
+    <span v-if="props.showTotal" class="pagination-total"
+      >{{ props.totalText }} {{ props.total }}</span
+    >
 
     <!-- 页码列表 -->
     <ul class="pagination-list">
@@ -47,7 +49,7 @@
     </ul>
 
     <!-- 每页条数选择器 -->
-    <div class="pagination-size-changer">
+    <div v-if="props.showSizeChanger" class="pagination-size-changer">
       <VSelect
         :value="props.pageSize"
         :options="[
@@ -58,23 +60,27 @@
         ]"
         @select-change="(value) => props.onPageChange?.(1, value as number)"
       />
-      <span class="pagination-size-text">条/页</span>
+      <span class="pagination-size-text">{{ props.pageSizeText }}</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import ArrowIcon from '../icons/ArrowIcon.vue'
-import type { VTablePaginationProps } from '../interface'
+import type { VTablePaginationExtraProps, VTablePaginationProps } from '../interface'
 import VSelect from './VSelect.vue'
 
 defineOptions({ name: 'VPagination' })
 
-const props = withDefaults(defineProps<VTablePaginationProps>(), {
+const props = withDefaults(defineProps<VTablePaginationProps & VTablePaginationExtraProps>(), {
   total: 0,
   pageSize: 10,
   pageIndex: 1,
   onPageChange: () => {},
+  showTotal: false,
+  showSizeChanger: true,
+  totalText: '总计',
+  pageSizeText: '页',
 })
 
 // 总页数

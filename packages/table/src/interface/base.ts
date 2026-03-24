@@ -83,8 +83,16 @@ export interface VTableLoadMoreConfig {
   noMoreText?: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface VTablePaginationExtraProps {}
+export interface VTablePaginationExtraProps {
+  /** 是否显示总计 */
+  showTotal?: boolean
+  /** 是否显示每页条数选择器 */
+  showSizeChanger?: boolean
+  /** 总计文本 */
+  totalText?: string
+  /** 每页条数选择器文本 */
+  pageSizeText?: string
+}
 
 export interface VTablePaginationConfig {
   /** 总数（必须要传, 客户端分页可以不传，自动以传入的 data 长度作为总数） */

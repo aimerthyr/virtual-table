@@ -558,7 +558,9 @@ const PaginationComponent = computed(() => {
       props.paginationConfig?.mode === 'client' ? props.data.length : props.paginationConfig.total,
     onPageChange: handlePageChange,
   }
-  return () => $slots?.customPagination?.(paginationProps) || h(VPagination, paginationProps)
+  return () =>
+    $slots?.customPagination?.(paginationProps) ||
+    h(VPagination, { ...paginationProps, ...props.paginationConfig?.paginationExtraProps })
 })
 // #endregion
 

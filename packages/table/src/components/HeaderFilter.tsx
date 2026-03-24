@@ -62,7 +62,7 @@ export default defineComponent({
         setFilterValue: (value) => (filterModelValue.value = value),
         column: columnMeta.value,
         filterModelValue: filterModelValue.value,
-      }) || h('div', '我是默认下拉')
+      }) || h('div', 'Default Filter Dropdown')
 
     return () => {
       const customPopover = slots?.customPopover?.({

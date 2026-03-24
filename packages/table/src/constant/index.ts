@@ -33,6 +33,12 @@ export const vTableDefaultProps = defineDefaultProps<VTableProps<any>>({
     placement: 'right',
     total: 0,
     mode: 'server',
+    paginationExtraProps: {
+      showTotal: false,
+      showSizeChanger: true,
+      pageSizeText: '页',
+      totalText: '总计',
+    },
   }),
   treeConfig: () => ({
     enabled: false,
