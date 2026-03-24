@@ -1,6 +1,13 @@
 <template>
   <div>
-    <div class="mb-4 flex items-center justify-between">
+    <div
+      style="
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      "
+    >
       <div>
         <a-tag color="blue">总数据: {{ totalCount }} 条</a-tag>
         <a-tag color="green">当前页: {{ pagination.pageIndex }}</a-tag>

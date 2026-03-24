@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mb-4">
+    <div style="margin-bottom: 16px">
       <a-tag color="blue">已选择: {{ selectedRows.length }} 条</a-tag>
     </div>
     <VTable

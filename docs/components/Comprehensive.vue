@@ -1,31 +1,45 @@
 <template>
-  <div style="height: calc(100vh - 64px)" class="flex flex-col bg-white p-[24px]">
-    <h2 class="mb-[16px] flex gap-[16px]">
+  <div
+    style="
+      height: calc(100vh - 64px);
+      display: flex;
+      flex-direction: column;
+      background-color: #fff;
+      padding: 24px;
+    "
+  >
+    <h2 style="margin-bottom: 16px; display: flex; gap: 16px">
       综合示例
       <div>
         <a-tag color="blue">已选择: {{ selectedRows.length }} 条</a-tag>
         <a-tag color="green">当前数据: {{ tableData.length }} 条</a-tag>
       </div>
+      <a
+        style="color: #1890ff"
+        href="https://stackblitz.com/edit/vitejs-vite-ylzb2jdk?file=src%2FApp.vue"
+        target="_blank"
+        >在线链接🔗</a
+      >
     </h2>
-    <div class="mb-[12px] flex flex-col gap-[12px]">
-      <div class="flex gap-[16px]">
-        <div class="flex flex-col gap-[4px]">
-          <div class="text-[14px] font-medium">展开模式</div>
+    <div style="margin-bottom: 12px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 14px; font-weight: 500">展开模式</div>
           <a-radio-group v-model:value="expandMode" @change="handleExpandModeChange">
             <a-radio value="expand">expand 自定义</a-radio>
             <a-radio value="tree">tree</a-radio>
             <a-radio value="">不设置</a-radio>
           </a-radio-group>
         </div>
-        <div class="flex flex-col gap-[4px]">
-          <div class="text-[14px] font-medium">表格模式</div>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="font-size: 14px; font-weight: 500">表格模式</div>
           <a-radio-group v-model:value="columnMode" @change="handleColumnModeChange">
             <a-radio value="normal">普通列</a-radio>
             <a-radio value="combined">表头分组+单元格合并</a-radio>
           </a-radio-group>
         </div>
       </div>
-      <div class="flex items-center gap-[16px]">
+      <div style="display: flex; align-items: center; gap: 16px">
         <a-checkbox v-model:checked="useScrollLoad" @change="handleLoadModeChange">
           启用滚动加载
         </a-checkbox>
@@ -51,7 +65,7 @@
       v-model:default-expanded="expandedState"
       v-model:default-selection="selectionState"
       v-model:default-column-pinning="columnPinningState"
-      class="min-h-0 flex-1"
+      style="min-height: 0; flex: 1"
       :data="tableData"
       :columns="columns"
       :loading="loading"

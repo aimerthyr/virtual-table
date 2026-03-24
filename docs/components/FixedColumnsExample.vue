@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="mb-4">
+    <div style="margin-bottom: 16px">
       <a-button @click="handleFixColumns">固定左右列</a-button>
-      <a-button class="ml-2" @click="handleClearFixed">取消固定</a-button>
+      <a-button style="margin-left: 8px" @click="handleClearFixed">取消固定</a-button>
     </div>
     <VTable
       v-model:default-column-pinning="columnPinning"

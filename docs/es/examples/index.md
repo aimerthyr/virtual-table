@@ -31,7 +31,7 @@ The simplest table usage, showing basic data rendering.
 :::
 
 <details>
-<summary>View code</summary>
+<summary>View code <a href="https://stackblitz.com/edit/vitejs-vite-i4218nn4?file=src%2FApp.vue" target="_blank">Online link</a></summary>
 
 ```vue
 <template>
@@ -70,13 +70,13 @@ Fixed header, content area can scroll, suitable for large data volume scenarios.
 :::
 
 <details>
-<summary>View code</summary>
+<summary>View code <a href="https://stackblitz.com/edit/vitejs-vite-a4j48cku?file=src%2FApp.vue" target="_blank">Online link</a></summary>
 
 ```vue
 <template>
   <div style="height: 400px">
     <VTable
-      class="h-full"
+      style="height: 100%"
       :data="data"
       :columns="columns"
       :fixed-header="true"
@@ -85,7 +85,7 @@ Fixed header, content area can scroll, suitable for large data volume scenarios.
       :fixed-footer="true"
     >
       <template #customFooter>
-        <div class="w-full bg-[#fafafa] p-[12px]">我是表尾可以自定义</div>
+        <div style="width: 100%; background-color: #fafafa; padding: 12px">我是表尾可以自定义</div>
       </template>
     </VTable>
   </div>
@@ -128,7 +128,7 @@ Supports editable row functionality, can set the editing state of the row.
 :::
 
 <details>
-<summary>View code</summary>
+<summary>View code <a href="https://stackblitz.com/edit/vitejs-vite-xxrjq8pp?file=src%2FApp.vue" target="_blank">Online link</a></summary>
 
 ```vue
 <template>
@@ -300,12 +300,12 @@ Supports multi-selection, single selection, disabled selection, etc.
 :::
 
 <details>
-<summary>View code</summary>
+<summary>View code <a href="https://stackblitz.com/edit/vitejs-vite-dzb3ipw2?file=src%2FApp.vue" target="_blank">Online link</a></summary>
 
 ```vue
 <template>
   <div>
-    <div class="mb-4">
+    <div style="margin-bottom: 16px">
       <a-tag color="blue">已选择: {{ selectedRows.length }} 条</a-tag>
     </div>
     <VTable
@@ -368,7 +368,7 @@ Supports column sorting and custom filtering functionality.
 :::
 
 <details>
-<summary>View code</summary>
+<summary>View code <a href="https://stackblitz.com/edit/vitejs-vite-y9pux5uy?file=src%2FApp.vue" target="_blank">Online link</a></summary>
 
 ```vue
 <template>
@@ -460,12 +460,19 @@ Supports pagination functionality, can set the position, mode of the pagination 
 :::
 
 <details>
-<summary>View code</summary>
+<summary>View code <a href="https://stackblitz.com/edit/vitejs-vite-29wpw8fn?file=src%2FApp.vue" target="_blank">Online link</a></summary>
 
 ```vue
 <template>
   <div>
-    <div class="mb-4 flex items-center justify-between">
+    <div
+      style="
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      "
+    >
       <div>
         <a-tag color="blue">总数据: {{ totalCount }} 条</a-tag>
         <a-tag color="green">当前页: {{ pagination.pageIndex }}</a-tag>
@@ -568,7 +575,7 @@ Supports tree data display.
 :::
 
 <details>
-<summary>View code</summary>
+<summary>View code <a href="https://stackblitz.com/edit/vitejs-vite-qpgmdtjv?file=src%2FApp.vue" target="_blank">Online link</a></summary>
 
 ```vue
 <template>
@@ -644,13 +651,13 @@ Supports expandable row functionality, can set the collapsed state of the expand
 :::
 
 <details>
-<summary>View code</summary>
+<summary>View code <a href="https://stackblitz.com/edit/vitejs-vite-45kvolhg?file=src%2FApp.vue" target="_blank">Online link</a></summary>
 
 ```vue
 <template>
   <VTable :data="data" :columns="columns" row-key="id" :enable-expand-row="true">
     <template #expandedRowRender="{ row }">
-      <div class="bg-gray-50 p-4">
+      <div style="background-color: #f0f0f0; padding: 16px">
         <p><strong>详细信息：</strong></p>
         <p>邮箱：{{ row.email }}</p>
         <p>电话：{{ row.phone }}</p>
@@ -711,14 +718,14 @@ Supports fixed column functionality, can set the position, mode of the fixed col
 :::
 
 <details>
-<summary>View code</summary>
+<summary>View code <a href="https://stackblitz.com/edit/vitejs-vite-modavt47?file=src%2FApp.vue" target="_blank">Online link</a></summary>
 
 ```vue
 <template>
   <div>
-    <div class="mb-4">
+    <div style="margin-bottom: 16px">
       <a-button @click="handleFixColumns">固定左右列</a-button>
-      <a-button class="ml-2" @click="handleClearFixed">取消固定</a-button>
+      <a-button style="margin-left: 8px" @click="handleClearFixed">取消固定</a-button>
     </div>
     <VTable
       v-model:default-column-pinning="columnPinning"
@@ -809,14 +816,14 @@ Supports column resize functionality, can set the resize mode of the column.
 :::
 
 <details>
-<summary>View code</summary>
+<summary>View code <a href="https://stackblitz.com/edit/vitejs-vite-ucurmqms?file=src%2FApp.vue" target="_blank">Online link</a></summary>
 
 ```vue
 <template>
   <div>
-    <div class="mb-4 flex flex-col gap-4">
+    <div style="margin-bottom: 16px; display: flex; flex-direction: column; gap: 16px">
       <div>
-        <span class="mr-2">调整模式:</span>
+        <span style="margin-right: 8px">调整模式:</span>
         <a-radio-group v-model:value="resizeMode" @change="handleResizeModeChange">
           <a-radio value="onChange">实时调整 (onChange)</a-radio>
           <a-radio value="onEnd">结束后调整 (onEnd)</a-radio>
@@ -824,7 +831,7 @@ Supports column resize functionality, can set the resize mode of the column.
       </div>
     </div>
 
-    <div class="mb-4">
+    <div style="margin-bottom: 16px">
       <a-space>
         <a-button @click="handleResetWidth">重置列宽</a-button>
         <a-button @click="handleShowSizing">查看当前列宽</a-button>
@@ -1003,7 +1010,7 @@ Supports cell merge functionality, can set the merge mode of the cell.
 :::
 
 <details>
-<summary>View code</summary>
+<summary>View code <a href="https://stackblitz.com/edit/vitejs-vite-otwnasiw?file=src%2FApp.vue" target="_blank">Online link</a></summary>
 
 ```vue
 <template>
@@ -1088,11 +1095,11 @@ Supports custom slot functionality, can set the rendering mode of the custom slo
 :::
 
 <details>
-<summary>View code</summary>
+<summary>View code <a href="https://stackblitz.com/edit/vitejs-vite-tjaac8wh?file=src%2FApp.vue" target="_blank">Online link</a></summary>
 
 ```vue
 <template>
-  <div class="mb-[8px] flex items-center gap-[8px]">
+  <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px">
     <a-button @click="handleLoading">触发 loading</a-button>
     <a-button @click="handleEmpty">触发空状态</a-button>
     <a-button @click="data = dataList">重置</a-button>
@@ -1106,7 +1113,7 @@ Supports custom slot functionality, can set the rendering mode of the custom slo
     :row-selection-config="{
       enabled: true,
     }"
-    :default-checkbox-column-width="82"
+    :default-checkbox-column-width="100"
     :adaptive-column-width="180"
   >
     <!-- 自定义表头单元格 -->
@@ -1334,7 +1341,7 @@ Supports custom theme functionality, can set the style of the theme.
 :::
 
 <details>
-<summary>View code</summary>
+<summary>View code <a href="https://stackblitz.com/edit/vitejs-vite-dwofdryk?file=src%2FApp.vue" target="_blank">Online link</a></summary>
 
 ```vue
 <template>

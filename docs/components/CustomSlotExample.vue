@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-[8px] flex items-center gap-[8px]">
+  <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px">
     <a-button @click="handleLoading">触发 loading</a-button>
     <a-button @click="handleEmpty">触发空状态</a-button>
     <a-button @click="data = dataList">重置</a-button>
@@ -13,7 +13,7 @@
     :row-selection-config="{
       enabled: true,
     }"
-    :default-checkbox-column-width="82"
+    :default-checkbox-column-width="100"
     :adaptive-column-width="180"
   >
     <!-- 自定义表头单元格 -->

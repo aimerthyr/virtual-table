@@ -1,7 +1,7 @@
 <template>
   <div style="height: 400px">
     <VTable
-      class="h-full"
+      style="height: 100%"
       :data="data"
       :columns="columns"
       :fixed-header="true"
@@ -10,7 +10,7 @@
       :fixed-footer="true"
     >
       <template #customFooter>
-        <div class="w-full bg-[#fafafa] p-[12px]">我是表尾可以自定义</div>
+        <div style="width: 100%; background-color: #fafafa; padding: 12px">我是表尾可以自定义</div>
       </template>
     </VTable>
   </div>

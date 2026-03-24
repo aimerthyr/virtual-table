@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="mb-4 flex flex-col gap-4">
+    <div style="margin-bottom: 16px; display: flex; flex-direction: column; gap: 16px">
       <div>
-        <span class="mr-2">调整模式:</span>
+        <span style="margin-right: 8px">调整模式:</span>
         <a-radio-group v-model:value="resizeMode" @change="handleResizeModeChange">
           <a-radio value="onChange">实时调整 (onChange)</a-radio>
           <a-radio value="onEnd">结束后调整 (onEnd)</a-radio>
@@ -10,7 +10,7 @@
       </div>
     </div>
 
-    <div class="mb-4">
+    <div style="margin-bottom: 16px">
       <a-space>
         <a-button @click="handleResetWidth">重置列宽</a-button>
         <a-button @click="handleShowSizing">查看当前列宽</a-button>

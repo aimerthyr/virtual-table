@@ -1,7 +1,7 @@
 <template>
   <VTable :data="data" :columns="columns" row-key="id" :enable-expand-row="true">
     <template #expandedRowRender="{ row }">
-      <div class="bg-gray-50 p-4">
+      <div style="background-color: #f0f0f0; padding: 16px">
         <p><strong>详细信息：</strong></p>
         <p>邮箱：{{ row.email }}</p>
         <p>电话：{{ row.phone }}</p>
