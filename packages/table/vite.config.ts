@@ -38,8 +38,13 @@ export default defineConfig({
     cssCodeSplit: false,
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      formats: ['es', 'cjs'],
-      fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs'),
+      name: 'VirtualTable',
+      formats: ['es', 'cjs', 'umd'],
+      fileName: (format) => {
+        if (format === 'es') return 'index.js'
+        if (format === 'cjs') return 'index.cjs'
+        return 'index.umd.js'
+      },
     },
     rollupOptions: {
       external: ['vue'],

@@ -99,6 +99,20 @@ import type {
 } from '@aimerthyr/virtual-table'
 ```
 
+## CDN 方式
+
+支持通过 UMD 产物直接在浏览器中使用：
+
+```html
+<link rel="stylesheet" href="https://unpkg.com/@aimerthyr/virtual-table/dist/virtual-table.css" />
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="https://unpkg.com/@aimerthyr/virtual-table/dist/index.umd.js"></script>
+<script>
+  // UMD 挂载名来自 vite lib.name = 'VirtualTable'
+  const VTable = window.VirtualTable.default || window.VirtualTable
+</script>
+```
+
 ## 常见用法
 
 ### 1. 启用排序和筛选

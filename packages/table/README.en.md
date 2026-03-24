@@ -84,6 +84,20 @@ Or:
 import { VTable } from '@aimerthyr/virtual-table'
 ```
 
+## CDN Usage
+
+You can also use the UMD build directly in the browser:
+
+```html
+<link rel="stylesheet" href="https://unpkg.com/@aimerthyr/virtual-table/dist/virtual-table.css" />
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="https://unpkg.com/@aimerthyr/virtual-table/dist/index.umd.js"></script>
+<script>
+  // UMD global name comes from vite lib.name = 'VirtualTable'
+  const VTable = window.VirtualTable.default || window.VirtualTable
+</script>
+```
+
 ## Documentation
 
 For the complete API (props / slots / examples), please refer to:
