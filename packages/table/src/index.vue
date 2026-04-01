@@ -239,7 +239,7 @@ import {
   vTableDefaultProps,
 } from './constant'
 import { useProvideVTableContext } from './context'
-import { RowEditingFeature } from './features/rowEditing'
+import { EditingStateFeature, type EditingState } from './features/editingState'
 import { useTheme } from './hooks/useTheme'
 import ExpandIcon from './icons/ExpandIcon.vue'
 import type {
@@ -378,8 +378,11 @@ const columnPinning = defineModel<ColumnPinningState>('defaultColumnPinning', {
 const columnSizing = defineModel<ColumnSizingState>('defaultColumnSizing', {
   default: () => ({}),
 })
-const editingRowId = ref<string | null>(null)
-
+const editingState = ref<EditingState>({
+  mode: null,
+  rowId: null,
+  columnKey: null,
+})
 const handlePageChange = (page: number, pageSize: number) => {
   pagination.value = { pageIndex: page, pageSize }
   triggerTableStateChange()
@@ -416,10 +419,10 @@ watch(
   { deep: true, immediate: true },
 )
 const table = useVueTable<TData>({
-  _features: [RowEditingFeature],
+  _features: [EditingStateFeature],
   state: {
-    get editingRowId() {
-      return editingRowId.value
+    get editingState() {
+      return editingState.value
     },
     get columnFilters() {
       return columnFilters.value
@@ -514,9 +517,9 @@ const table = useVueTable<TData>({
       props.onColumnSizingChange?.(columnSizing.value)
     })
   },
-  onEditingRowIdChange: (updaterOrValue) => {
-    editingRowId.value =
-      typeof updaterOrValue === 'function' ? updaterOrValue(editingRowId.value) : updaterOrValue
+  onEditingStateChange: (updaterOrValue) => {
+    editingState.value =
+      typeof updaterOrValue === 'function' ? updaterOrValue(editingState.value) : updaterOrValue
   },
   getSubRows: (row) => {
     // 如果开启了自定义可展开行
@@ -733,9 +736,12 @@ defineExpose<VTableInstance<TData>>({
       rowVirtualizer.value.scrollToIndex(index, { align: 'start', behavior })
     })
   },
-  /** 设置编辑行（传 null 退出编辑态） */
-  setEditingRow: (rowId: string | number | null) => {
-    table.setEditingRow(rowId === null ? null : String(rowId))
+  /** 设置编辑状态（不传 columnKey 为行编辑，传 columnKey 为单元格编辑，传 null 清除） */
+  setEditingState: (rowId: string | number | null, columnKey?: string | null) => {
+    table.setEditingState(
+      rowId === null ? null : String(rowId),
+      columnKey === undefined ? undefined : columnKey === null ? null : String(columnKey),
+    )
   },
 })
 </script>

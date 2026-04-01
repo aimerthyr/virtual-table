@@ -176,6 +176,10 @@ export interface VTableInstance<TData = any> {
   tanstackTable: Table<TData>
   /** 滚动到指定下标(从 0 开始，默认是平滑滚动) */
   scrollToIndex: (index: number, behavior?: 'auto' | 'smooth') => void
-  /** 设置当前编辑行 (传 null 代表退出编辑态) */
-  setEditingRow: (rowId: string | number | null) => void
+  /** 设置编辑状态
+   * 1. columnKey 为空，则为行编辑
+   * 2. columnKey 不为空，则为单元格编辑
+   * 3. rowId 传 null，清除编辑状态
+   */
+  setEditingState: (rowId: string | number | null, columnKey?: string | null) => void
 }

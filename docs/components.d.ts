@@ -31,7 +31,7 @@ declare module 'vue' {
     Comprehensive: typeof import('./components/Comprehensive.vue')['default']
     CustomSlotExample: typeof import('./components/CustomSlotExample.vue')['default']
     CustomTheme: typeof import('./components/CustomTheme.vue')['default']
-    EditRowExample: typeof import('./components/EditRowExample.vue')['default']
+    EditStateExample: typeof import('./components/EditStateExample.vue')['default']
     ExpandableExample: typeof import('./components/ExpandableExample.vue')['default']
     FixedColumnsExample: typeof import('./components/FixedColumnsExample.vue')['default']
     FixedHeaderExample: typeof import('./components/FixedHeaderExample.vue')['default']

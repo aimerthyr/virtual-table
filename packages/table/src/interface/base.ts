@@ -130,5 +130,10 @@ export interface VTableBodyCellProps<TData = any> {
   column: VTableColumn
   row: TData
   rowIndex: number
-  isEditing: boolean
+  /** 编辑模式
+   * row  => 整行编辑
+   * cell => 单元格编辑
+   * null => 未处于编辑态
+   *  */
+  isEditingMode: 'row' | 'cell' | null
 }

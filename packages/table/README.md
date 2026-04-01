@@ -382,11 +382,11 @@ const handleSelectionChange = (rows: any[]) => {
 
 组件暴露了以下实例能力：
 
-| 方法名          | 类型                                                     | 说明                |
-| --------------- | -------------------------------------------------------- | ------------------- |
-| `tanstackTable` | `Table<TData>`                                           | TanStack Table 实例 |
-| `scrollToIndex` | `(index: number, behavior?: 'auto' \| 'smooth') => void` | 滚动到指定行        |
-| `setEditingRow` | `(rowId: string \| number \| null) => void`              | 设置当前编辑行      |
+| 方法名            | 类型                                                                    | 说明                                                                                                             |
+| ----------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `tanstackTable`   | `Table<TData>`                                                          | TanStack Table 实例                                                                                              |
+| `scrollToIndex`   | `(index: number, behavior?: 'auto' \| 'smooth') => void`                | 滚动到指定行                                                                                                     |
+| `setEditingState` | `(rowId: string \| number \| null, columnKey?: string \| null) => void` | 设置编辑状态（1. columnKey 为空，则为行编辑 2. columnKey 不为空，则为单元格编辑 3. rowId 传 null，清除编辑状态） |
 
 使用示例：
 

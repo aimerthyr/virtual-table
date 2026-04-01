@@ -105,9 +105,9 @@
       @column-sizing-change="handleColumnSizingChange"
     >
       <!-- 自定义单元格 -->
-      <template #bodyCell="{ columnKey, row, isEditing }">
+      <template #bodyCell="{ columnKey, row, isEditingMode }">
         <template v-if="columnKey === 'name'">
-          <a-input v-if="isEditing" v-model:value="row.name" size="small" />
+          <a-input v-if="isEditingMode" v-model:value="row.name" size="small" />
           <a-tag v-else :color="row.level === 1 ? 'blue' : 'green'">
             {{ formatName(row.name) }}
           </a-tag>
@@ -120,7 +120,7 @@
         </template>
         <template v-else-if="columnKey === 'action'">
           <a-space>
-            <template v-if="!isEditing">
+            <template v-if="!isEditingMode">
               <a-button type="link" size="small" @click="handleEdit(row)">编辑</a-button>
               <a-button type="link" size="small" danger @click="handleDelete(row)">删除</a-button>
             </template>
@@ -575,11 +575,11 @@ const editingSnapshot = new Map<number, Partial<TableRow>>()
 
 const handleEdit = (row: TableRow) => {
   editingSnapshot.set(row.id, { name: row.name })
-  vTableRef.value?.setEditingRow(row.id)
+  vTableRef.value?.setEditingState(row.id)
 }
 
 const handleSave = () => {
-  vTableRef.value?.setEditingRow(null)
+  vTableRef.value?.setEditingState(null)
 }
 
 const handleCancel = (row: TableRow) => {
@@ -588,7 +588,7 @@ const handleCancel = (row: TableRow) => {
     Object.assign(row, original)
     editingSnapshot.delete(row.id)
   }
-  vTableRef.value?.setEditingRow(null)
+  vTableRef.value?.setEditingState(null)
 }
 
 const handleDelete = (row: TableRow) => {

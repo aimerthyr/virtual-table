@@ -99,4 +99,4 @@ Display the API documentation for the VTable component.
 | --- | --- | --- | --- |
 | `scrollToIndex` | Scroll to the specified row index | `(index: number, behavior?: ScrollBehavior)` | `void` |
 | `tanstackTable` | Get TanStack Table instance | - | `Table` |
-| `setEditingRow` | Set the current editing row | `(rowId: string | number | null)` | `void` |
+| `setEditingState` | Set the editing state (1. columnKey is empty, it is row editing 2. columnKey is not empty, it is cell editing 3. rowId is null, clear editing state) | `(rowId: string \| number \| null, columnKey?: string \| null) => void` | `void` |

@@ -99,4 +99,4 @@ title: 参考
 | --- | --- | --- | --- |
 | `scrollToIndex` | 滚动到指定行索引 | `(index: number, behavior?: ScrollBehavior)` | `void` |
 | `tanstackTable` | 获取 TanStack Table 实例 | - | `Table` |
-| `setEditingRow` | 设置当前编辑行 | `(rowId: string | number | null)` | `void` |
+| `setEditingState` | `(rowId: string \| number \| null, columnKey?: string \| null) => void` | 设置编辑状态（1. columnKey 为空，则为行编辑 2. columnKey 不为空，则为单元格编辑 3. rowId 传 null，清除编辑状态） |

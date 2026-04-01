@@ -47,8 +47,11 @@ const columnKey = props.cell.column.id
 const rowIndex = props.cell.row.index
 const originalRow = computed(() => props.cell.row.original)
 const column = computed(() => props.cell.column.columnDef.meta!)
-const isEditing = computed(() => {
-  return props.cell.getContext().table.isRowEditing(props.row.id)
+const isRowEditing = computed(() => {
+  return props.cell.getContext().table.isEditing(props.row.id)
+})
+const isCellEditing = computed(() => {
+  return props.cell.getContext().table.isEditing(props.row.id, props.cell.column.id)
 })
 
 const handleExpandChange = async () => {
@@ -63,7 +66,7 @@ const cellRender = computed(() => {
       rowIndex,
       row: originalRow.value,
       column: column.value,
-      isEditing: isEditing.value,
+      isEditingMode: isRowEditing.value ? 'row' : isCellEditing.value ? 'cell' : null,
     })
     const vNode = bodyCellContent?.[0]
     if (hasPassSlot(vNode)) {
