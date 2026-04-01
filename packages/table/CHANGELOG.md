@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.1] - 2026-04-01
+
+### Breaking Changes
+
+- 重构可编辑功能（支持行编辑和单元格编辑两种模式）
+- 原 setEditingRow 改为 setEditingState，参数调整为 (rowId: string | number | null, columnKey?: string | null)
+- 原 bodyCell 中的 isEditing 改为 isEditingMode，类型调整为 'row' | 'cell' | null
+
 ## [1.4.0] - 2026-03-22
 
 ### Features

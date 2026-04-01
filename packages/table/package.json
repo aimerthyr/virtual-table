@@ -1,6 +1,6 @@
 {
   "name": "@aimerthyr/virtual-table",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "高性能虚拟滚动表格",
   "type": "module",
   "main": "./dist/index.cjs",
