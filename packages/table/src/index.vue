@@ -155,6 +155,41 @@
           </tr>
 
           <tr v-if="paddingBottom > 0" :style="{ height: `${paddingBottom}px`, border: 'none' }" />
+
+          <!-- 底部汇总行 -->
+          <tr
+            v-if="props.summaryConfig?.enabled"
+            :class="{ sticky: props.summaryConfig?.fixed }"
+            :style="{
+              zIndex: themeConfig.zIndex?.fixedFooter,
+            }"
+            class="bottom-0"
+          >
+            <td
+              v-for="header in table.getFlatHeaders()"
+              :key="header.id"
+              :style="columnStyleMap.get(header.id)"
+              :class="[
+                header.column.id === CHECKBOX_COLUMN_KEY ? 'checkbox-col' : '',
+                header.column.id === EXPAND_COLUMN_KEY ? 'expand-col' : '',
+                shadowPinnedColumnMap.get(header.column.id),
+              ]"
+            >
+              <slot
+                v-if="$slots.summaryCell"
+                name="summaryCell"
+                :column-key="header.column.id"
+                :column="header.column.columnDef.meta!"
+                :summary-value="summaryValueMap.get(header.column.id)"
+              >
+                {{ summaryValueMap.get(header.column.id) }}
+              </slot>
+              <template v-else>
+                {{ summaryValueMap.get(header.column.id) }}
+              </template>
+            </td>
+          </tr>
+
           <!-- 底部提示模板 (作为最后一行) -->
           <tr v-if="showNoMoreTip" :style="{ borderBottom: 'none' }">
             <td
@@ -255,7 +290,7 @@ import type {
 import VCheckbox from './libs/VCheckbox.vue'
 import vLoading from './libs/VLoading'
 import VPagination from './libs/VPagination.vue'
-import { buildData, convertToColumnDefList, getAllRowKeys } from './utils'
+import { buildData, calculateSummary, convertToColumnDefList, getAllRowKeys } from './utils'
 
 defineOptions({ name: 'VTable' })
 
@@ -706,6 +741,34 @@ const shadowPinnedColumnMap = computed(() => {
 })
 // #endregion
 
+// #region 汇总行逻辑
+/** 汇总值 Map */
+const summaryValueMap = computed(() => {
+  const map = new Map<string, any>()
+  for (const column of allLeafColumns.value) {
+    const columnKey = column.id
+    const columnMeta = column.columnDef.meta
+    // checkbox 和 expand 列不显示汇总
+    if (columnKey === CHECKBOX_COLUMN_KEY || columnKey === EXPAND_COLUMN_KEY) {
+      map.set(columnKey, '')
+      continue
+    }
+    // 优先使用全局自定义汇总函数
+    if (props.summaryConfig?.customSummary) {
+      map.set(columnKey, props.summaryConfig.customSummary(columnMeta!, props.data))
+      continue
+    }
+    // 使用列配置的汇总方式
+    if (columnMeta?.columnSummary) {
+      map.set(columnKey, calculateSummary(props.data, columnMeta, columnMeta.columnSummary))
+      continue
+    }
+    map.set(columnKey, '')
+  }
+  return map
+})
+// #endregion
+
 onMounted(() => {
   initResizeObserver()
   if (props.defaultExpandAllRows) {
@@ -777,6 +840,9 @@ defineExpose<VTableInstance<TData>>({
       color: var(--v-table-header-color);
       padding: var(--v-table-header-padding);
       .border-mixin(bottom);
+      word-wrap: break-word;
+      word-break: break-word;
+      white-space: normal;
 
       &:not(.checkbox-col, .expand-col, :last-child, .pinned-left-shadow)::before {
         content: '';
@@ -808,6 +874,9 @@ defineExpose<VTableInstance<TData>>({
       .border-mixin(bottom);
       padding: var(--v-table-body-padding);
       color: var(--v-table-body-color);
+      word-wrap: break-word;
+      word-break: break-word;
+      white-space: normal;
     }
   }
 

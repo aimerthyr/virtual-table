@@ -15,6 +15,7 @@ import type {
   VTableRowSelectionConfig,
   VTableSelectionState,
   VTableSortingState,
+  VTableSummaryConfig,
   VTableTreeConfig,
 } from './base'
 import type {
@@ -68,6 +69,8 @@ export interface VTableSlots<TData = any> {
   customExpandIcon?: (props: VTableExpandIconProps) => VNode[]
   /** 自定义排序图标 */
   customSorterIcon?: (props: VTableSorterIconProps) => VNode[]
+  /** 自定义汇总单元格 */
+  summaryCell?: (props: { columnKey: string; column: VTableColumn; summaryValue: any }) => VNode[]
   [key: string]: ((...args: any[]) => VNode[]) | undefined
 }
 
@@ -97,6 +100,8 @@ export interface VTableProps<TData = any> {
   paginationConfig?: VTablePaginationConfig
   /** 树形结构配置 */
   treeConfig?: VTableTreeConfig
+  /** 汇总行配置 */
+  summaryConfig?: VTableSummaryConfig<TData>
   /** 是否启用展开行功能 */
   enableExpandRow?: boolean
   /** 是否启用行 hover 高亮 */

@@ -38,6 +38,7 @@ declare module 'vue' {
     PaginationExample: typeof import('./components/PaginationExample.vue')['default']
     RowSelectionExample: typeof import('./components/RowSelectionExample.vue')['default']
     SortFilterExample: typeof import('./components/SortFilterExample.vue')['default']
+    SummaryExample: typeof import('./components/SummaryExample.vue')['default']
     TreeDataExample: typeof import('./components/TreeDataExample.vue')['default']
   }
 }

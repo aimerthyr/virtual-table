@@ -51,6 +51,7 @@ title: 参考
 | `customHeaderCellAttributes` | 自定义表头单元格属性 | `(column, colIndex) => ThHTMLAttributes` | `() => ({})` |
 | `customCellAttributes` | 自定义表体单元格属性（支持合并单元格） | `(row, column, rowIndex, colIndex) => TdHTMLAttributes` 或 `null` | `() => ({})` |
 | `layoutMode` | 表格布局模式 (固定宽度 / 内容自适应) | `'fixed'` &#124; `'contentFit'` | `'fixed'` |
+| `summaryConfig` | 汇总行配置 | `VTableSummaryConfig` | 见说明 |
 
 ---
 
@@ -87,6 +88,7 @@ title: 参考
 | `customFooter` | 自定义表尾 | - |
 | `customExpandIcon` | 自定义展开图标 | `{ expand, onExpandChange }` |
 | `customSorterIcon` | 自定义排序图标 | `{ sort }` |
+| `summaryCell` | 自定义汇总单元格 | `{ columnKey, column, data, summaryValue }` |
 
 ---
 

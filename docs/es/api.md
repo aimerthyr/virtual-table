@@ -51,6 +51,7 @@ Display the API documentation for the VTable component.
 | `customHeaderCellAttributes` | Custom table header cell attributes | `(column, colIndex) => ThHTMLAttributes` | `() => ({})` |
 | `customCellAttributes` | Custom table body cell attributes (supports merging cells) | `(row, column, rowIndex, colIndex) => TdHTMLAttributes` or `null` | `() => ({})` |
 | `layoutMode` | Table layout mode (fixed width / content fit) | `'fixed'` &#124; `'contentFit'` | `'fixed'` |
+| `summaryConfig` | Summary configuration | `VTableSummaryConfig` | See description |
 
 ---
 
@@ -87,6 +88,7 @@ Display the API documentation for the VTable component.
 | `customFooter` | Custom table footer | - |
 | `customExpandIcon` | Custom expand icon | `{ expand, onExpandChange }` |
 | `customSorterIcon` | Custom sort icon | `{ sort }` |
+| `summaryCell` | Custom summary cell | `{ columnKey, column, data, summaryValue }` |
 
 ---
 

@@ -1,7 +1,7 @@
 import type { VNode } from 'vue'
 import type { ColumnDef } from '@tanstack/vue-table'
 import { EXPAND_ROW_DATA_INDEX, EXPAND_ROW_KEY } from '../constant'
-import type { VTableColumn, VTableRowKey } from '../interface'
+import type { VTableColumn, VTableRowKey, VTableSummaryType } from '../interface'
 
 export function convertToColumnDefList<T>(
   columns: VTableColumn[],
@@ -99,4 +99,53 @@ export function hasPassSlot(vNode?: VNode): boolean {
   return (
     Array.isArray(vNode.children) && vNode.children.some((child) => child && (child as VNode).type)
   )
+}
+
+/**
+ * 计算汇总值
+ */
+export function calculateSummary<TData = any>(
+  data: TData[],
+  column: VTableColumn,
+  summaryType?: VTableSummaryType<TData>,
+): any {
+  if (!summaryType) return ''
+  const columnKey = column.columnKey
+  if (typeof summaryType === 'function') {
+    return summaryType(data, column)
+  }
+  switch (summaryType) {
+    case 'count':
+      return data.length
+    case 'sum': {
+      const sum = data.reduce((acc, row) => {
+        const value = (row as any)[columnKey]
+        return acc + (isNumeric(value) ? Number(value) : 0)
+      }, 0)
+      return sum
+    }
+    case 'avg': {
+      const sum = data.reduce((acc, row) => {
+        const value = (row as any)[columnKey]
+        return acc + (isNumeric(value) ? Number(value) : 0)
+      }, 0)
+      return data.length > 0 ? (sum / data.length).toFixed(2) : 0
+    }
+    case 'max': {
+      const values = data
+        .map((row) => (row as any)[columnKey])
+        .filter((v) => isNumeric(v))
+        .map(Number)
+      return values.length > 0 ? Math.max(...values) : ''
+    }
+    case 'min': {
+      const values = data
+        .map((row) => (row as any)[columnKey])
+        .filter((v) => isNumeric(v))
+        .map(Number)
+      return values.length > 0 ? Math.min(...values) : ''
+    }
+    default:
+      return ''
+  }
 }

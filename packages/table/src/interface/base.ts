@@ -56,6 +56,8 @@ export interface VTableColumn<TData = any> {
   columnMinWidth?: number
   /** 子列（用于表头分组） */
   columnChildren?: VTableColumn<TData>[]
+  /** 汇总计算方式 (sum 汇总 agv 平均值 count 统计 max 最大值 min 最小值) */
+  columnSummary?: VTableSummaryType<TData>
 }
 
 /** 表格状态（分页，排序，筛选） */
@@ -136,4 +138,25 @@ export interface VTableBodyCellProps<TData = any> {
    * null => 未处于编辑态
    *  */
   isEditingMode: 'row' | 'cell' | null
+}
+
+/** 汇总类型 */
+export type VTableSummaryType<TData> =
+  | 'sum'
+  | 'avg'
+  | 'count'
+  | 'max'
+  | 'min'
+  | VTableSummaryFn<TData>
+
+export type VTableSummaryFn<TData = any> = (data: TData[], column: VTableColumn) => any
+
+/** 汇总配置 */
+export interface VTableSummaryConfig<TData = any> {
+  /** 是否显示汇总行 */
+  enabled?: boolean
+  /** 汇总行固定（不随表格滚动） */
+  fixed?: boolean
+  /** 自定义汇总计算函数（优先级高于列配置） */
+  customSummary?: (column: VTableColumn, data: TData[]) => any
 }

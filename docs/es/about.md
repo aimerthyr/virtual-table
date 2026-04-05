@@ -12,7 +12,7 @@ Please check if the `rowKey` property is configured, if configured, please ensur
 
 **2. The position of a row is not accurate or the table scrolls abnormally?**
 
-Please check if the `rowHeight` property is set, if set, please ensure that the value of `rowHeight` is correct, otherwise the position of a row may not be accurate.
+Please check if the `rowHeight` property is set, if set, please ensure that the value of `rowHeight` is correct, otherwise the position of a row may not be accurate. <span style="color:#ff4d4f;">Important: Do not set line height if your lines are not fixed (e.g., text that can wrap to the next line)</span>
 
 **3. It is recommended to use the `bodyCell` slot instead of the `customCell` function in the `column`**
 

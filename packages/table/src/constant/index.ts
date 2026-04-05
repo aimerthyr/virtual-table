@@ -45,6 +45,10 @@ export const vTableDefaultProps = defineDefaultProps<VTableProps<any>>({
     childrenKey: 'children',
     indentSize: 16,
   }),
+  summaryConfig: () => ({
+    enabled: false,
+    fixed: false,
+  }),
   enableExpandRow: false,
   enableRowHover: true,
   adaptiveColumnWidth: 120,
