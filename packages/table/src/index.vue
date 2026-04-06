@@ -31,7 +31,7 @@
           :class="{ sticky: props.fixedHeader }"
           :style="{ top: 0, zIndex: themeConfig.zIndex?.fixedHeader }"
         >
-          <slot name="customHeader" :columns="columns" :table="table">
+          <slot name="customHeader" :columns="props.columns" :table="table">
             <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
               <th
                 v-for="header in headerGroup.headers"
@@ -662,7 +662,7 @@ watchEffect(() => {
     return
   }
   // 判断当前最后一项是否是目前总数据长度的最后一项
-  if (lastItem.index >= tableData.value?.length - 1 && !props.loading) {
+  if (lastItem.index >= rows.value.length - 1 && rows.value.length > 0 && !props.loading) {
     props.onScrollToBottom?.()
   }
 })
@@ -679,7 +679,7 @@ const paddingBottom = computed(() => {
 // #region 底部提示逻辑
 /** 底部提示行高度 */
 const showNoMoreTip = computed(() => {
-  return tableData.value.length > 0 && !props.loading && props.loadMoreConfig?.showNoMore
+  return rows.value.length > 0 && !props.loading && props.loadMoreConfig?.showNoMore
 })
 const noMoreText = computed(() => props.loadMoreConfig?.noMoreText || '没有更多了')
 // #endregion

@@ -358,13 +358,14 @@ const handleSelectionChange = (rows: any[]) => {
 | `scroll-to-bottom`     | `() => void`                               | 滚动到底部时触发                         |
 | `expanded-rows-change` | `(state: VTableExpandedState) => void`     | 展开行变化时触发                         |
 | `column-sizing-change` | `(state: VTableColumnSizingState) => void` | 列宽调整时触发                           |
+| `expand`               | `(expanded: boolean, row: TData) => void`  | 点击展开图标时触发                       |
 
 ## Slots
 
 | 插槽名                 | 参数                                                           | 说明                   |
 | ---------------------- | -------------------------------------------------------------- | ---------------------- |
 | `customHeader`         | `{ columns, table }`                                           | 自定义整个表头         |
-| `bodyCell`             | `{ columnKey, column, row, rowIndex }`                         | 自定义单元格内容       |
+| `bodyCell`             | `{ columnKey, column, row, rowIndex, isEditingMode }`          | 自定义单元格内容       |
 | `headerCell`           | `{ columnKey, column }`                                        | 自定义表头单元格       |
 | `customFilterIcon`     | `{ columnKey, filtered, column }`                              | 自定义筛选图标         |
 | `customFilterDropdown` | `{ confirm, reset, setFilterValue, column, filterModelValue }` | 自定义筛选下拉内容     |
@@ -377,6 +378,8 @@ const handleSelectionChange = (rows: any[]) => {
 | `customLoadNoMore`     | `-`                                                            | 自定义“没有更多了”区域 |
 | `customFooter`         | `-`                                                            | 自定义表尾             |
 | `customExpandIcon`     | `{ expand, onExpandChange }`                                   | 自定义展开图标         |
+| `customSorterIcon`     | `{ sort }`                                                     | 自定义排序图标         |
+| `summaryCell`          | `{ columnKey, column, summaryValue }`                          | 自定义汇总单元格       |
 
 ## 实例方法
 

@@ -390,7 +390,7 @@ const handleSelectionChange = (rows: DataRow[]) => {
 
 ### Sort and Filter
 
-Supports column sorting and custom filtering functionality.
+Supports column sorting state and custom filtering interaction, usually combined with `table-change` for external data handling.
 
 ::: raw
 <SortFilterExample />

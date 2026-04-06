@@ -4,7 +4,7 @@ title: Guide
 
 # VTable Virtual Table
 
-A high-performance virtual scrolling table component built with TanStack Table and TanStack Virtual, supporting large data volume rendering, sorting, filtering, pagination, dragging, tree structure, expandable, and selectable features.
+A high-performance virtual scrolling table component built with TanStack Table and TanStack Virtual, supporting large data volume rendering, sorting, filtering, pagination, column resizing by drag, tree structure, expandable, and selectable features.
 
 ### Features
 

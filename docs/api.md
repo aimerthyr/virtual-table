@@ -15,9 +15,9 @@ title: 参考
 | --- | --- | --- | --- |
 | `defaultFilter` | 筛选状态 | `VTableColumnFiltersState` | `[]` |
 | `defaultSort` | 排序状态 | `VTableSortingState` | `[]` |
-| `defaultPagination` | 分页状态 | `VTablePaginationState` | `{}` |
-| `defaultExpanded` | 展开状态 | `VTableExpandedState` | `[]` |
-| `defaultSelection` | 选择状态 | `VTableSelectionState` | `[]` |
+| `defaultPagination` | 分页状态 | `VTablePaginationState` | `{ pageIndex: 1, pageSize: 20 }` |
+| `defaultExpanded` | 展开状态 | `VTableExpandedState` | `{}` |
+| `defaultSelection` | 选择状态 | `VTableSelectionState` | `{}` |
 | `defaultColumnPinning` | 列固定状态 | `VTableColumnPinningState` | `{}` |
 | `defaultColumnSizing` | 列宽状态 | `VTableColumnSizingState` | `{}` |
 
@@ -74,7 +74,7 @@ title: 参考
 | 插槽名 | 说明 | 参数 |
 | --- | --- | --- |
 | `customHeader` | 自定义整个表头 | `{ columns, table }` |
-| `bodyCell` | 自定义单元格内容 | `{ columnKey, column, row, rowIndex }` |
+| `bodyCell` | 自定义单元格内容 | `{ columnKey, column, row, rowIndex, isEditingMode }` |
 | `headerCell` | 自定义表头单元格 | `{ columnKey, column }` |
 | `customFilterIcon` | 自定义筛选图标 | `{ columnKey, filtered, column }` |
 | `customFilterDropdown` | 自定义筛选下拉框 | `{ confirm, reset, setFilterValue, column, filterModelValue }` |
@@ -88,7 +88,7 @@ title: 参考
 | `customFooter` | 自定义表尾 | - |
 | `customExpandIcon` | 自定义展开图标 | `{ expand, onExpandChange }` |
 | `customSorterIcon` | 自定义排序图标 | `{ sort }` |
-| `summaryCell` | 自定义汇总单元格 | `{ columnKey, column, data, summaryValue }` |
+| `summaryCell` | 自定义汇总单元格 | `{ columnKey, column, summaryValue }` |
 
 ---
 
@@ -101,4 +101,4 @@ title: 参考
 | --- | --- | --- | --- |
 | `scrollToIndex` | 滚动到指定行索引 | `(index: number, behavior?: ScrollBehavior)` | `void` |
 | `tanstackTable` | 获取 TanStack Table 实例 | - | `Table` |
-| `setEditingState` | `(rowId: string \| number \| null, columnKey?: string \| null) => void` | 设置编辑状态（1. columnKey 为空，则为行编辑 2. columnKey 不为空，则为单元格编辑 3. rowId 传 null，清除编辑状态） |
+| `setEditingState` | 设置编辑状态（1. columnKey 为空，则为行编辑 2. columnKey 不为空，则为单元格编辑 3. rowId 传 null，清除编辑状态） | `(rowId: string \| number \| null, columnKey?: string \| null) => void` | `void` |

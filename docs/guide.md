@@ -4,7 +4,7 @@ title: 指南
 
 # VTable 虚拟表格
 
-基于 TanStack Table 和 TanStack Virtual 构建的高性能虚拟滚动表格组件，支持大数据量渲染、排序、筛选、分页、拖拽、树形结构、可展开、可选择等功能。
+基于 TanStack Table 和 TanStack Virtual 构建的高性能虚拟滚动表格组件，支持大数据量渲染、排序、筛选、分页、列宽拖拽调整、树形结构、可展开、可选择等功能。
 
 ### 特性
 

@@ -15,9 +15,9 @@ Display the API documentation for the VTable component.
 | --- | --- | --- | --- |
 | `defaultFilter` | Filter state | `VTableColumnFiltersState` | `[]` |
 | `defaultSort` | Sort state | `VTableSortingState` | `[]` |
-| `defaultPagination` | Pagination state | `VTablePaginationState` | `{}` |
-| `defaultExpanded` | Expanded state | `VTableExpandedState` | `[]` |
-| `defaultSelection` | Selection state | `VTableSelectionState` | `[]` |
+| `defaultPagination` | Pagination state | `VTablePaginationState` | `{ pageIndex: 1, pageSize: 20 }` |
+| `defaultExpanded` | Expanded state | `VTableExpandedState` | `{}` |
+| `defaultSelection` | Selection state | `VTableSelectionState` | `{}` |
 | `defaultColumnPinning` | Column pinning state | `VTableColumnPinningState` | `{}` |
 | `defaultColumnSizing` | Column sizing state | `VTableColumnSizingState` | `{}` |
 
@@ -74,7 +74,7 @@ Display the API documentation for the VTable component.
 | Slot Name | Description | Parameters |
 | --- | --- | --- |
 | `customHeader` | Custom the entire table header | `{ columns, table }` |
-| `bodyCell` | Custom cell content | `{ columnKey, column, row, rowIndex }` |
+| `bodyCell` | Custom cell content | `{ columnKey, column, row, rowIndex, isEditingMode }` |
 | `headerCell` | Custom table header cell | `{ columnKey, column }` |
 | `customFilterIcon` | Custom filter icon | `{ columnKey, filtered, column }` |
 | `customFilterDropdown` | Custom filter dropdown | `{ confirm, reset, setFilterValue, column, filterModelValue }` |
@@ -88,7 +88,7 @@ Display the API documentation for the VTable component.
 | `customFooter` | Custom table footer | - |
 | `customExpandIcon` | Custom expand icon | `{ expand, onExpandChange }` |
 | `customSorterIcon` | Custom sort icon | `{ sort }` |
-| `summaryCell` | Custom summary cell | `{ columnKey, column, data, summaryValue }` |
+| `summaryCell` | Custom summary cell | `{ columnKey, column, summaryValue }` |
 
 ---
 

@@ -391,7 +391,7 @@ const handleSelectionChange = (rows: DataRow[]) => {
 
 ### 排序和筛选
 
-支持列排序和自定义筛选功能。
+支持列排序状态与自定义筛选交互，通常结合 `table-change` 在外部处理数据。
 
 ::: raw
 <SortFilterExample />
