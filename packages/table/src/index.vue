@@ -269,7 +269,6 @@ import HeaderCell from './components/HeaderCell.vue'
 import {
   CHECKBOX_COLUMN_KEY,
   EXPAND_COLUMN_KEY,
-  EXPAND_ROW_DATA_INDEX,
   EXPAND_ROW_KEY,
   vTableDefaultProps,
 } from './constant'
@@ -290,7 +289,7 @@ import type {
 import VCheckbox from './libs/VCheckbox.vue'
 import vLoading from './libs/VLoading'
 import VPagination from './libs/VPagination.vue'
-import { buildData, calculateSummary, convertToColumnDefList, getAllRowKeys } from './utils'
+import { calculateSummary, convertToColumnDefList, getAllRowKeys } from './utils'
 
 defineOptions({ name: 'VTable' })
 
@@ -445,14 +444,8 @@ const computedColumns = computed(() => {
   }
   return columns
 })
-const tableData = shallowRef<TData[]>([])
-watch(
-  () => props.data,
-  (newData) => {
-    tableData.value = buildData([...newData], props.enableExpandRow)
-  },
-  { deep: true, immediate: true },
-)
+const tableData = computed(() => props.data)
+const expandRowCache = new WeakMap<TData, TData[]>()
 const table = useVueTable<TData>({
   _features: [EditingStateFeature],
   state: {
@@ -557,12 +550,24 @@ const table = useVueTable<TData>({
       typeof updaterOrValue === 'function' ? updaterOrValue(editingState.value) : updaterOrValue
   },
   getSubRows: (row) => {
-    // 如果开启了自定义可展开行
-    if (props.enableExpandRow) {
-      return (row as any)[EXPAND_ROW_DATA_INDEX]
+    // 如果已经是展开行，则直接返回
+    if ((row as any)[EXPAND_ROW_KEY]) {
+      return
     }
-    // 反之就是开启了 tree 模式，那直接读取用户提供的字段
-    return (row as any)[props.treeConfig!.childrenKey!] as TData[] | undefined
+    if (!props.enableExpandRow) {
+      return (row as any)[props.treeConfig!.childrenKey!] as TData[] | undefined
+    }
+    if (expandRowCache.has(row)) {
+      return expandRowCache.get(row)
+    }
+    const expandRow = [
+      {
+        ...row,
+        [EXPAND_ROW_KEY]: true,
+      },
+    ]
+    expandRowCache.set(row, expandRow)
+    return expandRow
   },
   getRowCanExpand: (row: Row<TData>) => {
     // tree 模式：只要存在 children 数组（允许空数组），就显示展开按钮
@@ -647,25 +652,28 @@ watch(
   },
   { immediate: true },
 )
+const measuredSet = new WeakSet()
 function measureElement(element?: any, isExpandRow?: boolean) {
   if (!element) return
-  if (isExpandRow) {
-    rowVirtualizer.value.measureElement(element)
-  } else {
-    if (props.rowHeight) return
+  if (measuredSet.has(element)) return
+  measuredSet.add(element)
+  if (isExpandRow || !props.rowHeight) {
     rowVirtualizer.value.measureElement(element)
   }
 }
-watchEffect(() => {
-  const [lastItem] = [...virtualRows.value].reverse()
-  if (!lastItem || !rowVirtualizer.value.isScrolling) {
-    return
-  }
-  // 判断当前最后一项是否是目前总数据长度的最后一项
-  if (lastItem.index >= rows.value.length - 1 && rows.value.length > 0 && !props.loading) {
-    props.onScrollToBottom?.()
-  }
-})
+watch(
+  () => virtualRows.value[virtualRows.value.length - 1]?.index,
+  (lastIndex) => {
+    if (
+      lastIndex !== undefined &&
+      lastIndex >= rows.value.length - 1 &&
+      rows.value.length > 0 &&
+      !props.loading
+    ) {
+      props.onScrollToBottom?.()
+    }
+  },
+)
 /** 模拟顶部占位 */
 const paddingTop = computed(() => (virtualRows.value.length > 0 ? virtualRows.value[0]!.start : 0))
 /** 模拟底部占位 */
@@ -704,8 +712,9 @@ const canRenderCell = (
   return true
 }
 /** 列样式 Map */
+const columnStyleCache = new Map<string, CSSProperties>()
 const columnStyleMap = computed(() => {
-  const map = new Map<string, CSSProperties>()
+  columnStyleCache.clear()
   for (const column of allLeafColumns.value) {
     const meta = column.columnDef.meta
     const pinPosition = column.getIsPinned()
@@ -721,51 +730,56 @@ const columnStyleMap = computed(() => {
       }
       style.zIndex = themeConfig.value.zIndex?.pinnedColumn
     }
-    map.set(column.id, style)
+    columnStyleCache.set(column.id, style)
   }
-  return map
+  return columnStyleCache
 })
 /** 固定列阴影 Map */
+const shadowPinnedColumnCache = new Map<string, string>()
 const shadowPinnedColumnMap = computed(() => {
-  const map = new Map<string, string>()
+  shadowPinnedColumnCache.clear()
   for (const column of allLeafColumns.value) {
     const pinPosition = column.getIsPinned()
     if (!pinPosition) continue
     if (pinPosition === 'left' && column.getIsLastColumn('left')) {
-      map.set(column.id, 'pinned-left-shadow')
+      shadowPinnedColumnCache.set(column.id, 'pinned-left-shadow')
     } else if (pinPosition === 'right' && column.getIsFirstColumn('right')) {
-      map.set(column.id, 'pinned-right-shadow')
+      shadowPinnedColumnCache.set(column.id, 'pinned-right-shadow')
     }
   }
-  return map
+  return shadowPinnedColumnCache
 })
 // #endregion
 
 // #region 汇总行逻辑
 /** 汇总值 Map */
+const summaryValueCache = new Map<string, any>()
 const summaryValueMap = computed(() => {
-  const map = new Map<string, any>()
+  summaryValueCache.clear()
   for (const column of allLeafColumns.value) {
     const columnKey = column.id
     const columnMeta = column.columnDef.meta
     // checkbox 和 expand 列不显示汇总
     if (columnKey === CHECKBOX_COLUMN_KEY || columnKey === EXPAND_COLUMN_KEY) {
-      map.set(columnKey, '')
+      summaryValueCache.set(columnKey, '')
       continue
     }
     // 优先使用全局自定义汇总函数
     if (props.summaryConfig?.customSummary) {
-      map.set(columnKey, props.summaryConfig.customSummary(columnMeta!, props.data))
+      summaryValueCache.set(columnKey, props.summaryConfig.customSummary(columnMeta!, props.data))
       continue
     }
     // 使用列配置的汇总方式
     if (columnMeta?.columnSummary) {
-      map.set(columnKey, calculateSummary(props.data, columnMeta, columnMeta.columnSummary))
+      summaryValueCache.set(
+        columnKey,
+        calculateSummary(props.data, columnMeta, columnMeta.columnSummary),
+      )
       continue
     }
-    map.set(columnKey, '')
+    summaryValueCache.set(columnKey, '')
   }
-  return map
+  return summaryValueCache
 })
 // #endregion
 

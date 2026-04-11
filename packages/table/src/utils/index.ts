@@ -1,6 +1,5 @@
 import type { VNode } from 'vue'
 import type { ColumnDef } from '@tanstack/vue-table'
-import { EXPAND_ROW_DATA_INDEX, EXPAND_ROW_KEY } from '../constant'
 import type { VTableColumn, VTableRowKey, VTableSummaryType } from '../interface'
 
 export function convertToColumnDefList<T>(
@@ -23,22 +22,6 @@ export function convertToColumnDefList<T>(
     columns: convertToColumnDefList<T>(col.columnChildren || [], containerWidth),
     meta: col,
   }))
-}
-
-/** 给 data 添加组件内部属性（仅当 enableExpandRow 时添加展开行结构） */
-export function buildData<T extends Record<string, any>>(data: T[], enableExpandRow = false) {
-  if (!enableExpandRow) return data
-  return data.map((row) => {
-    if (!row[EXPAND_ROW_DATA_INDEX]) {
-      ;(row as any)[EXPAND_ROW_DATA_INDEX] = [
-        {
-          ...row,
-          [EXPAND_ROW_KEY]: true,
-        },
-      ]
-    }
-    return row
-  })
 }
 
 /** 获取所有行的 key */

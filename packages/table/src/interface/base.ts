@@ -8,13 +8,11 @@ import type {
   RowSelectionState,
   SortingState,
 } from '@tanstack/vue-table'
-import type { EXPAND_ROW_DATA_INDEX, EXPAND_ROW_KEY } from '../constant'
+import type { EXPAND_ROW_KEY } from '../constant'
 
 export type VTableData<T = Record<string, any>> = T & {
   /** 当前行是否展开 */
   [EXPAND_ROW_KEY]?: boolean
-  /** 子行数据列表（HACK: 为了实现自定义展开行的逻辑，这里只会有一项） */
-  [EXPAND_ROW_DATA_INDEX]?: Array<VTableData<T>>
 }
 
 /** 排序状态 */
