@@ -45,6 +45,7 @@ export default defineConfig({
           '/examples/': [
             { text: '基础示例', link: '/examples/' },
             { text: '综合示例', link: '/examples/comprehensive' },
+            { text: '性能对比', link: '/examples/comparison' },
           ],
         },
         lastUpdated: {
@@ -69,6 +70,7 @@ export default defineConfig({
           '/es/examples/': [
             { text: 'Basic Examples', link: '/es/examples/' },
             { text: 'Comprehensive Examples', link: '/es/examples/comprehensive' },
+            { text: 'Performance Comparison', link: '/es/examples/comparison' },
           ],
         },
         lastUpdated: {
