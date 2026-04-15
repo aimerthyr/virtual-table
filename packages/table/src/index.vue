@@ -11,13 +11,19 @@
     <div
       ref="tableContainerRef"
       class="v-table-container min-h-0 flex-1"
-      :class="{ 'overflow-y-auto': props.fixedHeader }"
+      :class="{
+        'overflow-y-auto': props.fixedHeader,
+      }"
+      :style="{
+        maxWidth:
+          props.maxTableWidth === 'max-content'
+            ? 'none'
+            : typeof props.maxTableWidth === 'number'
+              ? `${props.maxTableWidth}px`
+              : props.maxTableWidth,
+      }"
     >
-      <table
-        class="v-table"
-        :class="{ 'v-table-bordered': props.bordered }"
-        :style="{ width: props.layoutMode === 'fixed' ? '100%' : 'max-content' }"
-      >
+      <table class="v-table" :class="{ 'v-table-bordered': props.bordered }" :style="tableStyle">
         <colgroup>
           <col
             v-for="column in allLeafColumns"
@@ -694,6 +700,13 @@ const noMoreText = computed(() => props.loadMoreConfig?.noMoreText || '没有更
 
 // #region 表格样式相关逻辑
 const { cssVariables, themeConfig } = useTheme(props.themeConfig)
+const tableStyle = computed<CSSProperties>(() => {
+  return {
+    width: props.maxTableWidth === 'max-content' ? 'max-content' : '100%',
+    tableLayout: props.maxTableWidth === 'max-content' ? 'auto' : 'fixed',
+    whiteSpace: props.maxTableWidth === 'max-content' ? 'nowrap' : 'normal',
+  }
+})
 /** 判断单元格是否应该渲染（被合并的单元格返回 false） */
 const canRenderCell = (
   row: TData,
@@ -856,7 +869,6 @@ defineExpose<VTableInstance<TData>>({
       .border-mixin(bottom);
       word-wrap: break-word;
       word-break: break-word;
-      white-space: normal;
 
       &:not(.checkbox-col, .expand-col, :last-child, .pinned-left-shadow)::before {
         content: '';
@@ -890,7 +902,6 @@ defineExpose<VTableInstance<TData>>({
       color: var(--v-table-body-color);
       word-wrap: break-word;
       word-break: break-word;
-      white-space: normal;
     }
   }
 

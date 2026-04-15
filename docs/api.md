@@ -50,7 +50,7 @@ title: 参考
 | `customRowAttributes` | 自定义数据行属性 | `(row, rowIndex) => HTMLAttributes` | `() => ({})` |
 | `customHeaderCellAttributes` | 自定义表头单元格属性 | `(column, colIndex) => ThHTMLAttributes` | `() => ({})` |
 | `customCellAttributes` | 自定义表体单元格属性（支持合并单元格） | `(row, column, rowIndex, colIndex) => TdHTMLAttributes` 或 `null` | `() => ({})` |
-| `layoutMode` | 表格布局模式 (固定宽度 / 内容自适应) | `'fixed'` &#124; `'contentFit'` | `'fixed'` |
+| `maxTableWidth` | 表格容器最大宽度（max-content：表格宽度根据内容自适应,内容有多长，表格就有多宽，未设置：表格宽度 100%，如果列内容超出自己的列宽会自动换行，已设置：容器超过最大宽度，出现横向滚动条，列内容会自动换行） | `string` &#124; `number` &#124; `'max-content'` | `undefined` |
 | `summaryConfig` | 汇总行配置 | `VTableSummaryConfig` | 见说明 |
 
 ---

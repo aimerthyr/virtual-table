@@ -50,7 +50,7 @@ Display the API documentation for the VTable component.
 | `customRowAttributes` | Custom data row attributes | `(row, rowIndex) => HTMLAttributes` | `() => ({})` |
 | `customHeaderCellAttributes` | Custom table header cell attributes | `(column, colIndex) => ThHTMLAttributes` | `() => ({})` |
 | `customCellAttributes` | Custom table body cell attributes (supports merging cells) | `(row, column, rowIndex, colIndex) => TdHTMLAttributes` or `null` | `() => ({})` |
-| `layoutMode` | Table layout mode (fixed width / content fit) | `'fixed'` &#124; `'contentFit'` | `'fixed'` |
+| `maxTableWidth` | Table container max width (max-content: table width adapts to content, content has as long as the table, not set: table width 100%, if the column content exceeds its own column width will wrap, set: container exceeds the maximum width, horizontal scroll bar appears, column content will wrap) | `string` &#124; `number` &#124; `'max-content'` | `undefined` |
 | `summaryConfig` | Summary configuration | `VTableSummaryConfig` | See description |
 
 ---

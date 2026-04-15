@@ -120,8 +120,12 @@ export interface VTableProps<TData = any> {
   defaultCheckboxColumnWidth?: number
   /** 默认展开列的列宽 */
   defaultExpandColumnWidth?: number
-  /** 表格布局模式 (固定宽度 / 内容自适应) */
-  layoutMode?: 'fixed' | 'contentFit'
+  /** 表格容器最大宽度（支持 CSS 单位字符串或数字，如 '300px' 或 300）
+   * - 'max-content'：表格宽度根据内容自适应,内容有多长，表格就有多宽
+   * - 未设置：表格宽度 100%，如果列内容超出自己的列宽会自动换行
+   * - 已设置：容器超过最大宽度，出现横向滚动条，列内容会自动换行
+   */
+  maxTableWidth?: string | number | 'max-content'
   /** 自定义数据行属性 */
   customRowAttributes?: (row: TData, rowIndex: number) => HTMLAttributes
   /** 自定义表头单元格属性 */

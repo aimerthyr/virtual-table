@@ -18,15 +18,19 @@ Please check if the `rowHeight` property is set, if set, please ensure that the 
 
 The reason is that bodyCell internally does caching processing, which can avoid unnecessary cell redrawing, while the customCell function will be called repeatedly.
 
-**4. The problem of multiple triggers of scroll loading**
+**4. How to set the content width of the table to adapt**
+
+You can set the `maxTableWidth` property to `max-content` , so that the content of each column will adapt to its own column width, without wrapping. (in other cases, the table will wrap the display of each column).
+
+**5. The problem of multiple triggers of scroll loading**
 
 You need to pass in the `loading` state, which is used to control the problem of frequent triggers.
 
-**5. The pagination component cannot be displayed?**
+**6. The pagination component cannot be displayed?**
 
 The display of the pagination component depends on two values `paginationConfig.enabled` and `paginationConfig.total`, both must be set to display.
 
-**6. When setting the pagination state, both properties must be passed in**
+**7. When setting the pagination state, both properties must be passed in**
 
 ```vue
 // Incorrect passing ❌
@@ -36,7 +40,7 @@ The display of the pagination component depends on two values `paginationConfig.
 <VTable :default-pagination="{ pageSize: 5, pageIndex: 1 }"></VTable>
 ```
 
-**6. How to customize the secondary encapsulation of the built-in components such as `checkbox` `pagination`?**
+**8. How to customize the secondary encapsulation of the built-in components such as `checkbox` `pagination`?**
 
 The following code is a secondary encapsulation inside the company (simplified processing, but the basic logic is enough)
 
