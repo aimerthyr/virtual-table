@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.3] - 2026-04-16
+
+### Features
+
+- 支持表格内容自适应宽度，新增 maxTableWidth 属性，移除 layoutMode 属性
+- 代码性能优化
+
 ## [1.4.2] - 2026-04-05
 
 ### Features
