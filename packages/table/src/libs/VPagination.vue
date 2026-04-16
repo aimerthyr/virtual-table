@@ -1,7 +1,7 @@
 <template>
   <div class="pagination">
     <!-- 总数显示 -->
-    <span v-if="props.showTotal" class="pagination-total"
+    <span v-if="props.isShowTotal" class="pagination-total"
       >{{ props.totalText }} {{ props.total }}</span
     >
 
@@ -49,7 +49,7 @@
     </ul>
 
     <!-- 每页条数选择器 -->
-    <div v-if="props.showSizeChanger" class="pagination-size-changer">
+    <div v-if="props.isShowSizeChanger" class="pagination-size-changer">
       <VSelect
         :value="props.pageSize"
         :options="[
@@ -77,8 +77,8 @@ const props = withDefaults(defineProps<VTablePaginationProps & VTablePaginationE
   pageSize: 10,
   pageIndex: 1,
   onPageChange: () => {},
-  showTotal: false,
-  showSizeChanger: true,
+  isShowTotal: false,
+  isShowSizeChanger: true,
   totalText: '总计',
   pageSizeText: '页',
 })

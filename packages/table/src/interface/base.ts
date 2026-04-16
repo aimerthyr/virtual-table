@@ -85,9 +85,9 @@ export interface VTableLoadMoreConfig {
 
 export interface VTablePaginationExtraProps {
   /** 是否显示总计 */
-  showTotal?: boolean
+  isShowTotal?: boolean
   /** 是否显示每页条数选择器 */
-  showSizeChanger?: boolean
+  isShowSizeChanger?: boolean
   /** 总计文本 */
   totalText?: string
   /** 每页条数选择器文本 */
