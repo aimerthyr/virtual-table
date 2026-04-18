@@ -450,7 +450,14 @@ const computedColumns = computed(() => {
   }
   return columns
 })
-const tableData = computed(() => props.data)
+const tableData = shallowRef<TData[]>([])
+watch(
+  () => props.data,
+  (newData) => {
+    tableData.value = [...newData]
+  },
+  { deep: true, immediate: true },
+)
 const expandRowCache = new WeakMap<TData, TData[]>()
 const table = useVueTable<TData>({
   _features: [EditingStateFeature],
@@ -465,7 +472,10 @@ const table = useVueTable<TData>({
       return columnSorts.value
     },
     get pagination() {
-      return pagination.value
+      return {
+        pageIndex: Math.max(0, (pagination.value.pageIndex || 1) - 1),
+        pageSize: pagination.value.pageSize || 20,
+      }
     },
     get rowSelection() {
       return selection.value
@@ -524,8 +534,16 @@ const table = useVueTable<TData>({
     triggerTableStateChange()
   },
   onPaginationChange: (updaterOrValue) => {
-    pagination.value =
-      typeof updaterOrValue === 'function' ? updaterOrValue(pagination.value) : updaterOrValue
+    const current0Based = {
+      pageIndex: Math.max(0, (pagination.value.pageIndex || 1) - 1),
+      pageSize: pagination.value.pageSize || 20,
+    }
+    const pageState =
+      typeof updaterOrValue === 'function' ? updaterOrValue(current0Based) : updaterOrValue
+    pagination.value = {
+      pageIndex: pageState.pageIndex + 1,
+      pageSize: pageState.pageSize,
+    }
     triggerTableStateChange()
   },
   onExpandedChange: (updaterOrValue) => {
