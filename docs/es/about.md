@@ -47,7 +47,7 @@ The following code is a secondary encapsulation inside the company (simplified p
 ```vue
 <template>
   <VirtualTable :ref="componentRef" class="custom-table" v-bind="computedProps">
-    <template v-for="(_, name) in slots" #[name]="slotProps">
+    <template v-for="(_, name) in computedSlots" #[name]="slotProps">
       <slot :name="name" v-bind="slotProps" />
     </template>
 
@@ -137,6 +137,21 @@ const computedProps = computed<VTableProps<TData>>(() => {
 
 // #region 插槽定义
 const slots = defineSlots<VTableSlots<TData>>()
+const computedSlots = computed<VTableSlots<TData>>(() => {
+  const {
+    /* eslint-disable */
+    customFilterDropdown,
+    customFilterIcon,
+    customPopover,
+    customCheckbox,
+    customPagination,
+    customEmpty,
+    customSorterIcon,
+    /* eslint-enable */
+    ...rest
+  } = slots
+  return rest
+})
 // #endregion
 
 // #region 实例定义
