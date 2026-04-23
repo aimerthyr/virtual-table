@@ -123,9 +123,11 @@ const canFilter = computed(() => columnDef.value.enableColumnFilter)
 const canResize = computed(() => column.value.getCanResize())
 const handleMouseDown = (event: MouseEvent) => {
   props.header.getResizeHandler()?.(event)
+  document.body.style.userSelect = 'auto'
 }
 const handleTouchStart = (event: TouchEvent) => {
   props.header.getResizeHandler()?.(event)
+  document.body.style.userSelect = 'none'
 }
 const handleDoubleClick = () => {
   column.value.resetSize()
