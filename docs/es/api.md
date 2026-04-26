@@ -34,10 +34,10 @@ Display the API documentation for the VTable component.
 | `fixedHeader` | Whether to fix the table header | `boolean` | `true` |
 | `enableSortingRemoval` | Whether to allow sorting removal | `boolean` | `true` |
 | `bordered` | Whether to display borders | `boolean` | `false` |
-| `rowSelectionConfig` | Row selection configuration | `VTableRowSelectionConfig<TData>` | See description |
-| `loadMoreConfig` | Load more configuration | `VTableLoadMoreConfig` | See description |
-| `paginationConfig` | Pagination configuration | `VTablePaginationConfig` | See description |
-| `treeConfig` | Tree structure configuration | `VTableTreeConfig` | See description |
+| `rowSelectionConfig` | Row selection configuration | `VTableRowSelectionConfig<TData>` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/contextMenu.ts) |
+| `loadMoreConfig` | Load more configuration | `VTableLoadMoreConfig` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/contextMenu.ts) |
+| `paginationConfig` | Pagination configuration | `VTablePaginationConfig` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/contextMenu.ts) |
+| `treeConfig` | Tree structure configuration | `VTableTreeConfig` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/contextMenu.ts) |
 | `enableExpandRow` | Whether to enable expandable rows | `boolean` | `false` |
 | `enableRowHover` | Whether to enable row hover highlighting | `boolean` | `true` |
 | `adaptiveColumnWidth` | Minimum column width for adaptive column width | `number` | `120` |
@@ -51,7 +51,8 @@ Display the API documentation for the VTable component.
 | `customHeaderCellAttributes` | Custom table header cell attributes | `(column, colIndex) => ThHTMLAttributes` | `() => ({})` |
 | `customCellAttributes` | Custom table body cell attributes (supports merging cells) | `(row, column, rowIndex, colIndex) => TdHTMLAttributes` or `null` | `() => ({})` |
 | `maxTableWidth` | Table container max width (max-content: table width adapts to content, content has as long as the table, not set: table width 100%, if the column content exceeds its own column width will wrap, set: container exceeds the maximum width, horizontal scroll bar appears, column content will wrap) | `string` &#124; `number` &#124; `'max-content'` | `undefined` |
-| `summaryConfig` | Summary configuration | `VTableSummaryConfig` | See description |
+| `summaryConfig` | Summary configuration | `VTableSummaryConfig` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/contextMenu.ts) |
+| `contextMenuConfig` | Right-click menu configuration | `VTableContextMenuConfig` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/contextMenu.ts) |
 
 ---
 
@@ -89,6 +90,7 @@ Display the API documentation for the VTable component.
 | `customExpandIcon` | Custom expand icon | `{ expand, onExpandChange }` |
 | `customSorterIcon` | Custom sort icon | `{ sort }` |
 | `summaryCell` | Custom summary cell | `{ columnKey, column, summaryValue }` |
+| `customContextMenu` | Custom context menu | `{ context, close }` |
 
 ---
 

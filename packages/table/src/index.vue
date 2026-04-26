@@ -40,7 +40,7 @@
           <slot name="customHeader" :columns="props.columns" :table="table">
             <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
               <th
-                v-for="header in headerGroup.headers"
+                v-for="(header, headerIndex) in headerGroup.headers"
                 :key="header.id"
                 :colspan="header.colSpan"
                 class="relative"
@@ -48,6 +48,7 @@
                   header.column.id === CHECKBOX_COLUMN_KEY ? 'checkbox-col' : '',
                   header.column.id === EXPAND_COLUMN_KEY ? 'expand-col' : '',
                   shadowPinnedColumnMap.get(header.column.id),
+                  { 'v-table-context-menu-active': isContextMenuActiveHeader(headerIndex) },
                 ]"
                 :style="columnStyleMap.get(header.column.id)"
                 v-bind="
@@ -56,6 +57,7 @@
                     header.column.getIndex(),
                   )
                 "
+                @contextmenu="handleHeaderContextMenu($event, header, headerIndex)"
               >
                 <template v-if="!header.isPlaceholder">
                   <FlexRender
@@ -119,6 +121,9 @@
                     cell.column.id === CHECKBOX_COLUMN_KEY ? 'checkbox-col' : '',
                     cell.column.id === EXPAND_COLUMN_KEY ? 'expand-col' : '',
                     shadowPinnedColumnMap.get(cell.column.id),
+                    {
+                      'v-table-context-menu-active': isContextMenuActiveCell(vRow.index, cellIndex),
+                    },
                   ]"
                   v-bind="
                     props.customCellAttributes?.(
@@ -127,6 +132,9 @@
                       vRow.index,
                       cellIndex,
                     ) ?? {}
+                  "
+                  @contextmenu="
+                    handleCellContextMenu($event, rows[vRow.index]!, cell, vRow.index, cellIndex)
                   "
                 >
                   <FlexRender
@@ -233,6 +241,20 @@
       </div>
     </div>
 
+    <!-- 右键菜单 -->
+    <ContextMenu
+      v-if="props.contextMenuConfig?.enableHeaderMenu || props.contextMenuConfig?.enableCellMenu"
+      :visible="contextMenuState.visible"
+      :x="contextMenuState.x"
+      :y="contextMenuState.y"
+      :context="contextMenuState.context"
+      @close="closeContextMenu"
+    >
+      <template #default="{ context, close }">
+        <slot name="customContextMenu" :context="context" :close="close" />
+      </template>
+    </ContextMenu>
+
     <div
       v-if="props.paginationConfig.enabled"
       ref="paginationRef"
@@ -251,13 +273,14 @@
 </template>
 
 <script setup lang="ts" generic="TData extends VTableData">
-import { type CSSProperties } from 'vue'
+import { h, type CSSProperties } from 'vue'
 import {
   FlexRender,
   getCoreRowModel,
   getExpandedRowModel,
   getPaginationRowModel,
   useVueTable,
+  type Cell,
   type ColumnDef,
   type ColumnFiltersState,
   type ColumnPinningState,
@@ -271,6 +294,7 @@ import {
 } from '@tanstack/vue-table'
 import { Virtualizer, useVirtualizer, type VirtualItem } from '@tanstack/vue-virtual'
 import BodyCell from './components/BodyCell.vue'
+import ContextMenu from './components/ContextMenu.vue'
 import HeaderCell from './components/HeaderCell.vue'
 import {
   CHECKBOX_COLUMN_KEY,
@@ -285,6 +309,7 @@ import ExpandIcon from './icons/ExpandIcon.vue'
 import type {
   VTableCheckboxProps,
   VTableColumn,
+  VTableContextMenuContext,
   VTableData,
   VTableExpandIconProps,
   VTableInstance,
@@ -816,6 +841,92 @@ const summaryValueMap = computed(() => {
 })
 // #endregion
 
+// #region 右键菜单逻辑
+const contextMenuState = ref<{
+  visible: boolean
+  x: number
+  y: number
+  context: VTableContextMenuContext
+}>({
+  visible: false,
+  x: 0,
+  y: 0,
+  context: {} as VTableContextMenuContext,
+})
+/** 判断单元格是否处于右键菜单激活 */
+const isContextMenuActiveCell = (rowIndex: number, cellIndex: number) => {
+  const ctx = contextMenuState.value.context
+  return (
+    contextMenuState.value.visible &&
+    ctx?.type === 'cell' &&
+    ctx.rowIndex === rowIndex &&
+    ctx.columnIndex === cellIndex
+  )
+}
+/** 判断表头是否处于右键菜单激活 */
+const isContextMenuActiveHeader = (columnIndex: number) => {
+  const ctx = contextMenuState.value.context
+  return contextMenuState.value.visible && ctx?.type === 'header' && ctx.columnIndex === columnIndex
+}
+/** 处理单元格右键事件 */
+const handleCellContextMenu = (
+  event: MouseEvent,
+  row: Row<TData>,
+  cell: Cell<TData, any>,
+  rowIndex: number,
+  cellIndex: number,
+) => {
+  if (!props.contextMenuConfig?.enableCellMenu) return
+  // 阻止默认右键菜单
+  event.preventDefault()
+  event.stopPropagation()
+  // 过滤掉 checkbox 和 expand 列
+  if (cell.column.id === CHECKBOX_COLUMN_KEY || cell.column.id === EXPAND_COLUMN_KEY) {
+    return
+  }
+  contextMenuState.value = {
+    visible: true,
+    x: event.clientX,
+    y: event.clientY,
+    context: {
+      type: 'cell',
+      row: row.original,
+      rowIndex,
+      column: cell.column.columnDef.meta!,
+      columnIndex: cellIndex,
+    },
+  }
+}
+
+/** 处理表头右键事件 */
+const handleHeaderContextMenu = (event: MouseEvent, header: any, columnIndex: number) => {
+  if (!props.contextMenuConfig?.enableHeaderMenu) return
+  // 阻止默认右键菜单
+  event.preventDefault()
+  event.stopPropagation()
+  // 过滤掉 checkbox 和 expand 列
+  if (header.column.id === CHECKBOX_COLUMN_KEY || header.column.id === EXPAND_COLUMN_KEY) {
+    return
+  }
+  contextMenuState.value = {
+    visible: true,
+    x: event.clientX,
+    y: event.clientY,
+    context: {
+      type: 'header',
+      column: header.column.columnDef.meta!,
+      columnIndex,
+    },
+  }
+}
+
+/** 关闭右键菜单 */
+const closeContextMenu = () => {
+  contextMenuState.value.visible = false
+  contextMenuState.value.context = {} as VTableContextMenuContext
+}
+// #endregion
+
 onMounted(() => {
   initResizeObserver()
   if (props.defaultExpandAllRows) {
@@ -907,11 +1018,19 @@ defineExpose<VTableInstance<TData>>({
       &:last-child {
         border-start-end-radius: var(--v-table-header-border-radius);
       }
+
+      &.v-table-context-menu-active {
+        background-color: var(--v-table-context-menu-active-bg, #e6f7ff) !important;
+        position: relative;
+        z-index: 2;
+        outline: 2px solid var(--v-table-context-menu-active-border, #1890ff);
+        outline-offset: -2px;
+      }
     }
   }
 
   &-body tr {
-    &.v-table-row-hover:hover td {
+    &.v-table-row-hover:hover td:not(.v-table-context-menu-active) {
       background-color: var(--v-table-row-hover-color);
     }
 
@@ -922,6 +1041,14 @@ defineExpose<VTableInstance<TData>>({
       color: var(--v-table-body-color);
       word-wrap: break-word;
       word-break: break-word;
+
+      &.v-table-context-menu-active {
+        background-color: var(--v-table-context-menu-active-bg, #e6f4ff) !important;
+        position: relative;
+        z-index: 2;
+        outline: 1px solid var(--v-table-context-menu-active-border, #1890ff);
+        outline-offset: -1px;
+      }
     }
   }
 

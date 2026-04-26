@@ -25,6 +25,7 @@ import type {
   VTablePopoverProps,
   VTableSorterIconProps,
 } from './components'
+import type { VTableContextMenuConfig, VTableContextMenuContext } from './contextMenu'
 import type { VTableThemeConfig } from './theme'
 
 /** slots 类型定义 */
@@ -35,6 +36,8 @@ export interface VTableSlots<TData = any> {
   bodyCell?: (props: VTableBodyCellProps<TData>) => VNode[]
   /** 自定义列头 */
   headerCell?: (props: { columnKey: string; column: VTableColumn }) => VNode[]
+  /** 自定义汇总单元格 */
+  summaryCell?: (props: { columnKey: string; column: VTableColumn; summaryValue: any }) => VNode[]
   /** 自定义筛选图标 */
   customFilterIcon?: (props: {
     columnKey: string
@@ -69,8 +72,11 @@ export interface VTableSlots<TData = any> {
   customExpandIcon?: (props: VTableExpandIconProps) => VNode[]
   /** 自定义排序图标 */
   customSorterIcon?: (props: VTableSorterIconProps) => VNode[]
-  /** 自定义汇总单元格 */
-  summaryCell?: (props: { columnKey: string; column: VTableColumn; summaryValue: any }) => VNode[]
+  /** 自定义右键菜单 */
+  customContextMenu?: (props: {
+    context: VTableContextMenuContext<TData>
+    close: () => void
+  }) => VNode[]
   [key: string]: ((...args: any[]) => VNode[]) | undefined
 }
 
@@ -104,6 +110,8 @@ export interface VTableProps<TData = any> {
   summaryConfig?: VTableSummaryConfig<TData>
   /** 是否启用展开行功能 */
   enableExpandRow?: boolean
+  /** 右键菜单配置 */
+  contextMenuConfig?: VTableContextMenuConfig
   /** 是否启用行 hover 高亮 */
   enableRowHover?: boolean
   /** 自适应列宽（当列数很多时，会出现横向滚动条，那么就需要设置自适应列的最小列宽） */

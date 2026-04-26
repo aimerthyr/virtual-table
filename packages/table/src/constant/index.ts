@@ -47,6 +47,10 @@ export const vTableDefaultProps = defineDefaultProps<VTableProps<any>>({
     enabled: false,
     fixed: false,
   }),
+  contextMenuConfig: () => ({
+    enableCellMenu: false,
+    enableHeaderMenu: false,
+  }),
   enableExpandRow: false,
   enableRowHover: true,
   adaptiveColumnWidth: 120,
@@ -83,6 +87,10 @@ export const defaultThemeConfig: VTableThemeConfig = {
     padding: 12,
   },
   rowHoverColor: '#fafafa',
+  contextMenuActive: {
+    backgroundColor: '#e6f7ff',
+    borderColor: '#1890ff',
+  },
   border: {
     borderStyle: 'solid',
     borderColor: '#f0f0f0',

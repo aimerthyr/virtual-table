@@ -42,6 +42,14 @@ export interface VTableZIndexConfig {
   fixedFooter?: number
 }
 
+/** 右键菜单激活样式配置 */
+export interface VTableContextMenuActiveStyle {
+  /** 激活单元格背景色 */
+  backgroundColor: string
+  /** 激活单元格边框色 */
+  borderColor: string
+}
+
 /** 表格主题配置 */
 export interface VTableThemeConfig {
   /** 主色 */
@@ -54,6 +62,8 @@ export interface VTableThemeConfig {
   border?: Partial<VTableBorderStyle>
   /** 行 hover 颜色 */
   rowHoverColor?: string
+  /** 右键菜单激活样式 */
+  contextMenuActive?: Partial<VTableContextMenuActiveStyle>
   /** z-index 层级配置 */
   zIndex?: VTableZIndexConfig
 }
