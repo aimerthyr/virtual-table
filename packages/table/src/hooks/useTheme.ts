@@ -16,6 +16,10 @@ export function useTheme(config: VTableThemeConfig) {
         ...config?.body,
       },
       rowHoverColor: config?.rowHoverColor || defaultThemeConfig.rowHoverColor,
+      contextMenuActive: {
+        ...defaultThemeConfig.contextMenuActive,
+        ...config?.contextMenuActive,
+      },
       border: {
         ...defaultThemeConfig.border,
         ...config?.border,
@@ -49,6 +53,10 @@ export function useTheme(config: VTableThemeConfig) {
 
       // 行 hover 颜色
       '--v-table-row-hover-color': config.rowHoverColor,
+
+      // 右键菜单激活样式
+      '--v-table-context-menu-active-bg': config.contextMenuActive?.backgroundColor,
+      '--v-table-context-menu-active-border': config.contextMenuActive?.borderColor,
 
       // 边框样式变量
       '--v-table-border-style': config.border?.borderStyle,

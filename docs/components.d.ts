@@ -29,6 +29,7 @@ declare module 'vue' {
     CellMergeExample: typeof import('./components/CellMergeExample.vue')['default']
     ColumnResizeExample: typeof import('./components/ColumnResizeExample.vue')['default']
     Comprehensive: typeof import('./components/Comprehensive.vue')['default']
+    ContextMenuExample: typeof import('./components/ContextMenuExample.vue')['default']
     CustomSlotExample: typeof import('./components/CustomSlotExample.vue')['default']
     CustomTheme: typeof import('./components/CustomTheme.vue')['default']
     EditStateExample: typeof import('./components/EditStateExample.vue')['default']

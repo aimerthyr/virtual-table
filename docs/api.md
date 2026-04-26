@@ -12,7 +12,7 @@ title: 参考
 
 <!-- prettier-ignore -->
 | 状态名 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
+| :--- | :--- | :--- | :--- |
 | `defaultFilter` | 筛选状态 | `VTableColumnFiltersState` | `[]` |
 | `defaultSort` | 排序状态 | `VTableSortingState` | `[]` |
 | `defaultPagination` | 分页状态 | `VTablePaginationState` | `{ pageIndex: 1, pageSize: 20 }` |
@@ -25,7 +25,7 @@ title: 参考
 
 <!-- prettier-ignore -->
 | 属性名 | 说明 | 类型 | 默认值 |
-| --- | --- | --- | --- |
+| :--- | :--- | :--- | :--- |
 | `data` | 表格数据源 | `TData[]` | `[]` |
 | `columns` | 表格列配置 | `VTableColumn[]` | `[]` |
 | `rowHeight` | 表格行高（建议设置，优化滚动性能） | `number` | - |
@@ -34,10 +34,10 @@ title: 参考
 | `fixedHeader` | 是否固定表头 | `boolean` | `true` |
 | `enableSortingRemoval` | 是否允许取消排序 | `boolean` | `true` |
 | `bordered` | 是否显示边框 | `boolean` | `false` |
-| `rowSelectionConfig` | 选择行功能配置 | `VTableRowSelectionConfig<TData>` | 见说明 |
-| `loadMoreConfig` | 加载更多配置 | `VTableLoadMoreConfig` | 见说明 |
-| `paginationConfig` | 分页器配置 | `VTablePaginationConfig` | 见说明 |
-| `treeConfig` | 树形结构配置 | `VTableTreeConfig` | 见说明 |
+| `rowSelectionConfig` | 选择行功能配置 | `VTableRowSelectionConfig<TData>` | [详情](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/base.ts) |
+| `loadMoreConfig` | 加载更多配置 | `VTableLoadMoreConfig` | [详情](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/base.ts) |
+| `paginationConfig` | 分页器配置 | `VTablePaginationConfig` | [详情](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/base.ts) |
+| `treeConfig` | 树形结构配置 | `VTableTreeConfig` | [详情](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/base.ts) |
 | `enableExpandRow` | 是否启用展开行功能 | `boolean` | `false` |
 | `enableRowHover` | 是否启用行 hover 高亮 | `boolean` | `true` |
 | `adaptiveColumnWidth` | 自适应列宽的最小列宽 | `number` | `120` |
@@ -51,7 +51,8 @@ title: 参考
 | `customHeaderCellAttributes` | 自定义表头单元格属性 | `(column, colIndex) => ThHTMLAttributes` | `() => ({})` |
 | `customCellAttributes` | 自定义表体单元格属性（支持合并单元格） | `(row, column, rowIndex, colIndex) => TdHTMLAttributes` 或 `null` | `() => ({})` |
 | `maxTableWidth` | 表格容器最大宽度（max-content：表格宽度根据内容自适应,内容有多长，表格就有多宽，未设置：表格宽度 100%，如果列内容超出自己的列宽会自动换行，已设置：容器超过最大宽度，出现横向滚动条，列内容会自动换行） | `string` &#124; `number` &#124; `'max-content'` | `undefined` |
-| `summaryConfig` | 汇总行配置 | `VTableSummaryConfig` | 见说明 |
+| `summaryConfig` | 汇总行配置 | `VTableSummaryConfig` | [详情](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/base.ts) |
+| `contextMenuConfig` | 右键菜单配置 | `VTableContextMenuConfig` | [详情](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/contextMenu.ts) |
 
 ---
 
@@ -89,6 +90,7 @@ title: 参考
 | `customExpandIcon` | 自定义展开图标 | `{ expand, onExpandChange }` |
 | `customSorterIcon` | 自定义排序图标 | `{ sort }` |
 | `summaryCell` | 自定义汇总单元格 | `{ columnKey, column, summaryValue }` |
+| `customContextMenu` | 自定义右键菜单 | `{ context, close }` |
 
 ---
 
