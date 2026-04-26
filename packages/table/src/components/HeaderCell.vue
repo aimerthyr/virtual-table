@@ -122,16 +122,30 @@ const canFilter = computed(() => columnDef.value.enableColumnFilter)
 
 const canResize = computed(() => column.value.getCanResize())
 const handleMouseDown = (event: MouseEvent) => {
+  document.body.style.userSelect = 'none'
   props.header.getResizeHandler()?.(event)
-  document.body.style.userSelect = 'auto'
 }
 const handleTouchStart = (event: TouchEvent) => {
-  props.header.getResizeHandler()?.(event)
   document.body.style.userSelect = 'none'
+  props.header.getResizeHandler()?.(event)
 }
 const handleDoubleClick = () => {
   column.value.resetSize()
 }
+
+const onResizeEnd = () => {
+  document.body.style.userSelect = 'auto'
+}
+
+onMounted(() => {
+  document.addEventListener('mouseup', onResizeEnd)
+  document.addEventListener('touchend', onResizeEnd)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('mouseup', onResizeEnd)
+  document.removeEventListener('touchend', onResizeEnd)
+})
 </script>
 
 <style lang="less" scoped>
