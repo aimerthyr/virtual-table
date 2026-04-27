@@ -3,7 +3,9 @@
     <Transition name="context-menu-fade">
       <div v-if="visible" class="v-table-context-menu-overlay">
         <div ref="floatingRef" class="v-table-context-menu" :style="floatingStyles">
-          <slot :context="context" :close="handleClose" />
+          <slot :context="context" :close="handleClose">
+            <div class="v-table-context-menu-empty">No Content</div>
+          </slot>
         </div>
       </div>
     </Transition>
@@ -155,6 +157,17 @@ onBeforeUnmount(() => {
   z-index: 9999;
   min-width: 160px;
   pointer-events: auto;
+}
+
+.v-table-context-menu-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  min-width: 160px;
 }
 
 /* 过渡动画 */

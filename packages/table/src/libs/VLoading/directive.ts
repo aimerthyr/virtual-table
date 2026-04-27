@@ -25,8 +25,19 @@ type LoadingElement = HTMLElement & {
 
 /** 创建 Loading 模板 */
 const createLoadingTpl = (el: LoadingElement, options: LoadingDirectiveOptions = true) => {
+  // 精确比较配置是否变化
+  const isSameOptions =
+    el._loadingOptions &&
+    typeof el._loadingOptions === typeof options &&
+    (typeof options === 'boolean'
+      ? el._loadingOptions === options
+      : typeof el._loadingOptions !== 'boolean' &&
+        el._loadingOptions.spinning === options.spinning &&
+        el._loadingOptions.bottom === options.bottom &&
+        el._loadingOptions.size === options.size)
+
   // 如果已存在并未变化，直接返回
-  if (el._loadingNode && JSON.stringify(el._loadingOptions) === JSON.stringify(options)) return
+  if (el._loadingNode && isSameOptions) return
 
   destroyLoadingTpl(el)
 
@@ -57,7 +68,14 @@ const createLoadingTpl = (el: LoadingElement, options: LoadingDirectiveOptions =
 
   el.appendChild(container)
   el._loadingNode = { vNode, element: container }
-  el._loadingOptions = options
+  el._loadingOptions =
+    typeof options === 'boolean'
+      ? options
+      : {
+          spinning: options.spinning,
+          size: options.size,
+          bottom: options.bottom,
+        }
 }
 
 /** 销毁 Loading 组件 */
