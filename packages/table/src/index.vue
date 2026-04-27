@@ -26,204 +26,86 @@
       <table class="v-table" :class="{ 'v-table-bordered': props.bordered }" :style="tableStyle">
         <colgroup>
           <col
-            v-for="column in allLeafColumns"
+            v-for="column in renderedColGroupColumns"
             :key="column.id"
-            :style="{ width: columnWidthMap[column.id] }"
+            :style="{ width: column.width }"
           />
         </colgroup>
-        <thead
+        <TableHeader
           ref="tableHeaderRef"
-          class="v-table-header"
-          :class="{ sticky: props.fixedHeader }"
-          :style="{ top: 0, zIndex: themeConfig.zIndex?.fixedHeader }"
+          :table="table"
+          :theme-config="themeConfig"
+          :virtual-center-columns="virtualCenterColumns"
+          :virtual-padding-left="virtualPaddingLeft"
+          :virtual-padding-right="virtualPaddingRight"
+          :column-style-map="columnStyleMap"
+          :shadow-pinned-column-map="shadowPinnedColumnMap"
+          :is-context-menu-active-header="isContextMenuActiveHeader"
+          :handle-header-context-menu="handleHeaderContextMenu"
         >
-          <slot name="customHeader" :columns="props.columns" :table="table">
-            <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-              <th
-                v-for="(header, headerIndex) in headerGroup.headers"
-                :key="header.id"
-                :colspan="header.colSpan"
-                class="relative"
-                :class="[
-                  header.column.id === CHECKBOX_COLUMN_KEY ? 'checkbox-col' : '',
-                  header.column.id === EXPAND_COLUMN_KEY ? 'expand-col' : '',
-                  shadowPinnedColumnMap.get(header.column.id),
-                  { 'v-table-context-menu-active': isContextMenuActiveHeader(headerIndex) },
-                ]"
-                :style="columnStyleMap.get(header.column.id)"
-                v-bind="
-                  props?.customHeaderCellAttributes?.(
-                    header.column.columnDef?.meta!,
-                    header.column.getIndex(),
-                  )
-                "
-                @contextmenu="handleHeaderContextMenu($event, header, headerIndex)"
-              >
-                <template v-if="!header.isPlaceholder">
-                  <FlexRender
-                    v-if="header.id === CHECKBOX_COLUMN_KEY"
-                    :render="header.column.columnDef.header"
-                    :props="header.getContext()"
-                  />
-                  <HeaderCell v-else :header="header" :table="table">
-                    <template v-if="$slots.headerCell" #headerCell="slotProps">
-                      <slot name="headerCell" v-bind="slotProps" />
-                    </template>
-                    <template v-if="$slots.customFilterDropdown" #customFilterDropdown="slotProps">
-                      <slot name="customFilterDropdown" v-bind="slotProps" />
-                    </template>
-                    <template v-if="$slots.customFilterIcon" #customFilterIcon="slotProps">
-                      <slot name="customFilterIcon" v-bind="slotProps" />
-                    </template>
-                    <template v-if="$slots.customPopover" #customPopover="slotProps">
-                      <slot name="customPopover" v-bind="slotProps" />
-                    </template>
-                    <template v-if="$slots.customSorterIcon" #customSorterIcon="slotProps">
-                      <slot name="customSorterIcon" v-bind="slotProps" />
-                    </template>
-                  </HeaderCell>
-                </template>
-              </th>
-            </tr>
-          </slot>
-        </thead>
+          <template v-if="$slots.customHeader" #customHeader="slotProps">
+            <slot name="customHeader" v-bind="slotProps" />
+          </template>
+          <template v-if="$slots.headerCell" #headerCell="slotProps">
+            <slot name="headerCell" v-bind="slotProps" />
+          </template>
+          <template v-if="$slots.customFilterDropdown" #customFilterDropdown="slotProps">
+            <slot name="customFilterDropdown" v-bind="slotProps" />
+          </template>
+          <template v-if="$slots.customFilterIcon" #customFilterIcon="slotProps">
+            <slot name="customFilterIcon" v-bind="slotProps" />
+          </template>
+          <template v-if="$slots.customPopover" #customPopover="slotProps">
+            <slot name="customPopover" v-bind="slotProps" />
+          </template>
+          <template v-if="$slots.customSorterIcon" #customSorterIcon="slotProps">
+            <slot name="customSorterIcon" v-bind="slotProps" />
+          </template>
+        </TableHeader>
 
-        <tbody class="v-table-body">
-          <tr v-if="paddingTop > 0" :style="{ height: `${paddingTop}px` }" />
-
-          <tr
-            v-for="vRow in virtualRows"
-            :key="rows[vRow.index]!.id!"
-            :ref="(el: any) => measureElement(el, rows[vRow.index]?.original?.[EXPAND_ROW_KEY])"
-            :data-index="vRow.index"
-            :style="{
-              minHeight: `${vRow.size}px`,
-            }"
-            :class="{ 'v-table-row-hover': props.enableRowHover }"
-            v-bind="props?.customRowAttributes?.(rows[vRow.index]!.original, vRow.index)"
-          >
-            <template v-if="!rows[vRow.index]!.original?.[EXPAND_ROW_KEY]">
-              <template
-                v-for="(cell, cellIndex) in rows[vRow.index]!.getVisibleCells()"
-                :key="cell.id"
-              >
-                <td
-                  v-if="
-                    canRenderCell(
-                      rows[vRow.index]!.original,
-                      cell.column.columnDef?.meta!,
-                      vRow.index,
-                      cellIndex,
-                    )
-                  "
-                  :style="columnStyleMap.get(cell.column.id)"
-                  :class="[
-                    cell.column.id === CHECKBOX_COLUMN_KEY ? 'checkbox-col' : '',
-                    cell.column.id === EXPAND_COLUMN_KEY ? 'expand-col' : '',
-                    shadowPinnedColumnMap.get(cell.column.id),
-                    {
-                      'v-table-context-menu-active': isContextMenuActiveCell(vRow.index, cellIndex),
-                    },
-                  ]"
-                  v-bind="
-                    props.customCellAttributes?.(
-                      rows[vRow.index]!.original,
-                      cell.column.columnDef?.meta!,
-                      vRow.index,
-                      cellIndex,
-                    ) ?? {}
-                  "
-                  @contextmenu="
-                    handleCellContextMenu($event, rows[vRow.index]!, cell, vRow.index, cellIndex)
-                  "
-                >
-                  <FlexRender
-                    v-if="cell.column.id === CHECKBOX_COLUMN_KEY"
-                    :render="cell.column.columnDef.cell"
-                    :props="cell.getContext()"
-                  />
-                  <BodyCell v-else :cell="cell" :columns="props.columns" :row="rows[vRow.index]!">
-                    <template v-if="$slots.bodyCell" #bodyCell="slotProps">
-                      <slot name="bodyCell" v-bind="slotProps" />
-                    </template>
-                    <template v-if="$slots.customExpandIcon" #customExpandIcon="slotProps">
-                      <slot name="customExpandIcon" v-bind="slotProps" />
-                    </template>
-                  </BodyCell>
-                </td>
-              </template>
-            </template>
-            <!-- 自定义展开行的模板 -->
-            <td v-else class="!p-0" :colspan="allLeafColumns.length">
-              <div
-                class="overflow-hidden"
-                :style="{
-                  position: hasFixedColumns ? 'sticky' : 'static',
-                  left: 0,
-                  width: hasFixedColumns ? `${tableContainerWidth}px` : 'auto',
-                }"
-              >
-                <slot name="expandedRowRender" :row="rows[vRow.index]!.original" />
-              </div>
-            </td>
-          </tr>
-
-          <tr v-if="paddingBottom > 0" :style="{ height: `${paddingBottom}px`, border: 'none' }" />
-
-          <!-- 底部汇总行 -->
-          <tr
-            v-if="props.summaryConfig?.enabled"
-            :class="{ sticky: props.summaryConfig?.fixed }"
-            :style="{
-              zIndex: themeConfig.zIndex?.fixedFooter,
-            }"
-            class="bottom-0"
-          >
-            <td
-              v-for="header in table.getFlatHeaders()"
-              :key="header.id"
-              :style="columnStyleMap.get(header.id)"
-              :class="[
-                header.column.id === CHECKBOX_COLUMN_KEY ? 'checkbox-col' : '',
-                header.column.id === EXPAND_COLUMN_KEY ? 'expand-col' : '',
-                shadowPinnedColumnMap.get(header.column.id),
-              ]"
-            >
-              <slot
-                v-if="$slots.summaryCell"
-                name="summaryCell"
-                :column-key="header.column.id"
-                :column="header.column.columnDef.meta!"
-                :summary-value="summaryValueMap.get(header.column.id)"
-              >
-                {{ summaryValueMap.get(header.column.id) }}
-              </slot>
-              <template v-else>
-                {{ summaryValueMap.get(header.column.id) }}
-              </template>
-            </td>
-          </tr>
-
-          <!-- 底部提示模板 (作为最后一行) -->
-          <tr v-if="showNoMoreTip" :style="{ borderBottom: 'none' }">
-            <td
-              :colspan="allLeafColumns.length"
-              class="!border-b-0 !p-0 text-center text-[14px] text-[rgba(0,0,0,0.32)]"
-            >
-              <slot name="customLoadNoMore">
-                <div class="p-[12px]">
-                  {{ noMoreText }}
-                </div>
-              </slot>
-            </td>
-          </tr>
-        </tbody>
+        <TableBody
+          :table="table"
+          :rows="rows"
+          :virtual-rows="virtualRows"
+          :padding-top="paddingTop"
+          :padding-bottom="paddingBottom"
+          :has-fixed-columns="hasFixedColumns"
+          :table-container-width="tableContainerWidth"
+          :column-style-map="columnStyleMap"
+          :shadow-pinned-column-map="shadowPinnedColumnMap"
+          :theme-config="themeConfig"
+          :virtual-center-columns="virtualCenterColumns"
+          :virtual-padding-left="virtualPaddingLeft"
+          :virtual-padding-right="virtualPaddingRight"
+          :rendered-column-count="renderedColumnCount"
+          :measure-element="measureElement"
+          :can-render-cell="canRenderCell"
+          :get-cell-column-index="(cell) => cell.column.getIndex()"
+          :is-context-menu-active-cell="isContextMenuActiveCell"
+          :handle-cell-context-menu="handleCellContextMenu"
+        >
+          <template v-if="$slots.bodyCell" #bodyCell="slotProps">
+            <slot name="bodyCell" v-bind="slotProps" />
+          </template>
+          <template v-if="$slots.customExpandIcon" #customExpandIcon="slotProps">
+            <slot name="customExpandIcon" v-bind="slotProps" />
+          </template>
+          <template v-if="$slots.expandedRowRender" #expandedRowRender="slotProps">
+            <slot name="expandedRowRender" v-bind="slotProps" />
+          </template>
+          <template v-if="$slots.summaryCell" #summaryCell="slotProps">
+            <slot name="summaryCell" v-bind="slotProps" />
+          </template>
+          <template v-if="$slots.customLoadNoMore">
+            <slot name="customLoadNoMore" />
+          </template>
+        </TableBody>
         <tfoot
           :class="{ sticky: props.fixedFooter }"
           :style="{ bottom: 0, zIndex: themeConfig.zIndex?.fixedFooter }"
         >
           <tr>
-            <td class="!p-0" :colspan="allLeafColumns.length">
+            <td class="!p-0" :colspan="renderedColumnCount">
               <div class="overflow-hidden">
                 <slot name="customFooter" />
               </div>
@@ -234,7 +116,9 @@
       <!-- 空状态 -->
       <div
         v-if="!virtualRows.length"
-        :style="{ height: `calc(100% - ${tableHeaderRef?.offsetHeight ?? 0}px)` }"
+        :style="{
+          height: `calc(100% - ${tableHeaderRef?.tableHeaderElement?.offsetHeight ?? 0}px)`,
+        }"
         class="flex items-center justify-center"
       >
         <slot name="customEmpty"> 当前内容为空 </slot>
@@ -275,12 +159,12 @@
 <script setup lang="ts" generic="TData extends VTableData">
 import { h, type CSSProperties } from 'vue'
 import {
-  FlexRender,
   getCoreRowModel,
   getExpandedRowModel,
   getPaginationRowModel,
   useVueTable,
   type Cell,
+  type Column,
   type ColumnDef,
   type ColumnFiltersState,
   type ColumnPinningState,
@@ -292,14 +176,16 @@ import {
   type SortingState,
   type Table,
 } from '@tanstack/vue-table'
-import { Virtualizer, useVirtualizer, type VirtualItem } from '@tanstack/vue-virtual'
-import BodyCell from './components/BodyCell.vue'
+import { useVirtualizer } from '@tanstack/vue-virtual'
 import ContextMenu from './components/ContextMenu.vue'
-import HeaderCell from './components/HeaderCell.vue'
+import TableBody from './components/TableBody.vue'
+import TableHeader from './components/TableHeader.vue'
 import {
   CHECKBOX_COLUMN_KEY,
   EXPAND_COLUMN_KEY,
   EXPAND_ROW_KEY,
+  VIRTUAL_LEFT_PADDING_COLUMN_KEY,
+  VIRTUAL_RIGHT_PADDING_COLUMN_KEY,
   vTableDefaultProps,
 } from './constant'
 import { useProvideVTableContext } from './context'
@@ -320,7 +206,7 @@ import type {
 import VCheckbox from './libs/VCheckbox.vue'
 import vLoading from './libs/VLoading'
 import VPagination from './libs/VPagination.vue'
-import { calculateSummary, convertToColumnDefList, getAllRowKeys } from './utils'
+import { convertToColumnDefList, getAllRowKeys } from './utils'
 
 defineOptions({ name: 'VTable' })
 
@@ -329,7 +215,7 @@ const $slots = defineSlots<VTableSlots<TData>>()
 
 // #region 自适应列宽计算
 const allLeafColumns = computed(() => table.getAllLeafColumns())
-const tableHeaderRef = ref<HTMLDivElement>()
+const tableHeaderRef = useTemplateRef('tableHeaderRef')
 const paginationRef = ref<HTMLDivElement>()
 const tableContainerRef = ref<HTMLDivElement | null>(null)
 const tableContainerWidth = ref(0)
@@ -350,27 +236,36 @@ const columnWidthConfig = computed(() => {
   let fixedTotal = 0
   let flexCount = 0
   allColumns.forEach((col) => {
-    if (col.columnDef.size) fixedTotal += Number(col.columnDef.size)
-    else flexCount += 1
+    if (columnSizing.value[col.id] !== undefined || col.columnDef.size !== undefined) {
+      fixedTotal += col.getSize()
+      return
+    }
+    flexCount += 1
   })
   // 计算 “剩余空间” 平分给每一个自适应列后，每列能分到多少像素 （剩余空间 = 容器总宽度 - 固定列总宽度）
   const avg = flexCount > 0 ? (containerWidth - fixedTotal) / flexCount : 0
   // 如果平分后的像素比最小自适应列宽还小，则认为空间不足
   const isCramped = flexCount > 0 && avg < MIN_WIDTH
-  return { isCramped, minWidth: MIN_WIDTH }
+  return {
+    isCramped,
+    minWidth: MIN_WIDTH,
+    flexWidth: isCramped ? MIN_WIDTH : Math.max(avg, 0),
+  }
 })
+const getColumnPixelWidth = (column: Column<TData>) => {
+  if (columnSizing.value[column.id] !== undefined || column.columnDef.size !== undefined) {
+    return column.getSize()
+  }
+  if (props.maxTableWidth === 'max-content') {
+    return Math.max(column.getSize(), props.adaptiveColumnWidth)
+  }
+  return columnWidthConfig.value.flexWidth || columnWidthConfig.value.minWidth
+}
 const columnWidthMap = computed(() => {
   const allColumns = table.getAllLeafColumns()
-  const { isCramped, minWidth } = columnWidthConfig.value
   const map: Record<string, string> = {}
   allColumns.forEach((column) => {
-    // 如果设置了宽度，则直接使用
-    if (column.columnDef.size) {
-      map[column.id] = `${column.getSize()}px`
-    } else {
-      // 反之如果没有，则需要判断是否为空间不足，如果是则设置最小宽度，反之使用 auto 来填满剩余空间
-      map[column.id] = isCramped ? `${minWidth}px` : 'auto'
-    }
+    map[column.id] = `${getColumnPixelWidth(column)}px`
   })
   return map
 })
@@ -462,7 +357,7 @@ const triggerTableStateChange = () => {
   })
 }
 const hasFixedColumns = computed(() => {
-  return columnPinning.value.left?.length || columnPinning.value.right?.length
+  return Boolean(columnPinning.value.left?.length || columnPinning.value.right?.length)
 })
 const computedColumns = computed(() => {
   // 传入容器宽度，用于将百分比转换为像素
@@ -658,40 +553,15 @@ const PaginationComponent = computed(() => {
 })
 // #endregion
 
-// #region 虚拟滚动相关逻辑
+// #region 行虚拟滚动相关逻辑
 const rows = computed(() => table.getRowModel().rows)
-// 限制重新渲染的频率 https://github.com/TanStack/virtual/issues/860
-const virtualRows = ref<VirtualItem[]>([])
-const rerenderTimer = ref<number | null>(null)
-const lastRenderTime = ref(0)
+const virtualRows = computed(() => rowVirtualizer.value.getVirtualItems())
 const rowVirtualizerOptions = computed(() => {
   return {
     count: rows.value.length,
     estimateSize: () => props.rowHeight || 48,
     getScrollElement: () => tableContainerRef.value,
-    overscan: 10,
-    useScrollendEvent: false,
-    useAnimationFrameWithResizeObserver: true,
-    onChange: (instance: Virtualizer<HTMLDivElement, HTMLDivElement>) => {
-      if (instance.scrollOffset && instance.scrollOffset < 0) return
-      if (!instance.isScrolling) {
-        virtualRows.value = instance.getVirtualItems()
-        return
-      }
-      // 滚动时 60fps 节流
-      const now = performance.now()
-      const targetFrameTime = 1000 / 60
-      if (now - lastRenderTime.value > targetFrameTime) {
-        lastRenderTime.value = now
-        if (rerenderTimer.value) {
-          cancelAnimationFrame(rerenderTimer.value)
-        }
-        rerenderTimer.value = requestAnimationFrame(() => {
-          virtualRows.value = instance.getVirtualItems()
-          rerenderTimer.value = null
-        })
-      }
-    },
+    overscan: 8,
   }
 })
 const rowVirtualizer = useVirtualizer(rowVirtualizerOptions)
@@ -704,7 +574,7 @@ watch(
   { immediate: true },
 )
 const measuredSet = new WeakSet()
-function measureElement(element?: any, isExpandRow?: boolean) {
+const measureElement = (element?: any, isExpandRow?: boolean) => {
   if (!element) return
   if (measuredSet.has(element)) return
   measuredSet.add(element)
@@ -735,12 +605,90 @@ const paddingBottom = computed(() => {
 })
 // #endregion
 
-// #region 底部提示逻辑
-/** 底部提示行高度 */
-const showNoMoreTip = computed(() => {
-  return rows.value.length > 0 && !props.loading && props.loadMoreConfig?.showNoMore
+// #region 列虚拟滚动相关逻辑
+const leftLeafColumns = computed(() => table.getLeftVisibleLeafColumns())
+const centerLeafColumns = computed(() => table.getCenterVisibleLeafColumns())
+const rightLeafColumns = computed(() => table.getRightVisibleLeafColumns())
+const columnVirtualizer = useVirtualizer<HTMLDivElement, HTMLTableCellElement>(
+  computed(() => ({
+    count: centerLeafColumns.value.length,
+    estimateSize: (index: number) => {
+      const column = centerLeafColumns.value[index]
+      return column ? getColumnPixelWidth(column) : 0
+    },
+    getScrollElement: () => tableContainerRef.value,
+    horizontal: true,
+    overscan: 3,
+    useScrollendEvent: false,
+    useAnimationFrameWithResizeObserver: true,
+  })),
+)
+const virtualColumns = computed(() => columnVirtualizer.value.getVirtualItems())
+const virtualPaddingLeft = computed(() => {
+  return virtualColumns.value.length > 0 ? virtualColumns.value[0]!.start : 0
 })
-const noMoreText = computed(() => props.loadMoreConfig?.noMoreText || '没有更多了')
+const virtualPaddingRight = computed(() => {
+  if (virtualColumns.value.length === 0) return 0
+  const lastItem = virtualColumns.value[virtualColumns.value.length - 1]!
+  return columnVirtualizer.value.getTotalSize() - lastItem.end
+})
+const virtualCenterColumns = computed<Column<TData>[]>(() => {
+  if (!tableContainerRef.value || virtualColumns.value.length === 0) {
+    return centerLeafColumns.value
+  }
+  const columns: Column<TData>[] = []
+  virtualColumns.value.forEach((virtualColumn) => {
+    const column = centerLeafColumns.value[virtualColumn.index]
+    if (column) {
+      columns.push(column)
+    }
+  })
+  return columns
+})
+const renderedColGroupColumns = computed(() => {
+  const columns: Array<{ id: string; width: string }> = []
+  leftLeafColumns.value.forEach((column) => {
+    columns.push({
+      id: column.id,
+      width: columnWidthMap.value[column.id]!,
+    })
+  })
+  if (virtualPaddingLeft.value > 0) {
+    columns.push({
+      id: VIRTUAL_LEFT_PADDING_COLUMN_KEY,
+      width: `${virtualPaddingLeft.value}px`,
+    })
+  }
+  virtualCenterColumns.value.forEach((column) => {
+    columns.push({
+      id: column.id,
+      width: columnWidthMap.value[column.id]!,
+    })
+  })
+  if (virtualPaddingRight.value > 0) {
+    columns.push({
+      id: VIRTUAL_RIGHT_PADDING_COLUMN_KEY,
+      width: `${virtualPaddingRight.value}px`,
+    })
+  }
+  rightLeafColumns.value.forEach((column) => {
+    columns.push({
+      id: column.id,
+      width: columnWidthMap.value[column.id]!,
+    })
+  })
+  return columns
+})
+const renderedColumnCount = computed(() => renderedColGroupColumns.value.length)
+watch(
+  [() => centerLeafColumns.value.length, () => tableContainerWidth.value, () => columnSizing.value],
+  () => {
+    nextTick(() => {
+      columnVirtualizer.value.measure()
+    })
+  },
+  { deep: true },
+)
 // #endregion
 
 // #region 表格样式相关逻辑
@@ -806,38 +754,6 @@ const shadowPinnedColumnMap = computed(() => {
     }
   }
   return shadowPinnedColumnCache
-})
-// #endregion
-
-// #region 汇总行逻辑
-/** 汇总值 Map */
-const summaryValueCache = new Map<string, any>()
-const summaryValueMap = computed(() => {
-  summaryValueCache.clear()
-  for (const column of allLeafColumns.value) {
-    const columnKey = column.id
-    const columnMeta = column.columnDef.meta
-    // checkbox 和 expand 列不显示汇总
-    if (columnKey === CHECKBOX_COLUMN_KEY || columnKey === EXPAND_COLUMN_KEY) {
-      summaryValueCache.set(columnKey, '')
-      continue
-    }
-    // 优先使用全局自定义汇总函数
-    if (props.summaryConfig?.customSummary) {
-      summaryValueCache.set(columnKey, props.summaryConfig.customSummary(columnMeta!, props.data))
-      continue
-    }
-    // 使用列配置的汇总方式
-    if (columnMeta?.columnSummary) {
-      summaryValueCache.set(
-        columnKey,
-        calculateSummary(props.data, columnMeta, columnMeta.columnSummary),
-      )
-      continue
-    }
-    summaryValueCache.set(columnKey, '')
-  }
-  return summaryValueCache
 })
 // #endregion
 
@@ -935,10 +851,6 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  if (rerenderTimer.value) {
-    cancelAnimationFrame(rerenderTimer.value)
-    rerenderTimer.value = null
-  }
   if (resizeObserver) {
     resizeObserver.disconnect()
     resizeObserver = null
@@ -972,6 +884,16 @@ defineExpose<VTableInstance<TData>>({
   border-@{position}: 1px var(--v-table-border-style) var(--v-table-border-color);
 }
 
+.pinned-shadow-base() {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: -1px;
+  width: 30px;
+  transition: box-shadow 0.3s;
+  pointer-events: none;
+}
+
 .v-table-wrapper {
   display: flex;
   flex-direction: column;
@@ -984,7 +906,7 @@ defineExpose<VTableInstance<TData>>({
   font-size: 14px;
   min-width: 100%;
 
-  &-header tr {
+  :deep(.v-table-header) tr {
     &:not(:last-child) th {
       &.checkbox-col,
       &.expand-col {
@@ -1029,7 +951,7 @@ defineExpose<VTableInstance<TData>>({
     }
   }
 
-  &-body tr {
+  :deep(.v-table-body) tr {
     &.v-table-row-hover:hover td:not(.v-table-context-menu-active) {
       background-color: var(--v-table-row-hover-color);
     }
@@ -1052,7 +974,7 @@ defineExpose<VTableInstance<TData>>({
     }
   }
 
-  &.v-table-bordered {
+  :deep(.v-table-bordered) {
     .v-table-header th {
       &::before {
         display: none;
@@ -1073,32 +995,21 @@ defineExpose<VTableInstance<TData>>({
       }
     }
   }
-}
 
-// #region --------------------------------------- 固定列阴影样式区域 ---------------------------------------
-.pinned-shadow-base() {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: -1px;
-  width: 30px;
-  transition: box-shadow 0.3s;
-  pointer-events: none;
-}
+  // #region --------------------------------------- 固定列阴影样式区域 ---------------------------------------
+  :deep(.pinned-left-shadow::after) {
+    .pinned-shadow-base();
+    right: 0;
+    transform: translateX(100%);
+    box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.15);
+  }
 
-.pinned-left-shadow::after {
-  .pinned-shadow-base();
-  right: 0;
-  transform: translateX(100%);
-  box-shadow: inset 10px 0 8px -8px rgba(0, 0, 0, 0.15);
+  :deep(.pinned-right-shadow::after) {
+    .pinned-shadow-base();
+    left: 0;
+    transform: translateX(-100%);
+    box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.15);
+  }
+  // #endregion --------------------------------------- 固定列阴影样式区域 ---------------------------------------
 }
-
-.pinned-right-shadow::after {
-  .pinned-shadow-base();
-  left: 0;
-  transform: translateX(-100%);
-  box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.15);
-}
-
-// #endregion --------------------------------------- 固定列阴影样式区域 ---------------------------------------
 </style>

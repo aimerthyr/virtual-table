@@ -15,7 +15,7 @@ hero:
 
 features:
   - icon: ⚡
-    title: 默认虚拟滚动
+    title: 行列级虚拟滚动
     details: 大数据量表格依然保持流畅滚动
 
   - icon: 🚀

@@ -5,6 +5,10 @@ import { defineDefaultProps } from '../utils/type'
 export const CHECKBOX_COLUMN_KEY = 'CHECKBOX_COLUMN_KEY'
 /** 展开列 */
 export const EXPAND_COLUMN_KEY = 'EXPAND_COLUMN_KEY'
+/** 虚拟左 padding 列 */
+export const VIRTUAL_LEFT_PADDING_COLUMN_KEY = '__virtual-left-padding__'
+/** 虚拟右 padding 列 */
+export const VIRTUAL_RIGHT_PADDING_COLUMN_KEY = '__virtual-right-padding__'
 /** 是否是展开行 */
 export const EXPAND_ROW_KEY = '_isExpandRow'
 /** 表格默认 props */

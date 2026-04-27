@@ -1,5 +1,5 @@
 import type { HTMLAttributes, TdHTMLAttributes, ThHTMLAttributes, VNode } from 'vue'
-import type { Table } from '@tanstack/vue-table'
+import type { Column, Table } from '@tanstack/vue-table'
 import type {
   VTableBodyCellProps,
   VTableChangeState,
@@ -31,7 +31,13 @@ import type { VTableThemeConfig } from './theme'
 /** slots 类型定义 */
 export interface VTableSlots<TData = any> {
   /** 自定义头部渲染 */
-  customHeader?: (props: { columns: VTableColumn[]; table: Table<TData> }) => VNode[]
+  customHeader?: (props: {
+    columns: VTableColumn[]
+    table: Table<TData>
+    virtualColumns: Column<TData, any>[]
+    virtualPaddingLeft: number
+    virtualPaddingRight: number
+  }) => VNode[]
   /** 自定义单元格 */
   bodyCell?: (props: VTableBodyCellProps<TData>) => VNode[]
   /** 自定义列头 */

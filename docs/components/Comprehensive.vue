@@ -211,64 +211,87 @@ const columnPinningState = ref<VTableColumnPinningState>({})
 const vTableRef = useTemplateRef('vTableRef')
 
 // 普通列配置（不分组）
-const normalColumns: VTableColumn[] = [
-  {
-    columnKey: 'id',
-    columnHeader: '员工id',
-    columnWidth: 100,
-    columnMaxWidth: 300,
-    columnEnableResize: true,
-  },
-  {
-    columnKey: 'name',
-    columnHeader: '姓名',
-    columnWidth: '30%',
-    columnEnableFilter: true,
-    columnEnableResize: true,
-  },
-  {
-    columnKey: 'age',
-    columnHeader: '年龄',
-    columnWidth: '20%',
-    columnAlign: 'center',
-    columnEnableSort: true,
-    /** 使用函数性能比插槽低，推荐使用插槽(如果内部无状态，例如下面的代码，则性能影响较小，只有在组件较为复杂，则可以改成 bodyCell 插槽) */
-    columnCell(ctx) {
-      return ctx.getValue()
+const generateColumns = (): VTableColumn[] => {
+  const base: VTableColumn[] = [
+    {
+      columnKey: 'id',
+      columnHeader: '员工id',
+      columnWidth: 100,
     },
-  },
-  {
-    columnKey: 'email',
-    columnHeader: '邮箱',
-    columnWidth: 220,
-    columnEnableFilter: true,
-  },
-  {
-    columnKey: 'department',
-    columnHeader: '部门',
-    columnWidth: 150,
-    columnEnableFilter: true,
-  },
-  {
-    columnKey: 'status',
-    columnHeader: '状态',
-    columnWidth: 120,
-    columnAlign: 'center',
-  },
-  {
-    columnKey: 'createTime',
-    columnHeader: '创建时间',
-    columnWidth: 180,
-    columnEnableSort: true,
-  },
-  {
-    columnKey: 'action',
-    columnHeader: '操作',
-    columnAlign: 'left',
-  },
-]
+    {
+      columnKey: 'name',
+      columnHeader: '姓名',
+      columnWidth: 120,
+      columnEnableFilter: true,
+    },
+    {
+      columnKey: 'age',
+      columnHeader: '年龄',
+      columnWidth: 100,
+      columnAlign: 'center',
+      columnEnableSort: true,
+    },
+    {
+      columnKey: 'email',
+      columnHeader: '邮箱',
+      columnWidth: 180,
+    },
+    {
+      columnKey: 'department',
+      columnHeader: '部门',
+      columnWidth: 120,
+    },
+    {
+      columnKey: 'status',
+      columnHeader: '状态',
+      columnWidth: 120,
+    },
+    {
+      columnKey: 'createTime',
+      columnHeader: '创建时间',
+      columnWidth: 160,
+    },
+    {
+      columnKey: 'action',
+      columnHeader: '操作',
+      columnWidth: 120,
+    },
+  ]
+
+  for (let i = 1; i <= 42; i++) {
+    base.push({
+      columnKey: `col_${i}`,
+      columnHeader: `扩展列${i}`,
+    })
+  }
+  return base
+}
 
 // 表头分组 + 单元格合并列配置
+const createExtendGroups = () => {
+  let groups = []
+  const groupCount = 5
+  const colsPerGroup = 9 // 5 * 9 = 45列
+  let colIndex = 1
+  for (let g = 1; g <= groupCount; g++) {
+    const children = []
+    for (let i = 0; i < colsPerGroup; i++) {
+      if (g === 5 && i > 5) continue
+      children.push({
+        columnKey: `col_${colIndex}`,
+        columnHeader: `扩展${colIndex}`,
+        columnWidth: 120,
+      })
+      colIndex++
+    }
+    groups.push({
+      columnKey: `extendGroup_${g}`,
+      columnHeader: `扩展分组${g}`,
+      columnChildren: children,
+    })
+  }
+  return groups
+}
 const combinedColumns: VTableColumn[] = [
   {
     columnKey: 'id',
@@ -320,6 +343,7 @@ const combinedColumns: VTableColumn[] = [
       },
     ],
   },
+  ...createExtendGroups(),
   {
     columnKey: 'createTime',
     columnHeader: '创建时间',
@@ -335,7 +359,7 @@ const combinedColumns: VTableColumn[] = [
 // 根据模式动态切换列配置
 const columns = computed(() => {
   if (columnMode.value === 'combined') return combinedColumns
-  return normalColumns
+  return generateColumns()
 })
 
 // 模拟后端数据生成
@@ -372,6 +396,9 @@ function generateMockData(page: number, pageSize: number): TableRow[] {
               },
             ]
           : undefined,
+    }
+    for (let j = 1; j <= 42; j++) {
+      ;(parentRow as any)[`col_${j}`] = `数据 ${id}-${j}`
     }
     data.push(parentRow)
   }

@@ -15,7 +15,7 @@ hero:
 
 features:
   - icon: ⚡
-    title: Default virtual scrolling
+    title: Row and column level virtual scrolling
     details: Large data volume tables still maintain smooth scrolling
 
   - icon: 🚀

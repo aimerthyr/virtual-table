@@ -26,7 +26,7 @@ import EditStateExample from '../components/EditStateExample.vue'
 
 ### 基础用法
 
-最简单的表格用法，展示基本的数据渲染。
+最简单的表格用法，展示大规模行列数据渲染。
 
 ::: raw
 <BasicExample />

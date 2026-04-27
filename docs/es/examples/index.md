@@ -27,7 +27,7 @@ import EditStateExample from '../../components/EditStateExample.vue'
 
 ### Basic Usage
 
-The simplest table usage, showing basic data rendering.
+The simplest table usage, showing large-scale row and column data rendering.
 
 ::: raw
 <BasicExample />

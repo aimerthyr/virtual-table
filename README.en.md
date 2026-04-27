@@ -6,7 +6,7 @@ A high-performance virtualized table component for Vue 3, built on TanStack Tabl
 
 ## Overview
 
-`@aimerthyr/virtual-table` is designed for medium-to-large datasets. It provides virtual scrolling, sorting state, filtering state, pagination, tree data, expandable rows, row selection, sticky headers, pinned columns, column resizing, and TypeScript-friendly extension points.
+`@aimerthyr/virtual-table` is designed for medium-to-large datasets. It provides Row and column virtual scrolling, sorting state, filtering state, pagination, tree data, expandable rows, row selection, sticky headers, pinned columns, column resizing, and TypeScript-friendly extension points.
 
 ## Features
 
