@@ -131,7 +131,7 @@
 
 <script setup lang="ts" generic="TData extends VTableData">
 import type { CSSProperties } from 'vue'
-import { type Row, type Table } from '@tanstack/vue-table'
+import { type Cell, type Row, type Table } from '@tanstack/vue-table'
 import { type VirtualItem } from '@tanstack/vue-virtual'
 import { CHECKBOX_COLUMN_KEY, EXPAND_COLUMN_KEY, EXPAND_ROW_KEY } from '../constant'
 import { useInjectVTableContext } from '../context'
@@ -154,7 +154,7 @@ const props = defineProps<{
   columnStyleMap: Map<string, CSSProperties>
   shadowPinnedColumnMap: Map<string, string>
   themeConfig: VTableThemeConfig
-  virtualCenterColumns: ReturnType<Table<TData>['getCenterVisibleLeafColumns']>
+  virtualCenterColumnIndexes: number[]
   virtualPaddingLeft: number
   virtualPaddingRight: number
   renderedColumnCount: number
@@ -174,10 +174,10 @@ const props = defineProps<{
 const tableContext = useInjectVTableContext()
 const tableProps = computed(() => tableContext.tableProps)
 const getVirtualCenterCells = (row: Row<TData>) => {
-  const centerCellMap = new Map(row.getCenterVisibleCells().map((cell) => [cell.column.id, cell]))
-  const cells = []
-  for (const column of props.virtualCenterColumns) {
-    const cell = centerCellMap.get(column.id)
+  const centerCells = row.getCenterVisibleCells()
+  const cells: Cell<TData, unknown>[] = []
+  for (const columnIndex of props.virtualCenterColumnIndexes) {
+    const cell = centerCells[columnIndex]
     if (cell) {
       cells.push(cell)
     }
@@ -186,12 +186,10 @@ const getVirtualCenterCells = (row: Row<TData>) => {
 }
 const leftLeafHeaders = computed(() => props.table.getLeftLeafHeaders())
 const virtualCenterLeafHeaders = computed(() => {
-  const centerHeaderMap = new Map(
-    props.table.getCenterLeafHeaders().map((header) => [header.column.id, header]),
-  )
+  const centerLeafHeaders = props.table.getCenterLeafHeaders()
   const headers = []
-  for (const column of props.virtualCenterColumns) {
-    const header = centerHeaderMap.get(column.id)
+  for (const columnIndex of props.virtualCenterColumnIndexes) {
+    const header = centerLeafHeaders[columnIndex]
     if (header) {
       headers.push(header)
     }
@@ -263,11 +261,21 @@ const summarySections = computed(() => [
     headers: rightLeafHeaders.value,
   },
 ])
+const renderedSummaryHeaders = computed(() => [
+  ...leftLeafHeaders.value,
+  ...virtualCenterLeafHeaders.value,
+  ...rightLeafHeaders.value,
+])
+const summaryValueCache = new Map<string, any>()
 /** 汇总值 Map */
 const summaryValueMap = computed(() => {
-  const summaryValueCache = new Map<string, any>()
-  const allLeafColumns = props.table.getAllLeafColumns()
-  for (const column of allLeafColumns) {
+  summaryValueCache.clear()
+  const summaryConfig = tableProps.value.summaryConfig
+  if (!summaryConfig?.enabled) {
+    return summaryValueCache
+  }
+  for (const header of renderedSummaryHeaders.value) {
+    const column = header.column
     const columnKey = column.id
     const columnMeta = column.columnDef.meta
     // checkbox 和 expand 列不显示汇总
@@ -276,10 +284,10 @@ const summaryValueMap = computed(() => {
       continue
     }
     // 优先使用全局自定义汇总函数
-    if (tableProps.value.summaryConfig?.customSummary) {
+    if (summaryConfig.customSummary) {
       summaryValueCache.set(
         columnKey,
-        tableProps.value.summaryConfig.customSummary(columnMeta!, tableProps.value.data),
+        summaryConfig.customSummary(columnMeta!, tableProps.value.data),
       )
       continue
     }

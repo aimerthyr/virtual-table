@@ -74,7 +74,7 @@
           :column-style-map="columnStyleMap"
           :shadow-pinned-column-map="shadowPinnedColumnMap"
           :theme-config="themeConfig"
-          :virtual-center-columns="virtualCenterColumns"
+          :virtual-center-column-indexes="virtualCenterColumnIndexes"
           :virtual-padding-left="virtualPaddingLeft"
           :virtual-padding-right="virtualPaddingRight"
           :rendered-column-count="renderedColumnCount"
@@ -573,11 +573,8 @@ watch(
   },
   { immediate: true },
 )
-const measuredSet = new WeakSet()
 const measureElement = (element?: any, isExpandRow?: boolean) => {
   if (!element) return
-  if (measuredSet.has(element)) return
-  measuredSet.add(element)
   if (isExpandRow || !props.rowHeight) {
     rowVirtualizer.value.measureElement(element)
   }
@@ -644,6 +641,12 @@ const virtualCenterColumns = computed<Column<TData>[]>(() => {
     }
   })
   return columns
+})
+const virtualCenterColumnIndexes = computed(() => {
+  if (!tableContainerRef.value || virtualColumns.value.length === 0) {
+    return centerLeafColumns.value.map((_, index) => index)
+  }
+  return virtualColumns.value.map((virtualColumn) => virtualColumn.index)
 })
 const renderedColGroupColumns = computed(() => {
   const columns: Array<{ id: string; width: string }> = []
@@ -974,8 +977,8 @@ defineExpose<VTableInstance<TData>>({
     }
   }
 
-  :deep(.v-table-bordered) {
-    .v-table-header th {
+  &.v-table-bordered {
+    :deep(.v-table-header th) {
       &::before {
         display: none;
       }
@@ -984,11 +987,12 @@ defineExpose<VTableInstance<TData>>({
         .border-mixin(left);
       }
     }
-    .v-table-header tr:first-child > th {
+
+    :deep(.v-table-header tr:first-child > th) {
       .border-mixin(top);
     }
 
-    .v-table-body td {
+    :deep(.v-table-body td) {
       .border-mixin(right);
       &:first-child {
         .border-mixin(left);
