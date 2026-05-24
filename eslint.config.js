@@ -15,6 +15,8 @@ export default tseslint.config(
       '**/dist/**',
       '**/.vite/**',
       '**/.vite-temp/**',
+      '**/.vitepress/cache/**',
+      '**/--host/**',
       '**/pnpm-lock.yaml',
       // 忽略自动生成的文件
       '**/auto-imports.d.ts',

@@ -34,10 +34,10 @@ Display the API documentation for the VTable component.
 | `fixedHeader` | Whether to fix the table header | `boolean` | `true` |
 | `enableSortingRemoval` | Whether to allow sorting removal | `boolean` | `true` |
 | `bordered` | Whether to display borders | `boolean` | `false` |
-| `rowSelectionConfig` | Row selection configuration | `VTableRowSelectionConfig<TData>` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/contextMenu.ts) |
-| `loadMoreConfig` | Load more configuration | `VTableLoadMoreConfig` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/contextMenu.ts) |
-| `paginationConfig` | Pagination configuration | `VTablePaginationConfig` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/contextMenu.ts) |
-| `treeConfig` | Tree structure configuration | `VTableTreeConfig` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/contextMenu.ts) |
+| `rowSelectionConfig` | Row selection configuration | `VTableRowSelectionConfig<TData>` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/base.ts) |
+| `loadMoreConfig` | Load more configuration | `VTableLoadMoreConfig` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/base.ts) |
+| `paginationConfig` | Pagination configuration | `VTablePaginationConfig` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/base.ts) |
+| `treeConfig` | Tree structure configuration | `VTableTreeConfig` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/base.ts) |
 | `enableExpandRow` | Whether to enable expandable rows | `boolean` | `false` |
 | `enableRowHover` | Whether to enable row hover highlighting | `boolean` | `true` |
 | `adaptiveColumnWidth` | Minimum column width for adaptive column width | `number` | `120` |
@@ -51,7 +51,7 @@ Display the API documentation for the VTable component.
 | `customHeaderCellAttributes` | Custom table header cell attributes | `(column, colIndex) => ThHTMLAttributes` | `() => ({})` |
 | `customCellAttributes` | Custom table body cell attributes (supports merging cells) | `(row, column, rowIndex, colIndex) => TdHTMLAttributes` or `null` | `() => ({})` |
 | `maxTableWidth` | Table container max width (max-content: table width adapts to content, content has as long as the table, not set: table width 100%, if the column content exceeds its own column width will wrap, set: container exceeds the maximum width, horizontal scroll bar appears, column content will wrap) | `string` &#124; `number` &#124; `'max-content'` | `undefined` |
-| `summaryConfig` | Summary configuration | `VTableSummaryConfig` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/contextMenu.ts) |
+| `summaryConfig` | Summary configuration | `VTableSummaryConfig` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/base.ts) |
 | `contextMenuConfig` | Right-click menu configuration | `VTableContextMenuConfig` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/contextMenu.ts) |
 
 ---
@@ -74,7 +74,7 @@ Display the API documentation for the VTable component.
 <!-- prettier-ignore -->
 | Slot Name | Description | Parameters |
 | --- | --- | --- |
-| `customHeader` | Custom the entire table header | `{ columns, table }` |
+| `customHeader` | Custom the entire table header | `{ columns, table, virtualColumns, virtualPaddingLeft, virtualPaddingRight }` |
 | `bodyCell` | Custom cell content | `{ columnKey, column, row, rowIndex, isEditingMode }` |
 | `headerCell` | Custom table header cell | `{ columnKey, column }` |
 | `customFilterIcon` | Custom filter icon | `{ columnKey, filtered, column }` |
@@ -101,6 +101,6 @@ Display the API documentation for the VTable component.
 <!-- prettier-ignore -->
 | Method Name | Description | Parameters | Return Value |
 | --- | --- | --- | --- |
-| `scrollToIndex` | Scroll to the specified row index | `(index: number, behavior?: ScrollBehavior)` | `void` |
+| `scrollToIndex` | Scroll to the specified row index | `(index: number, behavior?: 'auto' \| 'smooth')` | `void` |
 | `tanstackTable` | Get TanStack Table instance | - | `Table` |
 | `setEditingState` | Set the editing state (1. columnKey is empty, it is row editing 2. columnKey is not empty, it is cell editing 3. rowId is null, clear editing state) | `(rowId: string \| number \| null, columnKey?: string \| null) => void` | `void` |

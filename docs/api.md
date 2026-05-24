@@ -74,7 +74,7 @@ title: 参考
 <!-- prettier-ignore -->
 | 插槽名 | 说明 | 参数 |
 | --- | --- | --- |
-| `customHeader` | 自定义整个表头 | `{ columns, table }` |
+| `customHeader` | 自定义整个表头 | `{ columns, table, virtualColumns, virtualPaddingLeft, virtualPaddingRight }` |
 | `bodyCell` | 自定义单元格内容 | `{ columnKey, column, row, rowIndex, isEditingMode }` |
 | `headerCell` | 自定义表头单元格 | `{ columnKey, column }` |
 | `customFilterIcon` | 自定义筛选图标 | `{ columnKey, filtered, column }` |
@@ -101,6 +101,6 @@ title: 参考
 <!-- prettier-ignore -->
 | 方法名 | 说明 | 参数 | 返回值 |
 | --- | --- | --- | --- |
-| `scrollToIndex` | 滚动到指定行索引 | `(index: number, behavior?: ScrollBehavior)` | `void` |
+| `scrollToIndex` | 滚动到指定行索引 | `(index: number, behavior?: 'auto' \| 'smooth')` | `void` |
 | `tanstackTable` | 获取 TanStack Table 实例 | - | `Table` |
 | `setEditingState` | 设置编辑状态（1. columnKey 为空，则为行编辑 2. columnKey 不为空，则为单元格编辑 3. rowId 传 null，清除编辑状态） | `(rowId: string \| number \| null, columnKey?: string \| null) => void` | `void` |

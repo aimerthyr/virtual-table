@@ -331,6 +331,9 @@ const handleSelectionChange = (rows: any[]) => {
 | `customRowAttributes`        | `(row, rowIndex) => HTMLAttributes`                             | `() => ({})`                                                       | 自定义行属性                                                      |
 | `customHeaderCellAttributes` | `(column, colIndex) => ThHTMLAttributes`                        | `() => ({})`                                                       | 自定义表头单元格属性                                              |
 | `customCellAttributes`       | `(row, column, rowIndex, colIndex) => TdHTMLAttributes \| null` | `() => ({})`                                                       | 自定义表体单元格属性，返回 `colspan` 或 `rowspan` 为 `0` 时不渲染 |
+| `maxTableWidth`              | `string \| number \| 'max-content'`                             | `undefined`                                                        | 表格容器最大宽度                                                  |
+| `summaryConfig`              | `VTableSummaryConfig<TData>`                                    | `{ enabled: false, fixed: false }`                                 | 汇总行配置                                                        |
+| `contextMenuConfig`          | `VTableContextMenuConfig`                                       | `{ enableCellMenu: false, enableHeaderMenu: false }`               | 右键菜单配置                                                      |
 
 ## 列配置 `VTableColumn`
 
@@ -362,24 +365,24 @@ const handleSelectionChange = (rows: any[]) => {
 
 ## Slots
 
-| 插槽名                 | 参数                                                           | 说明                   |
-| ---------------------- | -------------------------------------------------------------- | ---------------------- |
-| `customHeader`         | `{ columns, table }`                                           | 自定义整个表头         |
-| `bodyCell`             | `{ columnKey, column, row, rowIndex, isEditingMode }`          | 自定义单元格内容       |
-| `headerCell`           | `{ columnKey, column }`                                        | 自定义表头单元格       |
-| `customFilterIcon`     | `{ columnKey, filtered, column }`                              | 自定义筛选图标         |
-| `customFilterDropdown` | `{ confirm, reset, setFilterValue, column, filterModelValue }` | 自定义筛选下拉内容     |
-| `expandedRowRender`    | `{ row }`                                                      | 自定义展开行内容       |
-| `customPopover`        | `{ open, onOpenChange, trigger, content }`                     | 自定义 Popover         |
-| `customPagination`     | `{ pageSize, pageIndex, total, onPageChange }`                 | 自定义分页器           |
-| `customCheckbox`       | `{ checked, disabled, indeterminate, onCheckedChange }`        | 自定义复选框           |
-| `customEmpty`          | `-`                                                            | 自定义空状态           |
-| `customLoadingIcon`    | `-`                                                            | 自定义 loading 图标    |
-| `customLoadNoMore`     | `-`                                                            | 自定义“没有更多了”区域 |
-| `customFooter`         | `-`                                                            | 自定义表尾             |
-| `customExpandIcon`     | `{ expand, onExpandChange }`                                   | 自定义展开图标         |
-| `customSorterIcon`     | `{ sort }`                                                     | 自定义排序图标         |
-| `summaryCell`          | `{ columnKey, column, summaryValue }`                          | 自定义汇总单元格       |
+| 插槽名                 | 参数                                                                          | 说明                   |
+| ---------------------- | ----------------------------------------------------------------------------- | ---------------------- |
+| `customHeader`         | `{ columns, table, virtualColumns, virtualPaddingLeft, virtualPaddingRight }` | 自定义整个表头         |
+| `bodyCell`             | `{ columnKey, column, row, rowIndex, isEditingMode }`                         | 自定义单元格内容       |
+| `headerCell`           | `{ columnKey, column }`                                                       | 自定义表头单元格       |
+| `customFilterIcon`     | `{ columnKey, filtered, column }`                                             | 自定义筛选图标         |
+| `customFilterDropdown` | `{ confirm, reset, setFilterValue, column, filterModelValue }`                | 自定义筛选下拉内容     |
+| `expandedRowRender`    | `{ row }`                                                                     | 自定义展开行内容       |
+| `customPopover`        | `{ open, onOpenChange, trigger, content }`                                    | 自定义 Popover         |
+| `customPagination`     | `{ pageSize, pageIndex, total, onPageChange }`                                | 自定义分页器           |
+| `customCheckbox`       | `{ checked, disabled, indeterminate, onCheckedChange }`                       | 自定义复选框           |
+| `customEmpty`          | `-`                                                                           | 自定义空状态           |
+| `customLoadingIcon`    | `-`                                                                           | 自定义 loading 图标    |
+| `customLoadNoMore`     | `-`                                                                           | 自定义“没有更多了”区域 |
+| `customFooter`         | `-`                                                                           | 自定义表尾             |
+| `customExpandIcon`     | `{ expand, onExpandChange }`                                                  | 自定义展开图标         |
+| `customSorterIcon`     | `{ sort }`                                                                    | 自定义排序图标         |
+| `summaryCell`          | `{ columnKey, column, summaryValue }`                                         | 自定义汇总单元格       |
 
 ## 实例方法
 
