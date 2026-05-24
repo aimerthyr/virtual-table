@@ -40,6 +40,7 @@ title: 参考
 | `treeConfig` | 树形结构配置 | `VTableTreeConfig` | [详情](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/base.ts) |
 | `enableExpandRow` | 是否启用展开行功能 | `boolean` | `false` |
 | `enableRowHover` | 是否启用行 hover 高亮 | `boolean` | `true` |
+| `enableSelectedHighlight` | 是否启用点击/框选单元格高亮 | `boolean` | `false` |
 | `adaptiveColumnWidth` | 自适应列宽的最小列宽 | `number` | `120` |
 | `defaultExpandAllRows` | 默认展开所有行（仅初始化生效） | `boolean` | `false` |
 | `columnResizeMode` | 列宽调整模式 | `'onChange'` &#124; `'onEnd'` | `'onChange'` |

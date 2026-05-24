@@ -40,6 +40,7 @@ Display the API documentation for the VTable component.
 | `treeConfig` | Tree structure configuration | `VTableTreeConfig` | [See description](https://github.com/aimerthyr/virtual-table/blob/master/packages/table/src/interface/base.ts) |
 | `enableExpandRow` | Whether to enable expandable rows | `boolean` | `false` |
 | `enableRowHover` | Whether to enable row hover highlighting | `boolean` | `true` |
+| `enableSelectedHighlight` | Whether to enable click/drag cell highlighting | `boolean` | `false` |
 | `adaptiveColumnWidth` | Minimum column width for adaptive column width | `number` | `120` |
 | `defaultExpandAllRows` | Whether to expand all rows by default (only initialized) | `boolean` | `false` |
 | `columnResizeMode` | Column width adjustment mode | `'onChange'` &#124; `'onEnd'` | `'onChange'` |

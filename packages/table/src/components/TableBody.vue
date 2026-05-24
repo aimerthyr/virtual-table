@@ -37,7 +37,10 @@
             :can-render-cell="props.canRenderCell"
             :get-cell-column-index="props.getCellColumnIndex"
             :is-context-menu-active-cell="props.isContextMenuActiveCell"
+            :get-selected-highlight-cell-class="props.getSelectedHighlightCellClass"
             :handle-cell-context-menu="props.handleCellContextMenu"
+            :handle-selected-highlight-mouse-down="props.handleSelectedHighlightMouseDown"
+            :handle-selected-highlight-mouse-enter="props.handleSelectedHighlightMouseEnter"
           >
             <template v-if="$slots.bodyCell" #bodyCell="slotProps">
               <slot name="bodyCell" v-bind="slotProps" />
@@ -162,10 +165,22 @@ const props = defineProps<{
   canRenderCell: (row: TData, column: VTableColumn, rowIndex: number, colIndex: number) => boolean
   getCellColumnIndex: (cell: any) => number
   isContextMenuActiveCell: (rowIndex: number, colIndex: number) => boolean
+  getSelectedHighlightCellClass: (rowIndex: number, colIndex: number) => Record<string, boolean>
   handleCellContextMenu: (
     event: MouseEvent,
     row: Row<TData>,
     cell: any,
+    rowIndex: number,
+    colIndex: number,
+  ) => void
+  handleSelectedHighlightMouseDown: (
+    event: MouseEvent,
+    cell: Cell<TData, any>,
+    rowIndex: number,
+    colIndex: number,
+  ) => void
+  handleSelectedHighlightMouseEnter: (
+    cell: Cell<TData, any>,
     rowIndex: number,
     colIndex: number,
   ) => void

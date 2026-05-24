@@ -82,7 +82,10 @@
           :can-render-cell="canRenderCell"
           :get-cell-column-index="(cell) => cell.column.getIndex()"
           :is-context-menu-active-cell="isContextMenuActiveCell"
+          :get-selected-highlight-cell-class="getSelectedHighlightCellClass"
           :handle-cell-context-menu="handleCellContextMenu"
+          :handle-selected-highlight-mouse-down="handleSelectedHighlightMouseDown"
+          :handle-selected-highlight-mouse-enter="handleSelectedHighlightMouseEnter"
         >
           <template v-if="$slots.bodyCell" #bodyCell="slotProps">
             <slot name="bodyCell" v-bind="slotProps" />
@@ -760,6 +763,126 @@ const shadowPinnedColumnMap = computed(() => {
 })
 // #endregion
 
+// #region 单元格选中高亮逻辑
+const selectedHighlightRange = ref<{
+  startRowIndex: number
+  startColumnIndex: number
+  endRowIndex: number
+  endColumnIndex: number
+} | null>(null)
+const isSelectingHighlight = ref(false)
+let previousBodyUserSelect = ''
+
+const isBuiltInControlCell = (cell: Cell<TData, any>) => {
+  return cell.column.id === CHECKBOX_COLUMN_KEY || cell.column.id === EXPAND_COLUMN_KEY
+}
+const getSelectedHighlightRangeBoundary = () => {
+  if (!props.enableSelectedHighlight || !selectedHighlightRange.value) return null
+  const minRowIndex = Math.min(
+    selectedHighlightRange.value.startRowIndex,
+    selectedHighlightRange.value.endRowIndex,
+  )
+  const maxRowIndex = Math.max(
+    selectedHighlightRange.value.startRowIndex,
+    selectedHighlightRange.value.endRowIndex,
+  )
+  const minColumnIndex = Math.min(
+    selectedHighlightRange.value.startColumnIndex,
+    selectedHighlightRange.value.endColumnIndex,
+  )
+  const maxColumnIndex = Math.max(
+    selectedHighlightRange.value.startColumnIndex,
+    selectedHighlightRange.value.endColumnIndex,
+  )
+  return {
+    minRowIndex,
+    maxRowIndex,
+    minColumnIndex,
+    maxColumnIndex,
+  }
+}
+const getSelectedHighlightCellClass = (
+  rowIndex: number,
+  cellIndex: number,
+): Record<string, boolean> => {
+  const boundary = getSelectedHighlightRangeBoundary()
+  if (!boundary) return {}
+  const selected =
+    rowIndex >= boundary.minRowIndex &&
+    rowIndex <= boundary.maxRowIndex &&
+    cellIndex >= boundary.minColumnIndex &&
+    cellIndex <= boundary.maxColumnIndex
+  if (!selected) return {}
+  return {
+    'v-table-selected-highlight': true,
+    'v-table-selected-highlight-top': rowIndex === boundary.minRowIndex,
+    'v-table-selected-highlight-right': cellIndex === boundary.maxColumnIndex,
+    'v-table-selected-highlight-bottom': rowIndex === boundary.maxRowIndex,
+    'v-table-selected-highlight-left': cellIndex === boundary.minColumnIndex,
+  }
+}
+const endSelectedHighlight = () => {
+  if (!isSelectingHighlight.value) return
+  isSelectingHighlight.value = false
+  document.body.style.userSelect = previousBodyUserSelect
+}
+const handleSelectedHighlightMouseDown = (
+  event: MouseEvent,
+  cell: Cell<TData, any>,
+  rowIndex: number,
+  cellIndex: number,
+) => {
+  if (!props.enableSelectedHighlight || event.button !== 0 || isBuiltInControlCell(cell)) return
+  selectedHighlightRange.value = {
+    startRowIndex: rowIndex,
+    startColumnIndex: cellIndex,
+    endRowIndex: rowIndex,
+    endColumnIndex: cellIndex,
+  }
+  isSelectingHighlight.value = true
+  previousBodyUserSelect = document.body.style.userSelect
+  document.body.style.userSelect = 'none'
+}
+const handleSelectedHighlightMouseEnter = (
+  cell: Cell<TData, any>,
+  rowIndex: number,
+  cellIndex: number,
+) => {
+  if (
+    !props.enableSelectedHighlight ||
+    !isSelectingHighlight.value ||
+    !selectedHighlightRange.value ||
+    isBuiltInControlCell(cell)
+  ) {
+    return
+  }
+  selectedHighlightRange.value = {
+    ...selectedHighlightRange.value,
+    endRowIndex: rowIndex,
+    endColumnIndex: cellIndex,
+  }
+}
+
+watch(
+  () => props.enableSelectedHighlight,
+  (enabled) => {
+    if (!enabled) {
+      selectedHighlightRange.value = null
+      endSelectedHighlight()
+    }
+  },
+)
+
+onMounted(() => {
+  document.addEventListener('mouseup', endSelectedHighlight)
+})
+
+onBeforeUnmount(() => {
+  endSelectedHighlight()
+  document.removeEventListener('mouseup', endSelectedHighlight)
+})
+// #endregion
+
 // #region 右键菜单逻辑
 const contextMenuState = ref<{
   visible: boolean
@@ -955,7 +1078,7 @@ defineExpose<VTableInstance<TData>>({
   }
 
   :deep(.v-table-body) tr {
-    &.v-table-row-hover:hover td:not(.v-table-context-menu-active) {
+    &.v-table-row-hover:hover td:not(.v-table-context-menu-active, .v-table-selected-highlight) {
       background-color: var(--v-table-row-hover-color);
     }
 
@@ -973,6 +1096,54 @@ defineExpose<VTableInstance<TData>>({
         z-index: 2;
         outline: 1px solid var(--v-table-context-menu-active-border, #1890ff);
         outline-offset: -1px;
+      }
+
+      &.v-table-selected-highlight {
+        --v-table-selected-highlight-border-top: 0;
+        --v-table-selected-highlight-border-right: 0;
+        --v-table-selected-highlight-border-bottom: 0;
+        --v-table-selected-highlight-border-left: 0;
+
+        background-color: var(--v-table-context-menu-active-bg, #e6f4ff) !important;
+        position: relative;
+        z-index: 2;
+      }
+
+      &.v-table-selected-highlight::after {
+        content: '';
+        pointer-events: none;
+        position: absolute;
+        top: -1px;
+        right: -1px;
+        bottom: -1px;
+        left: -1px;
+        border-style: solid;
+        border-color: var(--v-table-context-menu-active-border, #1890ff);
+        border-width: var(--v-table-selected-highlight-border-top)
+          var(--v-table-selected-highlight-border-right)
+          var(--v-table-selected-highlight-border-bottom)
+          var(--v-table-selected-highlight-border-left);
+        box-sizing: border-box;
+      }
+
+      &.v-table-selected-highlight-top {
+        --v-table-selected-highlight-border-top: 1px;
+      }
+
+      &.v-table-selected-highlight-top::after {
+        top: 0;
+      }
+
+      &.v-table-selected-highlight-right {
+        --v-table-selected-highlight-border-right: 1px;
+      }
+
+      &.v-table-selected-highlight-bottom {
+        --v-table-selected-highlight-border-bottom: 1px;
+      }
+
+      &.v-table-selected-highlight-left {
+        --v-table-selected-highlight-border-left: 1px;
       }
     }
   }

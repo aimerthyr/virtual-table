@@ -57,6 +57,7 @@ export const vTableDefaultProps = defineDefaultProps<VTableProps<any>>({
   }),
   enableExpandRow: false,
   enableRowHover: true,
+  enableSelectedHighlight: false,
   adaptiveColumnWidth: 120,
   defaultExpandAllRows: false,
   columnResizeMode: 'onChange',

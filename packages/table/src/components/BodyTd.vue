@@ -19,6 +19,7 @@
           props.getCellColumnIndex(props.cell),
         ),
       },
+      props.getSelectedHighlightCellClass(props.rowIndex, props.getCellColumnIndex(props.cell)),
     ]"
     v-bind="
       tableContext.tableProps.customCellAttributes?.(
@@ -27,6 +28,21 @@
         props.rowIndex,
         props.getCellColumnIndex(props.cell),
       ) ?? {}
+    "
+    @mousedown.capture="
+      props.handleSelectedHighlightMouseDown(
+        $event,
+        props.cell,
+        props.rowIndex,
+        props.getCellColumnIndex(props.cell),
+      )
+    "
+    @mouseenter="
+      props.handleSelectedHighlightMouseEnter(
+        props.cell,
+        props.rowIndex,
+        props.getCellColumnIndex(props.cell),
+      )
     "
     @contextmenu="
       props.handleCellContextMenu(
@@ -75,9 +91,21 @@ const props = defineProps<{
   canRenderCell: (row: TData, column: VTableColumn, rowIndex: number, colIndex: number) => boolean
   getCellColumnIndex: (cell: Cell<TData, any>) => number
   isContextMenuActiveCell: (rowIndex: number, colIndex: number) => boolean
+  getSelectedHighlightCellClass: (rowIndex: number, colIndex: number) => Record<string, boolean>
   handleCellContextMenu: (
     event: MouseEvent,
     row: Row<TData>,
+    cell: Cell<TData, any>,
+    rowIndex: number,
+    colIndex: number,
+  ) => void
+  handleSelectedHighlightMouseDown: (
+    event: MouseEvent,
+    cell: Cell<TData, any>,
+    rowIndex: number,
+    colIndex: number,
+  ) => void
+  handleSelectedHighlightMouseEnter: (
     cell: Cell<TData, any>,
     rowIndex: number,
     colIndex: number,

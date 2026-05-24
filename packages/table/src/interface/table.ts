@@ -120,6 +120,8 @@ export interface VTableProps<TData = any> {
   contextMenuConfig?: VTableContextMenuConfig
   /** 是否启用行 hover 高亮 */
   enableRowHover?: boolean
+  /** 是否启用点击/框选单元格高亮 */
+  enableSelectedHighlight?: boolean
   /** 自适应列宽（当列数很多时，会出现横向滚动条，那么就需要设置自适应列的最小列宽） */
   adaptiveColumnWidth?: number
   /** 默认展开所有行（仅初始化生效） */

@@ -10,6 +10,7 @@
       :data="data"
       :columns="columns"
       :bordered="true"
+      :enable-selected-highlight="true"
       style="height: 400px; overflow: auto"
     />
   </div>
