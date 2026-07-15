@@ -50,7 +50,7 @@
   "dependencies": {
     "@floating-ui/vue": "^1.1.10",
     "@tanstack/vue-table": "^8.21.3",
-    "@tanstack/vue-virtual": "^3.13.23"
+    "@tanstack/vue-virtual": "^3.13.32"
   },
   "devDependencies": {
     "@vitejs/plugin-vue-jsx": "^5.1.4",
